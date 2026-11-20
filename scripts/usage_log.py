@@ -16,6 +16,7 @@ Log file: ~/workspace/tools/usage-log/usage.jsonl (VM-local, not in the repo).
 import argparse
 import datetime
 import json
+from zoneinfo import ZoneInfo
 import pathlib
 import sys
 
@@ -51,7 +52,7 @@ def main():
     if not args.run_id:
         ap.error('--run-id is required when logging (or use --report)')
     entry = {
-        'date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
+        'date': datetime.datetime.now(ZoneInfo('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M'),
         'run_id': args.run_id,
         'context_used': args.context_used,
         'context_remaining': args.context_remaining,
