@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.jpg" width="200" alt="Muse, the muse-rsi mascot: a strong fluffy creature wearing glasses, flexing">
+  <img src="assets/logo.png" width="200" alt="Muse, the muse-rsi mascot: a strong fluffy creature wearing glasses, flexing">
 </p>
 
 <h1 align="center">muse-rsi</h1>
