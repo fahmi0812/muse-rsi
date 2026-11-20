@@ -14,7 +14,7 @@
 
 **Maintained by:** [Fahmi](https://github.com/fahmi0812) · **For:** [Muse](https://muse.ai) · **Verified:** 20 November 2026
 
-> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung, bukan sekadar daftar link. Ada 64 skill terdaftar — 6 Tier 1 + 15 penambal + 8 DevOps + 8 Akademik + 7 Full-Stack + 8 Kantor + 5 Riset + 7 Kesehatan — 7 skill orisinal, plus indeks referensi 156 skill dari Lumitome. Semua dicek langsung, 27 terakhir lewat web. Lihat [skills/index.md](skills/index.md) untuk daftar lengkap.
+> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung, bukan sekadar daftar link. Ada 64 skill terdaftar — 6 Tier 1 + 15 penambal + 8 DevOps + 8 Akademik + 7 Full-Stack + 8 Kantor + 5 Riset + 7 Kesehatan — 8 skill orisinal, plus indeks referensi 156 skill dari Lumitome. Semua dicek langsung, 27 terakhir lewat web. Lihat [skills/index.md](skills/index.md) untuk daftar lengkap. Mau pasang semuanya sekaligus ke agen Muse kamu (baru atau lama, tanpa menghilangkan karakternya)? Lihat [Setup](#setup-install-the-whole-system).
 
 ---
 
@@ -22,6 +22,7 @@
 
 - [Why muse-rsi?](#why-muse-rsi)
 - [Quick Start](#quick-start)
+- [Setup (Install the Whole System)](#setup-install-the-whole-system)
 - [Core Skills (64)](#core-skills-64)
 - [Lumitome Reference Index](#lumitome-reference-index)
 - [Further Reference by Tier](#further-reference-by-tier)
@@ -40,9 +41,9 @@ Most skill lists on the internet are just collections of links. **muse-rsi is di
 
 1. **Verified directly, not just suggested.** 40 repositories were checked one by one on GitHub on 20 November 2026 — existence, `SKILL.md`, licence, and last update. Result: 39 exist, 1 does not. See [docs/verification.md](docs/verification.md).
 2. **Critiqued before it was adopted.** After verification, we audited what was still missing across every category. The result was 5 major gaps and 15 verified additions. See [docs/critique.md](docs/critique.md).
-3. **Built for RSI.** This is not just a list. It includes 7 original skills: the daily RSI loop, a new-skill audit, an anti-slop checklist, plus health research literacy, campus workflow, office workflow, and full-stack delivery. The RSI runs every 24 hours, and this repository is its fuel.
+3. **Built for RSI.** This is not just a list. It includes 8 original skills: the daily RSI loop, a new-skill audit, an anti-slop checklist, plus health research literacy, campus workflow, office workflow, full-stack delivery, and visual-check (screenshot + accessibility audit). The RSI runs every 24 hours, and this repository is its fuel.
 6. **Full cross-domain.** Beyond coding: DevOps and infrastructure, college and academic work, office and corporate work, research, and health research literacy — with a link-only index of 156 skills from [Lumitome](https://github.com/fahmi0812/Lumitome). See [docs/expansion.md](docs/expansion.md).
-7. **Routed, not just listed.** [skills/router/SKILL.md](skills/router/SKILL.md) + [skills/router/registry.json](skills/router/registry.json) route each task to the right skill (259 entries). Routing was tested on 7 sample requests on 20 November 2026 — all 7 routed to the correct domain.
+7. **Routed, not just listed.** [skills/router/SKILL.md](skills/router/SKILL.md) + [skills/router/registry.json](skills/router/registry.json) route each task to the right skill (260 entries). Routing is covered by a 15-query eval (`scripts/eval_routing.py`, 15/15 passing) and by CI on every push.
 4. **Safe by default.** Defensive skills only. No offensive skills, no SMS bombers, no jailbreaks. Every new skill must pass a security checklist first.
 5. **Free ($0).** Every skill listed here comes from a free open-source repository. No paid API is required.
 
@@ -67,7 +68,7 @@ Install the 6 Tier 1 skills first. Do not install everything at once.
 
 To install a skill, open its repository link above and follow that repository's own `README` / `SKILL.md`. This repository **does not copy upstream `SKILL.md` content** — it only links to it, with a one-line description and a verification status. Upstream skills remain the property of their authors.
 
-### Step 2 — Add our 7 original skills
+### Step 2 — Add our 8 original skills
 
 These were written for this system and live in this repository under `skills/`:
 
@@ -78,6 +79,28 @@ These were written for this system and live in this repository under `skills/`:
 - [skills/academic-campus/SKILL.md](skills/academic-campus/SKILL.md) — Indonesian thesis lifecycle, citations, campus documents.
 - [skills/office-corporate/SKILL.md](skills/office-corporate/SKILL.md) — email, meetings, spreadsheets, decks, internal comms.
 - [skills/fullstack-delivery/SKILL.md](skills/fullstack-delivery/SKILL.md) — spec → TDD → review → CI → deploy → observe.
+- [skills/visual-check/SKILL.md](skills/visual-check/SKILL.md) — screenshot any page at 360/768/1280 + dark mode, report console errors, failed requests, overflow, and axe accessibility violations.
+
+## Setup (Install the Whole System)
+
+Installing skills one by one is the slow path. `setup/setup.py` installs the
+**whole muse-rsi system** into a Muse agent — new or long-running — in one run:
+
+```text
+python3 setup/setup.py --yes
+```
+
+It installs the 8 original skills + the router, gitleaks (secret scan),
+visual-check, the vault dir, a clean `MEMORY.md` + `memory/scenes/`, and merges
+the muse-rsi operating system into `SOUL.md`.
+
+**The guarantee:** your agent's character survives. `IDENTITY.md` is never
+overwritten — the name stays. `SOUL.md` keeps every character/persona section;
+only the system sections (autonomy, engine, bottleneck, RSI loop, frontstage)
+are replaced. Your facts in `MEMORY.md` are kept. Before writing anything, the
+setup snapshots your current files to `~/.muse-backup/<timestamp>/` — that is
+your rollback point. See [setup/README.md](setup/README.md) for the full
+details, dry-run mode, and options.
 
 ### Step 2b — Install the router (recommended)
 

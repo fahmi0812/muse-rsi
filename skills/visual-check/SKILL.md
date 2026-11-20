@@ -1,6 +1,6 @@
 # visual-check
 
-Screenshot any page or local HTML file at three widths plus dark mode, and report console errors, failed requests, and horizontal overflow. Use it whenever design work must be judged by looking at it, not by reading code. It closes the look-and-fix loop that `design-taste-frontend` requires: look at screenshots, score them, fix, look again.
+Screenshot any page or local HTML file at three widths plus dark mode, and report console errors, failed requests, horizontal overflow, and axe accessibility violations (light and dark). Use it whenever design work must be judged by looking at it, not by reading code. It closes the look-and-fix loop that `design-taste-frontend` requires: look at screenshots, score them, fix, look again.
 
 ## Run it
 
@@ -16,7 +16,7 @@ Example:
 node check.mjs ~/workspace/your_files/Arus-v2-improved.html shots arus-v2
 ```
 
-Output per run: `<label>-360.png`, `<label>-768.png`, `<label>-1280.png`, `<label>-1280-dark.png`, and `<label>-report.json` with console errors, failed requests (including HTTP 400+ and blocked external fonts), and horizontal overflow per width.
+Output per run: `<label>-360.png`, `<label>-768.png`, `<label>-1280.png`, `<label>-1280-dark.png`, and `<label>-report.json` with console errors, failed requests (including HTTP 400+ and blocked external fonts), horizontal overflow per width, and `a11y` (axe violations in light mode + `a11y.dark` in dark mode — rule id, impact, node count, help text). Zero violations in both themes is the bar; a `color-contrast` fail means the text color is too close to its background in that theme — fix the color, not the test.
 
 ## Judge the screenshots
 
