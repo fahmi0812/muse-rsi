@@ -105,6 +105,11 @@ All 4 checks must pass: registry check, routing eval (17/17), validate,
 secret scan. The setup installs this script, so the command always exists
 after a successful install.
 
+If you installed with `--no-gitleaks`, check 4/4 (secret scan) reports
+gitleaks missing — that is expected, not a broken install. Install gitleaks
+later (re-run setup without the flag) or run checks 1–3 only; never push to
+a public repo without a passing secret scan.
+
 ## If setup says files were STAGED
 
 On Muse VMs the runtime blocks shell writes to `SOUL.md`, `IDENTITY.md`, and

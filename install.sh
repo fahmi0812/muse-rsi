@@ -44,8 +44,16 @@ fi
 
 python3 "$REPO_DIR/setup/setup.py" --yes "$@"
 
-echo "Verifying (all 4 checks must pass) ..."
-"$HOME/workspace/tools/run_all_checks.sh" "$REPO_DIR"
+echo "Verifying ..."
+if [ -x "$HOME/workspace/tools/gitleaks/gitleaks" ]; then
+  "$HOME/workspace/tools/run_all_checks.sh" "$REPO_DIR"
+else
+  echo "gitleaks was skipped (--no-gitleaks), so the secret scan is skipped too. Running checks 1-3 ..."
+  python3 "$REPO_DIR/scripts/generate_registry.py" --check --repo "$REPO_DIR"
+  python3 "$REPO_DIR/scripts/eval_routing.py" --registry "$REPO_DIR/skills/router/registry.json"
+  python3 "$REPO_DIR/scripts/validate_registry.py"
+  echo "CHECKS 1-3 PASSED (secret scan skipped: gitleaks not installed)"
+fi
 
 echo ""
 echo "Done. If the setup helped, star the repo (open $REPO_URL in the browser and click Star)"
