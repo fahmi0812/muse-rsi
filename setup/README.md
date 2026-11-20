@@ -3,6 +3,12 @@
 `setup.py` installs the **entire muse-rsi system** — not just the skills — into a
 Muse agent, whether it is brand new or has been running for months.
 
+> **Start here instead:** [INSTALL.md](../INSTALL.md) is the full install
+> guide — one-line installer, clone, ZIP download, and skills-only. This file
+> is the reference for what `setup.py` does. The copy-paste prompt for another
+> agent is [INSTALL-PROMPT.md](INSTALL-PROMPT.md) (short — it points at
+> `INSTALL.md`).
+
 ## What it installs
 
 1. **Operating system (SOUL.md):** autonomy + safety gates (Auto-Snapshot,
@@ -59,6 +65,9 @@ python3 setup/setup.py --yes --no-visual-check
 
 # Skip gitleaks (already installed, or offline):
 python3 setup/setup.py --yes --no-gitleaks
+
+# Skills + tools only — SOUL.md, IDENTITY.md, MEMORY.md, AGENTS.md untouched:
+python3 setup/setup.py --yes --skills-only
 ```
 
 Requirements: Python 3 (stdlib only), `node` + `npm` for visual-check, `curl`

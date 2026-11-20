@@ -73,11 +73,23 @@ These were written for this system and live in this repository under `skills/`:
 
 ## Setup (Install the Whole System)
 
-Installing skills one by one is the slow path. `setup/setup.py` installs the
-**whole muse-rsi system** into a Muse agent — new or long-running — in one run:
+Installing skills one by one is the slow path. The whole muse-rsi system —
+9 original skills + router + tools + operating system — installs in one run,
+new agent or long-running, without losing the agent's character. Full guide
+with every method (one-line installer, clone, ZIP, skills-only):
+[INSTALL.md](INSTALL.md).
+
+Fastest:
 
 ```text
-python3 setup/setup.py --yes
+curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh | bash
+```
+
+Or the standard way:
+
+```text
+git clone https://github.com/fahmi0812/muse-rsi ~/muse-rsi
+python3 ~/muse-rsi/setup/setup.py --yes
 ```
 
 It installs the 9 original skills + the router, gitleaks (secret scan),
@@ -89,8 +101,8 @@ overwritten — the name stays. `SOUL.md` keeps every character/persona section;
 only the system sections (autonomy, engine, bottleneck, RSI loop, frontstage)
 are replaced. Your facts in `MEMORY.md` are kept. Before writing anything, the
 setup snapshots your current files to `~/.muse-backup/<timestamp>/` — that is
-your rollback point. See [setup/README.md](setup/README.md) for the full
-details, dry-run mode, and options.
+your rollback point. See [INSTALL.md](INSTALL.md) for every install method,
+all flags, and what to do when a step fails.
 
 ### Step 2b — Install the router (recommended)
 

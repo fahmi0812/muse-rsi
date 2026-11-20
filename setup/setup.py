@@ -18,6 +18,9 @@ What it does (new agent or long-running one):
   6. Creates the vault dir (~/.config/muse/vault, chmod 700).
   7. Verifies: registry --check + routing eval + secret scan on the repo.
 
+  --skills-only installs only the skills + tools: no snapshot, no system
+  files touched, no vault changes.
+
   On Muse VMs the runtime blocks shell writes to SOUL.md / IDENTITY.md /
   MEMORY.md. When a write is blocked, setup does NOT abort: it saves the
   content to ~/workspace/.muse-rsi-staging/<file> and prints ACTION REQUIRED —
@@ -27,6 +30,7 @@ What it does (new agent or long-running one):
 Usage:
   python3 setup.py [--home PATH] [--repo PATH] [--name NAME] [--user-name NAME]
                    [--dry-run] [--yes] [--no-visual-check] [--no-gitleaks]
+                   [--skills-only]
 
 Stdlib only. $0: everything it installs is free and open source. It never
 writes the user's private info into the repo — it only reads the agent's own
@@ -240,6 +244,8 @@ def main():
     ap.add_argument('--yes', action='store_true', help='skip the confirmation prompt')
     ap.add_argument('--no-visual-check', action='store_true')
     ap.add_argument('--no-gitleaks', action='store_true')
+    ap.add_argument('--skills-only', action='store_true',
+                    help='install skills + tools only; do not touch SOUL.md, IDENTITY.md, USER.md, MEMORY.md, AGENTS.md, or the vault')
     args = ap.parse_args()
 
     home = pathlib.Path(args.home) if args.home else pathlib.Path.home()
@@ -280,8 +286,11 @@ def main():
 
     # --- 1. snapshot ---
     stamp = datetime.datetime.now().strftime('%Y-%m-%d-%H%M%S')
-    backup = home / '.muse-backup' / stamp
-    if not args.dry_run:
+    backup = None
+    if args.skills_only:
+        log('[1] Snapshot skipped (--skills-only: no system files touched)')
+    elif not args.dry_run:
+        backup = home / '.muse-backup' / stamp
         backup.mkdir(parents=True, exist_ok=False)
         for name in RUNTIME_FILES:
             p = home / name
@@ -294,6 +303,9 @@ def main():
     bottlenecks = []
 
     def write_home(name, text):
+        if args.skills_only:
+            log(f'  [skills-only] skipped writing {name}')
+            return
         if args.dry_run:
             log(f'  [dry-run] would write {name} ({len(text)} bytes)')
             return
@@ -356,7 +368,7 @@ def main():
         if 'muse-rsi' not in new_mem:
             new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 64 listed + 32 reference + 9 originals + 156 Lumitome reference = 261 registry entries.\n'
         write_home('MEMORY.md', new_mem)
-    if not args.dry_run:
+    if not args.dry_run and not args.skills_only:
         (home / 'memory' / 'scenes').mkdir(parents=True, exist_ok=True)
         (home / 'memory' / 'scenes' / 'daily').mkdir(parents=True, exist_ok=True)
         for scene, body in {
@@ -384,10 +396,14 @@ def main():
 
     # --- 7. vault ---
     vault = home / '.config' / 'muse' / 'vault'
-    if not args.dry_run:
+    if args.skills_only:
+        log('[7] Vault: skipped (--skills-only)')
+    elif not args.dry_run:
         vault.mkdir(parents=True, exist_ok=True)
         os.chmod(vault, 0o700)
-    log('[7] Vault dir ready (chmod 700)')
+        log('[7] Vault dir ready (chmod 700)')
+    else:
+        log('[7] Vault dir ready (chmod 700)')
 
     # --- 8. skills ---
     installed = install_skills(repo, home, args.dry_run)
@@ -449,6 +465,9 @@ def main():
     log('')
     if args.dry_run:
         log('DRY RUN done — nothing was written. Re-run without --dry-run to apply.')
+    elif args.skills_only:
+        log('Selesai: muse-rsi skills installed (skills-only — no system files changed).')
+        log(f'Pengaman: identity {agent_name!r} preserved; secret scan mandatory before public push.')
     else:
         log(f'Selesai: muse-rsi system installed. Backup (rollback point): {backup}')
         log(f'Pengaman: snapshot before any change; identity {agent_name!r} preserved; secret scan mandatory before public push.')
