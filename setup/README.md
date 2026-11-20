@@ -12,7 +12,7 @@ Muse agent, whether it is brand new or has been running for months.
 3. **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome headless
    shell + axe a11y), `scan-secrets.sh`.
 4. **Memory:** a clean `MEMORY.md` (<60 lines) + `memory/scenes/` structure.
-5. **Vault:** `~/.config/muse/vault/` (chmod 600).
+5. **Vault:** `~/.config/muse/vault/` (chmod 700).
 
 ## What it NEVER does
 

@@ -15,7 +15,7 @@ What it does (new agent or long-running one):
      into ~/workspace/custom-skills/.
   5. Installs the tools: gitleaks (secret scan) + visual-check (Playwright +
      Chrome headless shell + axe) + scan-secrets.sh + run_all_checks.sh.
-  6. Creates the vault dir (~/.config/muse/vault, chmod 600).
+  6. Creates the vault dir (~/.config/muse/vault, chmod 700).
   7. Verifies: registry --check + routing eval + secret scan on the repo.
 
   On Muse VMs the runtime blocks shell writes to SOUL.md / IDENTITY.md /
@@ -122,7 +122,7 @@ def merge_soul(existing, template, agent_name):
         if not any(is_system_heading(oh) and any(
                 k in oh.lower() and k in h.lower() for k in SYSTEM_HEADING_KEYS) for oh, _ in secs):
             out.append(h + '\n' + b.strip() + '\n')
-    return '\n'.join(s.rstrip() for s in out) + '\n'
+    return '\n\n'.join(s.rstrip() for s in out) + '\n'
 
 
 def find_name(text, key='Name'):
@@ -386,8 +386,8 @@ def main():
     vault = home / '.config' / 'muse' / 'vault'
     if not args.dry_run:
         vault.mkdir(parents=True, exist_ok=True)
-        os.chmod(vault, 0o600)
-    log('[7] Vault dir ready (chmod 600)')
+        os.chmod(vault, 0o700)
+    log('[7] Vault dir ready (chmod 700)')
 
     # --- 8. skills ---
     installed = install_skills(repo, home, args.dry_run)

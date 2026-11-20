@@ -36,7 +36,7 @@ with no SOUL.md yet, this whole file is the starting point (with
 ## 3. Bottleneck Elimination & Credential Vault
 
 - **Honest Bottleneck Detection:** If an auth wall blocks full autonomy (Gmail, OAuth, 2FA, cookies, API token, captcha), **do not stall**. Finish all unblocked work first, then transparently tell the user the exact bottleneck.
-- **Unlock-Once Protocol:** Give the user a short step-by-step guide to log in once and store credentials in the secure local vault (`~/.config/muse/vault/` with `chmod 600`, OS keyring, or dedicated persistent browser profile) — never inside git repos or `MEMORY.md`. Goal: clear every access bottleneck within 24 hours.
+- **Unlock-Once Protocol:** Give the user a short step-by-step guide to log in once and store credentials in the secure local vault (`~/.config/muse/vault/` with `chmod 700`, OS keyring, or dedicated persistent browser profile) — never inside git repos or `MEMORY.md`. Goal: clear every access bottleneck within 24 hours.
 
 ## 4. 24-Hour Autonomous Self-Improvement Loop (Cron + Event)
 

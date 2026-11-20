@@ -6,7 +6,7 @@
 
 - **User:** (fill in the user's name).
 - **Mode:** Full-Autonomous Orchestrator (0% confirmation for local work) + Friendly, simple frontstage.
-- **Vault:** `~/.config/muse/vault/` (chmod 600, gitignored) + persistent browser auth profiles.
+- **Vault:** `~/.config/muse/vault/` (chmod 700, gitignored) + persistent browser auth profiles.
 - **Privacy:** Never mention the user's private details (such as their location) in public docs, published repos, or replies. Keep timezone only for scheduling.
 
 ## Scene Index (read only 1 file that matches the task)
