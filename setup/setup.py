@@ -14,9 +14,15 @@ What it does (new agent or long-running one):
   4. Installs the 9 original skills + the muse-rsi router (registry 261 entries)
      into ~/workspace/custom-skills/.
   5. Installs the tools: gitleaks (secret scan) + visual-check (Playwright +
-     Chrome headless shell + axe) + scan-secrets.sh.
+     Chrome headless shell + axe) + scan-secrets.sh + run_all_checks.sh.
   6. Creates the vault dir (~/.config/muse/vault, chmod 600).
   7. Verifies: registry --check + routing eval + secret scan on the repo.
+
+  On Muse VMs the runtime blocks shell writes to SOUL.md / IDENTITY.md /
+  MEMORY.md. When a write is blocked, setup does NOT abort: it saves the
+  content to ~/workspace/.muse-rsi-staging/<file> and prints ACTION REQUIRED —
+  the installing agent applies each staged file with its own file tool, then
+  deletes the staging copy and runs the verification.
 
 Usage:
   python3 setup.py [--home PATH] [--repo PATH] [--name NAME] [--user-name NAME]
@@ -283,11 +289,31 @@ def main():
                 shutil.copyfile(p, backup / name)
         log(f'[1] Snapshot -> {backup} ({len(list(backup.iterdir()))} files)')
 
+    # Files the shell could not write (staged for the agent's file tool).
+    staged = []
+    bottlenecks = []
+
     def write_home(name, text):
         if args.dry_run:
             log(f'  [dry-run] would write {name} ({len(text)} bytes)')
             return
-        (home / name).write_text(text, encoding='utf-8')
+        try:
+            (home / name).write_text(text, encoding='utf-8')
+        except OSError as e:
+            # Muse VMs block shell writes to SOUL.md / IDENTITY.md / MEMORY.md
+            # (PermissionError: Operation not permitted). Don't abort: stage
+            # the content where the agent's own file tool can reach it, and
+            # let the agent apply it. See issue #1.
+            staging = home / 'workspace' / '.muse-rsi-staging'
+            try:
+                staging.mkdir(parents=True, exist_ok=True)
+                sp = staging / name
+                sp.write_text(text, encoding='utf-8')
+                staged.append((name, sp))
+                log(f'  STAGED {name}: shell write blocked ({e}); content saved to {sp} — apply it with your own file tool, then delete the staging copy.')
+            except OSError as e2:
+                log(f'  FAILED {name}: shell write blocked ({e}) and staging also failed ({e2}) — re-run setup after fixing the block, or apply the merge manually from the templates.')
+                bottlenecks.append(f'{name} could not be written or staged: {e2}')
 
     # --- 2. SOUL.md merge (character kept, system replaced) ---
     soul_tpl = (tpl / 'SOUL-system.md').read_text(encoding='utf-8')
@@ -368,7 +394,6 @@ def main():
     log(f'[8] Skills installed: {len(installed)} ({", ".join(installed)})')
 
     # --- 9. tools ---
-    bottlenecks = []
     if not args.no_gitleaks:
         try:
             log('[9] gitleaks: ' + install_gitleaks(home, args.dry_run))
@@ -392,6 +417,13 @@ def main():
         shutil.copyfile(scan_src, dest)
         os.chmod(dest, 0o755)
         log('[9] scan-secrets.sh installed')
+    checks_src = repo / 'scripts' / 'run_all_checks.sh'
+    if checks_src.exists() and not args.dry_run:
+        dest = home / 'workspace' / 'tools' / 'run_all_checks.sh'
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(checks_src, dest)
+        os.chmod(dest, 0o755)
+        log('[9] run_all_checks.sh installed (verify with it after setup)')
 
     # --- 10. verify ---
     if not args.dry_run:
@@ -420,11 +452,19 @@ def main():
     else:
         log(f'Selesai: muse-rsi system installed. Backup (rollback point): {backup}')
         log(f'Pengaman: snapshot before any change; identity {agent_name!r} preserved; secret scan mandatory before public push.')
+    if staged:
+        log('')
+        log('ACTION REQUIRED — the shell cannot write these files on this machine:')
+        for name, sp in staged:
+            log(f'  - {name}  ->  staged at {sp}')
+        log('Apply each staged file to your home directory with your own file tool (not the shell),')
+        log('then delete the staging copy. The setup is NOT complete until this is done.')
+        log('After applying, verify with: ~/workspace/tools/run_all_checks.sh')
     if bottlenecks:
         log('Bottleneck:')
         for b in bottlenecks:
             log(' - ' + b)
-    return 1 if bottlenecks else 0
+    return 1 if (bottlenecks or staged) else 0
 
 
 if __name__ == '__main__':

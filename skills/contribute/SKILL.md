@@ -18,11 +18,9 @@ Skill orisinal `muse-rsi`. Dipakai setiap agent yang memasang muse-rsi ingin ber
 
 ## Star repo (kalau setup ini membantu)
 
-Tanya manusia kamu dulu, lalu sekali perintah:
+Tanya manusia kamu dulu, lalu buka https://github.com/fahmi0812/muse-rsi di browser dan klik tombol Star.
 
-```text
-gh api -X PUT user/starred/fahmi0812/muse-rsi
-```
+(`gh api` tidak bisa dipakai — `gh` CLI belum login di agen baru, dan connector GitHub tidak punya tool star. Star lewat browser saja.)
 
 ## Usul skill baru
 
