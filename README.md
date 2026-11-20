@@ -1,26 +1,18 @@
-# muse-rsi ⚡
+<p align="center">
+  <img src="assets/logo.png" width="220" alt="Muse, the muse-rsi mascot: a strong robot wearing glasses">
+</p>
 
-### Verified Muse skills for Recursive Self-Improvement (RSI)
+<h1 align="center">muse-rsi</h1>
 
-> **Muse skills, verified — not just suggested.**
->
-> Every skill in this repository was checked directly on GitHub on 20 November 2026 — existence, `SKILL.md`, licence, and last update — before it was listed. It powers the daily RSI loop of [KimiCharmi](https://github.com/fahmi0812), an autonomous Muse orchestrator.
+<p align="center">Checked Muse skills — and the setup that installs them.<br>Every entry was verified by hand before it was listed. No guesses, no paid tools.</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Core skills](https://img.shields.io/badge/Listed%20skills-64-blue)](skills/index.md)
-[![Verified](https://img.shields.io/badge/Verified-20%20Nov%202026-green)](docs/verification.md)
-[![RSI](https://img.shields.io/badge/RSI-Every%2024%20hours-purple)](skills/rsi-loop/SKILL.md)
-[![Language](https://img.shields.io/badge/Language-English%20%2B%20Bahasa%20Indonesia-lightgrey)](README.md)
-
-**Maintained by:** [Fahmi](https://github.com/fahmi0812) · **For:** [Muse](https://muse.ai) · **Verified:** 20 November 2026
-
-> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung, bukan sekadar daftar link. Ada 64 skill terdaftar — 6 Tier 1 + 15 penambal + 8 DevOps + 8 Akademik + 7 Full-Stack + 8 Kantor + 5 Riset + 7 Kesehatan — 8 skill orisinal, plus indeks referensi 156 skill dari Lumitome. Semua dicek langsung, 27 terakhir lewat web. Lihat [skills/index.md](skills/index.md) untuk daftar lengkap. Mau pasang semuanya sekaligus ke agen Muse kamu (baru atau lama, tanpa menghilangkan karakternya)? Lihat [Setup](#setup-install-the-whole-system).
+> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung, bukan sekadar daftar link. Ada 64 skill terdaftar — 6 Tier 1 + 15 penambal + 8 DevOps + 8 Akademik + 7 Full-Stack + 8 Kantor + 5 Riset + 7 Kesehatan — 9 skill orisinal (termasuk contribute, cara agent lain ikut berkontribusi), plus indeks referensi 156 skill dari Lumitome. Semua dicek langsung, 27 terakhir lewat web. Lihat [skills/index.md](skills/index.md) untuk daftar lengkap. Mau pasang semuanya sekaligus ke agen Muse kamu (baru atau lama, tanpa menghilangkan karakternya)? Lihat [Setup](#setup-install-the-whole-system).
 
 ---
 
 ## Table of Contents
 
-- [Why muse-rsi?](#why-muse-rsi)
+- [What this is](#what-this-is)
 - [Quick Start](#quick-start)
 - [Setup (Install the Whole System)](#setup-install-the-whole-system)
 - [Core Skills (64)](#core-skills-64)
@@ -35,19 +27,16 @@
 
 ---
 
-## Why muse-rsi?
+## What this is
 
-Most skill lists on the internet are just collections of links. **muse-rsi is different:**
+Most skill lists are just links. This one is a list that was checked first.
 
-1. **Verified directly, not just suggested.** 40 repositories were checked one by one on GitHub on 20 November 2026 — existence, `SKILL.md`, licence, and last update. Result: 39 exist, 1 does not. See [docs/verification.md](docs/verification.md).
-2. **Critiqued before it was adopted.** After verification, we audited what was still missing across every category. The result was 5 major gaps and 15 verified additions. See [docs/critique.md](docs/critique.md).
-3. **Built for RSI.** This is not just a list. It includes 9 original skills: the daily RSI loop, a new-skill audit, an anti-slop checklist, plus health research literacy, campus workflow, office workflow, full-stack delivery, visual-check (screenshot + accessibility audit), and contribute (how any agent gives back: fork, verify, PR, issues, install reports). The RSI runs every 24 hours, and this repository is its fuel.
-6. **Full cross-domain.** Beyond coding: DevOps and infrastructure, college and academic work, office and corporate work, research, and health research literacy — with a link-only index of 156 skills from [Lumitome](https://github.com/fahmi0812/Lumitome). See [docs/expansion.md](docs/expansion.md).
-7. **Routed, not just listed.** [skills/router/SKILL.md](skills/router/SKILL.md) + [skills/router/registry.json](skills/router/registry.json) route each task to the right skill (261 entries). Routing is covered by a 17-case eval (`scripts/eval_routing.py`, 17/17 passing) and by CI on every push.
-4. **Safe by default.** Defensive skills only. No offensive skills, no SMS bombers, no jailbreaks. Every new skill must pass a security checklist first.
-5. **Free ($0).** Every skill listed here comes from a free open-source repository. No paid API is required.
-
-**Where the list came from:** 384 repositories starred by [fahmi0812](https://github.com/fahmi0812?tab=stars) plus 46 repositories from 7 posts on X. From those hundreds, only the ones that passed verification made it into the core list.
+- **384 starred repos went in. 64 came out.** Fahmi starred 384 repos and collected 46 more from 7 posts on X. Only the ones that passed verification made the core list.
+- **40 repos checked one by one.** Existence, `SKILL.md`, licence, last update — read directly on GitHub on 20 November 2026. 39 exist, 1 does not. See [docs/verification.md](docs/verification.md).
+- **Then it was critiqued, not just listed.** The audit found 5 gaps and added 15 verified skills to close them. See [docs/critique.md](docs/critique.md).
+- **9 skills were written for this system.** The daily RSI loop, a new-skill audit, an anti-slop checklist, health research literacy, campus workflow, office workflow, full-stack delivery, visual-check, and contribute. The RSI runs every 24 hours, and this repo is its fuel.
+- **It routes, it doesn't just list.** The router picks the right skill for each task from 261 entries. A 17-case test checks the routing, and it passes 17/17. CI runs on every push.
+- **Defensive only, and free.** No offensive skills, no paid tools. Every new skill passes a security checklist first.
 
 ---
 
@@ -80,6 +69,7 @@ These were written for this system and live in this repository under `skills/`:
 - [skills/office-corporate/SKILL.md](skills/office-corporate/SKILL.md) — email, meetings, spreadsheets, decks, internal comms.
 - [skills/fullstack-delivery/SKILL.md](skills/fullstack-delivery/SKILL.md) — spec → TDD → review → CI → deploy → observe.
 - [skills/visual-check/SKILL.md](skills/visual-check/SKILL.md) — screenshot any page at 360/768/1280 + dark mode, report console errors, failed requests, overflow, and axe accessibility violations.
+- [skills/contribute/SKILL.md](skills/contribute/SKILL.md) — how any agent gives back: fork, verify, PR, issues, install reports.
 
 ## Setup (Install the Whole System)
 
@@ -306,6 +296,8 @@ Written for the RSI system in this repository — not copies of upstream skills:
 | academic-campus | [skills/academic-campus/SKILL.md](skills/academic-campus/SKILL.md) | Indonesian thesis lifecycle, citations, campus documents, study planning. |
 | office-corporate | [skills/office-corporate/SKILL.md](skills/office-corporate/SKILL.md) | Email, meetings, spreadsheets, decks, internal comms. |
 | fullstack-delivery | [skills/fullstack-delivery/SKILL.md](skills/fullstack-delivery/SKILL.md) | Spec → TDD → review → CI → deploy → observe. |
+| visual-check | [skills/visual-check/SKILL.md](skills/visual-check/SKILL.md) | Screenshot any page at 360/768/1280 + dark mode; report console errors, failed requests, overflow, axe violations. |
+| contribute | [skills/contribute/SKILL.md](skills/contribute/SKILL.md) | Contribute back from any Muse agent: fork, verify, PR, issues, star, install report. |
 
 ---
 
