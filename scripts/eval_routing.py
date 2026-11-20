@@ -6,7 +6,9 @@ take the top 3, pass when one of them is in an expected domain.
 Exit 0 when every case passes, 1 otherwise.
 Usage: python3 eval_routing.py [--registry PATH] [--cases PATH]
 """
-import argparse, json, pathlib, re, sys
+import argparse, json, pathlib, sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from route import route as route_query  # the real router code — the eval tests it
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--registry', default=None)
@@ -25,27 +27,18 @@ cases_path = pathlib.Path(args.cases) if args.cases else here / 'eval_routing.js
 registry = json.loads(reg_path.read_text(encoding='utf-8'))
 cases = json.loads(cases_path.read_text(encoding='utf-8'))['cases']
 
-def route(query, top_n=3):
-    words = set(re.split(r'[^a-z0-9]+', query.lower())) - {''}
-    scored = []
-    for s in registry['skills']:
-        hit = len(words & set(s.get('keywords', [])))
-        if hit:
-            scored.append((hit, s['name'], s['domain']))
-    scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
-    return scored[:top_n]
 
 passed, failed = 0, []
 for case in cases:
-    top = route(case['query'])
-    ok = any(d in case['expected_domains'] for _, _, d in top)
+    top = route_query(case['query'], registry)
+    ok = any(d in case['expected_domains'] for _, _, d, _, _ in top)
     status = 'PASS' if ok else 'FAIL'
     if ok:
         passed += 1
     else:
         failed.append(case['query'])
     print(f"[{status}] {case['query']}")
-    for hit, name, domain in top:
+    for hit, name, domain, _typ, _url in top:
         print(f"         {hit} | {name} | {domain}")
 print(f"\n{passed}/{len(cases)} passed")
 if failed:

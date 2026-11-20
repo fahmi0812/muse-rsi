@@ -52,8 +52,14 @@ Membuat KimiCharmi berkembang sendiri tiap 24 jam, dengan aman: tiap perubahan k
 ### 6. Simpan atau rollback
 
 - Kalau tes lolos dan scan bersih → simpan perubahan + tulis 1 baris di changelog: apa yang berubah dan bukti tesnya.
-- Kalau tes gagal → rollback ke snapshot, catat kenapa gagal, dan jangan ulangi cara yang sama di run berikutnya.
+- Kalau tes gagal → rollback ke snapshot, catat kenapa gagal, dan jangan ulangi cara yang sama di run berikutnya. Rollback konten (bukan history): `python3 scripts/rollback_file.py <path> --from mirror` (versi remote terakhir) atau `--from backup` (tarball terakhir). History tidak bisa ditulis ulang dari sini (tidak ada force-push) — restore selalu sebagai commit baru.
 - Diam (silent) kalau tidak ada perbaikan nyata atau bottleneck. Lapor hanya kalau ada yang benar-benar perlu tindakan Fahmi.
+
+### 7. Catat pemakaian (usage log)
+
+- Di akhir tiap run, baca status sesi (context window terpakai / tersisa) dan catat 1 entri: `python3 scripts/usage_log.py --run-id <id> --context-used <N> --context-remaining <M> --duration-min <N> --checks PASS|FAIL --note "<1 kalimat>"`.
+- Tidak ada meter token di harness ini — yang diukur adalah context window. Jangan mengarang angka; kalau angkanya tidak tersedia, kosongkan dan tulis alasannya di note.
+- Lihat tren: `python3 scripts/usage_log.py --report`.
 
 ## Pengaman yang tidak boleh dimatikan
 
@@ -72,4 +78,12 @@ Membuat KimiCharmi berkembang sendiri tiap 24 jam, dengan aman: tiap perubahan k
 ## Keluaran tiap run
 
 - 1 baris log: tanggal, perbaikan, hasil tes, snapshot yang dipakai.
+- 1 entri usage log (langkah 7).
 - Kalau tidak ada perbaikan: tulis "tidak ada perubahan" dan berhenti. Jangan mengarang perbaikan.
+
+## Operasional repo (lihat `docs/ops.md`)
+
+- Remote adalah sumber kebenaran untuk isi file; cek sinkronisasi dengan mirror clone.
+- File workflow (`.github/workflows/`) hanya lewat website GitHub (API 403).
+- Router adalah program: `scripts/route.py "<tugas>"`; eval 15 query harus lolos tiap registry berubah.
+- Kerja browser dipecah per batch <45 menit, progres disimpan ke file tiap batch.
