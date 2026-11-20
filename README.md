@@ -42,6 +42,7 @@ Most skill lists on the internet are just collections of links. **muse-rsi is di
 2. **Critiqued before it was adopted.** After verification, we audited what was still missing across every category. The result was 5 major gaps and 15 verified additions. See [docs/critique.md](docs/critique.md).
 3. **Built for RSI.** This is not just a list. It includes 7 original skills: the daily RSI loop, a new-skill audit, an anti-slop checklist, plus health research literacy, campus workflow, office workflow, and full-stack delivery. The RSI runs every 24 hours, and this repository is its fuel.
 6. **Full cross-domain.** Beyond coding: DevOps and infrastructure, college and academic work, office and corporate work, research, and health research literacy — with a link-only index of 156 skills from [Lumitome](https://github.com/fahmi0812/Lumitome). See [docs/expansion.md](docs/expansion.md).
+7. **Routed, not just listed.** [skills/router/SKILL.md](skills/router/SKILL.md) + [skills/router/registry.json](skills/router/registry.json) route each task to the right skill (259 entries). Routing was tested on 7 sample requests on 20 November 2026 — all 7 routed to the correct domain.
 4. **Safe by default.** Defensive skills only. No offensive skills, no SMS bombers, no jailbreaks. Every new skill must pass a security checklist first.
 5. **Free ($0).** Every skill listed here comes from a free open-source repository. No paid API is required.
 
@@ -77,6 +78,13 @@ These were written for this system and live in this repository under `skills/`:
 - [skills/academic-campus/SKILL.md](skills/academic-campus/SKILL.md) — Indonesian thesis lifecycle, citations, campus documents.
 - [skills/office-corporate/SKILL.md](skills/office-corporate/SKILL.md) — email, meetings, spreadsheets, decks, internal comms.
 - [skills/fullstack-delivery/SKILL.md](skills/fullstack-delivery/SKILL.md) — spec → TDD → review → CI → deploy → observe.
+
+### Step 2b — Install the router (recommended)
+
+To let Muse pick the right skill for each task automatically, install the router skill:
+
+- **In Muse:** the router lives in this repo at [skills/router/SKILL.md](skills/router/SKILL.md) with its routing table in [skills/router/registry.json](skills/router/registry.json) (259 entries: 64 core + 32 reference + 7 originals + 156 Lumitome reference). Install it as a custom skill together with the 7 original skills under `skills/`.
+- **How it routes:** it reads the request, names its domain, matches `keywords` + `domain` + `notes` in `registry.json`, and loads the smallest set that covers the task — core before reference, original when it matches exactly. It never installs from the Pending or Not Included lists, and it never copies upstream `SKILL.md` content.
 
 ### Step 3 — Add other tiers only when needed
 

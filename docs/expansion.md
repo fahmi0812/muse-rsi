@@ -4,20 +4,20 @@
 **Status:** Fully implemented on 20 November 2026. The 30 pending repos were re-checked via the web the same day (see [recheck-web.md](recheck-web.md)): 27 promoted into four new domain packs (Full-Stack 7, Office 8, Research 5, Health 7), 3 not promoted. Total listed skills: 64.
 **Sources (all verified, no invented numbers):**
 - Lumitome map (local clone): `lumitome-skills-map.md` — 156 core skills, all SKILL.md descriptions read locally; registry 930 skills confirmed in `router/skills-registry.json`.
-- External verification: `muse-rsi-expansion-verifikasi.md` — 48 external repos checked (46 unique); **only DevOps (8) and Academic (8) are fully verified** (SKILL.md + license). The other 32 are existence/stars/update only.
+- External verification: `muse-rsi-expansion-verifikasi.md` — 48 external repos checked (46 unique). DevOps (8) and Academic (8) were fully verified first (SKILL.md + license); the remaining 30 were re-checked via the web the same day (see [recheck-web.md](recheck-web.md)): 27 promoted, 3 not. 0 pending.
 - Current muse-rsi: `~/workspace/muse-rsi/` (README, skills/index.md, docs/verification.md, docs/critique.md).
 
 ## 1. Gap analysis per target domain
 
 | Target domain | What Lumitome already covers (core 156) | Fully verified external repos | Still missing / pending |
 |---|---|---|---|
-| Full-Stack Development | 31 — STRONG: code review, TDD, refactoring, debugging, Next.js/React renderers, docs-pack, architecture | None fully verified yet | 8 external repos PENDING re-check (QA, Next.js, React). Lumitome has no dedicated API-design, DB-migration, or frontend-testing-depth skill beyond `test-value`/`tdd-red-green-refactor`. |
+| Full-Stack Development | 31 — STRONG: code review, TDD, refactoring, debugging, Next.js/React renderers, docs-pack, architecture | **7 — CLEARED via web re-check 20 Nov 2026** (see [recheck-web.md](recheck-web.md)); 1 not promoted (`bleu-dragon/codex-web-dev-skills`, no visible SKILL.md, no licence) | Lumitome has no dedicated API-design, DB-migration, or frontend-testing-depth skill beyond `test-value`/`tdd-red-green-refactor`. |
 | DevOps & Infra | 8 — THIN: `automation-audit-ops`, `gh-axi`, `git-guardrails`, `mongodb-ops`, `supabase-ops`, `vercel-ops`, `release-bumper`, `rea-ci-tests-audit`. No K8s, no Terraform, no observability. | **8 — CLEARED NOW** (see §2) | Nothing blocking. This is the most complete domain after this expansion. |
 | Agent & Orchestration | 28 — STRONG: EGM review loop, subagents, MCP builder, eval harness, skill creator/harmonization | Covered by Tier 1 (superpowers, agent-skills) | Nothing missing. |
-| Office & Corporate | 5 — THIN: `internal-comms`, `one-pager`, `slides`, `smartdoc`, `tableau`. Plus `penulisan` pack (42, business writing). No email, spreadsheet, or meeting workflow in core. | None fully verified yet | 8 external repos PENDING re-check (email, PPT, Excel, Outlook, trade docs). |
+| Office & Corporate | 5 — THIN: `internal-comms`, `one-pager`, `slides`, `smartdoc`, `tableau`. Plus `penulisan` pack (42, business writing). No email, spreadsheet, or meeting workflow in core. | **8 — CLEARED via web re-check 20 Nov 2026** (see [recheck-web.md](recheck-web.md)) | Nothing blocking. Note: `MAJI-Skills` is AGPL v3 — link only, never vendor. |
 | College & Academic | 4 — THIN, all Indonesian academic writing: `laporan-generator`, `naskah-id`, `penulis-ilmiah`, `smartbook-ingest` (semester modules). No citation/Zotero workflow, no thesis lifecycle, no study planning. | **8 — CLEARED NOW** (see §2) | Thesis lifecycle + study workflow still need a new original skill (§4). |
-| Research | 2 — THIN: `deep-research`, `research` only. | 2 already verified via Academic pass: `917Dhj/DeepPaperNote` (MIT, SKILL.md yes) and `WenyuChiou/ai-research-skills` (MIT, catalog only — no installable SKILL.md). | 6 external repos PENDING re-check (PaperSpine, Deep-Research-skills, paper-craft, claude-deep-research, agent-research-skills, slr-prisma). No systematic-review (PRISMA) skill verified yet. |
-| Health & Medical | **0 — MISSING.** Verified by grep on the clone: no skill dir, no pack dir, no FHIR string anywhere. Only false positives (document "health audit", PubMed listed as a source, `/api/health` endpoints). | None fully verified yet | 8 external repos PENDING re-check — 1 already NOT RECOMMENDED (`jmandel/health-skillz`, handles real patient EHR data). Needs a new original skill with strict guardrails (§4). |
+| Research | 2 — THIN: `deep-research`, `research` only. | 2 already verified via Academic pass: `917Dhj/DeepPaperNote` (MIT, SKILL.md yes) and `WenyuChiou/ai-research-skills` (MIT, catalog only — no installable SKILL.md). **Plus 5 promoted via web re-check 20 Nov 2026** (Deep-Research-skills, paper-craft, claude-deep-research, agent-research-skills, slr-prisma); PaperSpine has no SKILL.md, so it is reference only. | Systematic review (PRISMA) is now covered by `keemanxp/slr-prisma`. |
+| Health & Medical | **0 — MISSING.** Verified by grep on the clone: no skill dir, no pack dir, no FHIR string anywhere. Only false positives (document "health audit", PubMed listed as a source, `/api/health` endpoints). | **7 — CLEARED via web re-check 20 Nov 2026** (see [recheck-web.md](recheck-web.md)); 1 permanently excluded (`jmandel/health-skillz`, handles real patient EHR data). | Covered by the 7 external research-only repos plus the new original skill `health-research-literacy` (§4). |
 | Security (defensive) | 30 — STRONG: 16 `hunt-*`, `code-audit`, `owasp-security`, `security-audit`, `fp-check`, `triage-validation`, `cvss-scoring` | — | Nothing missing. Red-team pack (166) is DISABLED by design and must never be added. |
 | Design & Media | 36 — STRONG, the biggest core domain | Covered by existing gap fillers (taste, hallmark, unslop) | Nothing missing. |
 | Finance & Business (ID) | 4 — `akuntansi-umkm`, `analisis-laporan-keuangan`, `keuangan-pribadi`, `pajak-dasar-id` | — | Out of scope for this expansion (already covered for Indonesian small business). |
@@ -52,9 +52,9 @@
 
 **Count check:** 16 cleared to list. 15 are installable as skill files (all except the WenyuChiou catalog, which has no SKILL.md). 1 is proprietary (Gabberflast) — list as a link, never vendor.
 
-## 3. PENDING re-check — 30 repos (do NOT add yet)
+## 3. Re-check results — 30 repos (resolved 20 Nov 2026)
 
-These have existence/stars/update verified only. SKILL.md and license were **not** verified (GitHub 429). Re-check after the rate limit clears, then promote the ones that pass.
+All 30 were re-checked directly on the web on 20 November 2026 (see [recheck-web.md](recheck-web.md)). **27 were promoted** into the four domain packs; **3 were not** (PaperSpine — no SKILL.md; codex-web-dev-skills — no visible SKILL.md, no licence; health-skillz — handles real patient EHR data, permanently excluded). The lists below are kept as the record of what was checked.
 
 ### 3a. Full-Stack — 8 (top 3: petrkindlmann/qa-skills, wsimmonds/claude-nextjs-skills, PyModel/react-frontend-skills)
 petrkindlmann/qa-skills (291) · PramodDutta/qaskills (250) · wsimmonds/claude-nextjs-skills (115) · laguagu/claude-code-nextjs-skills (74) · kazdenc/builder-skills (46) · PyModel/react-frontend-skills (43) · leejpsd/typescript-react-nextjs-patterns (22) · bleu-dragon/codex-web-dev-skills (1 — already NOT RECOMMENDED, too weak/unproven).
@@ -89,9 +89,9 @@ Keep everything that exists. Additions only — no file is deleted, no existing 
 | Gap fillers | 15 (unchanged) | Done |
 | **NEW: Domain Pack — DevOps & Infra** | 8 repos from §2a | **Cleared now** |
 | **NEW: Domain Pack — College & Academic** | 8 repos from §2b (incl. 1 proprietary link-only + 1 catalog-only) | **Cleared now** |
-| **NEW: Lumitome Reference Index** | Link-only index of the 156 core Lumitome skills, grouped by the 12 domains in `lumitome-skills-map.md`. Link only — never copy SKILL.md content. Red-team pack excluded, with the reason stated. | Ready to write (all data verified locally) |
-| **NEW: Pending Re-check** | The 30 repos from §3, listed as PENDING with the reason (SKILL.md + license not yet verified). Not recommendations yet. | Ready to write |
-| Original skills | 3 → **7** (add the 4 from §4) | To write |
+| **NEW: Lumitome Reference Index** | Link-only index of the 156 core Lumitome skills, grouped by the 12 domains in `lumitome-skills-map.md`. Link only — never copy SKILL.md content. Red-team pack excluded, with the reason stated. | Done |
+| **NEW: Pending Re-check** | The 30 repos from §3, re-checked via the web 20 Nov 2026: 27 promoted, 3 not (see §3 / [recheck-web.md](recheck-web.md)). 0 pending. | Done |
+| Original skills | 3 → **7** (add the 4 from §4) | Done |
 | Docs | New `docs/expansion.md` (this plan, adapted) + update `docs/verification.md` | To write |
 | README + skills/index.md | New domain sections added; counts updated: 37 listed + 27 promoted via web re-check = **64 listed skills** + 7 originals; reference index 156 Lumitome skills; 0 pending. | Done |
 

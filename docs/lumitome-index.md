@@ -263,8 +263,8 @@ Pack notes:
 | Agent & Orchestration | 28 | STRONG — EGM, subagents, MCP, eval harness already covered |
 | Office & Corporate | 5 | THIN — external office repos + `penulisan` pack need a second pass |
 | College & Academic | 4 | THIN — academic writing (ID) only; external academic repos (fully verified) are the main fill |
-| Research | 2 | THIN — `deep-research` + `research` only; external research repos pending re-check |
-| Health & Medical | 0 | MISSING — needs external research-only repos (pending re-check) + a new original skill with guardrails |
+| Research | 2 | THIN — `deep-research` + `research` only; 5 external research repos verified via web 20 Nov 2026 and promoted |
+| Health & Medical | 0 | MISSING — 7 external research-only repos verified via web 20 Nov 2026 and promoted, plus new original skill `health-research-literacy` with guardrails |
 | Security | 30 | STRONG (defensive) — link defensive subset only; never the red-team pack |
 | Design & Media | 36 | STRONG — already the biggest core domain |
 
