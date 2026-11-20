@@ -1,6 +1,6 @@
 # Skill Index — muse-rsi
 
-> Complete index of the **64 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 7 Full-Stack + 8 Office + 5 Research + 7 Health, plus 8 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 156 Lumitome skills. All 64 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)).
+> Complete index of the **64 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 7 Full-Stack + 8 Office + 5 Research + 7 Health, plus 9 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 156 Lumitome skills. All 64 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)).
 >
 > To install the whole system at once (skills + router + tools + memory + SOUL merge, keeping your agent's character), run `python3 setup/setup.py --yes` — see [setup/README.md](../setup/README.md).
 >
@@ -21,7 +21,7 @@
 | Domain Pack — Research | 5 | Verified via web 20 Nov 2026 |
 | Domain Pack — Health & Medical | 7 | Verified via web 20 Nov 2026 |
 | **Total listed skills** | **64** | — |
-| Original skills in this repository | 8 | Written for this RSI system |
+| Original skills in this repository | 9 | Written for this RSI system |
 | Lumitome Reference Index (link only) | 156 | Verified locally from the Lumitome clone |
 | Pending re-check | 0 | All 30 re-checked via web on 20 Nov 2026 — 27 promoted, 3 not (see below) |
 | Further reference, Tiers 2–6 | 32 | Verified; install only when needed |
@@ -180,9 +180,9 @@ All 30 pending repos were re-checked via the web on 20 November 2026 (see [docs/
 
 ## Router — Install and Route (skills/router/)
 
-[skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (259 entries: 64 core + 32 reference + 7 originals + 156 Lumitome reference). Install the router as a custom skill together with the 7 original skills. It routes each request by domain, then by `keywords` + `notes`, preferring core over reference and originals on exact matches. Routing was tested on 7 sample requests on 20 November 2026 — all 7 landed in the correct domain (Next.js → K8s/Terraform → DevOps; thesis + Zotero → academic-campus; medical paper → health-research-literacy; email + meetings → office-corporate; CI + observability → DevOps; logo + landing page → Design; leaked secrets → Security).
+[skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (261 entries: 64 core + 32 reference + 9 originals + 156 Lumitome reference). Install the router as a custom skill together with the 9 original skills. It routes each request by domain, then by `keywords` + `notes`, preferring core over reference and originals on exact matches. Routing is covered by a 17-case eval (`scripts/eval_routing.py`) — all 17 passed on 20 November 2026.
 
-## Original Skills in This Repository (8)
+## Original Skills in This Repository (9)
 
 Written for the KimiCharmi RSI — not copies of upstream skills:
 
@@ -195,6 +195,8 @@ Written for the KimiCharmi RSI — not copies of upstream skills:
 | academic-campus | [academic-campus/SKILL.md](academic-campus/SKILL.md) | Indonesian thesis lifecycle, citations (Zotero), campus documents, study planning. |
 | office-corporate | [office-corporate/SKILL.md](office-corporate/SKILL.md) | Email, meetings, spreadsheets, decks, internal comms. Never send/share without approval. |
 | fullstack-delivery | [fullstack-delivery/SKILL.md](fullstack-delivery/SKILL.md) | Spec → TDD → review → CI → deploy → observe. No prod deploy without tests + rollback plan. |
+| visual-check | [visual-check/SKILL.md](visual-check/SKILL.md) | Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow. |
+| contribute | [contribute/SKILL.md](contribute/SKILL.md) | Contribute back to the repo from any Muse agent: fork, verify, PR, file issues, star, and send an install report. |
 
 ## Further Reference — Tiers 2–6
 

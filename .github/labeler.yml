@@ -1,0 +1,20 @@
+# Auto-label pull requests by changed files.
+# Runs on every PR; the labeler action needs no extra config beyond this file.
+- label: skill
+  changed-files:
+    - any-glob-to-any-file: 'skills/index.md'
+- label: router
+  changed-files:
+    - any-glob-to-any-file: 'skills/router/**'
+    - any-glob-to-any-file: 'scripts/route.py'
+    - any-glob-to-any-file: 'scripts/eval_routing*'
+- label: setup
+  changed-files:
+    - any-glob-to-any-file: 'setup/**'
+- label: docs
+  changed-files:
+    - any-glob-to-any-file: 'docs/**'
+    - any-glob-to-any-file: '*.md'
+- label: ci
+  changed-files:
+    - any-glob-to-any-file: '.github/workflows/**'

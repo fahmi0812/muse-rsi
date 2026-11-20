@@ -2,7 +2,7 @@
 
 Checks:
 - skills/router/registry.json parses and counts match the actual entries.
-- Core listed skills == 64, reference listed == 32, originals == 8, Lumitome == 156.
+- Core listed skills == 64, reference listed == 32, originals == 9, Lumitome == 156.
 - Every entry has name/type/domain/url/repo, and every URL is github.com.
 - Every original skill's SKILL.md exists in the repo.
 Exit 0 when everything passes, 1 otherwise.
@@ -33,8 +33,8 @@ if len(core) != 64:
     errors.append(f'core listed skills: {len(core)}, expected 64')
 if len(ref) != 32:
     errors.append(f'reference listed skills: {len(ref)}, expected 32')
-if len(by_type.get('original', [])) != 8:
-    errors.append(f"original skills: {len(by_type.get('original', []))}, expected 8")
+if len(by_type.get('original', [])) != 9:
+    errors.append(f"original skills: {len(by_type.get('original', []))}, expected 9")
 if len(by_type.get('lumitome_reference', [])) != 156:
     errors.append(f"lumitome_reference: {len(by_type.get('lumitome_reference', []))}, expected 156")
 

@@ -27,7 +27,7 @@
 
 ## System State
 
-- **Repo:** `muse-rsi` — 64 listed skills + 32 reference + 8 originals + 156 Lumitome reference = **260 registry entries**.
+- **Repo:** `muse-rsi` — 64 listed skills + 32 reference + 9 originals + 156 Lumitome reference = **261 registry entries**.
 - **Router:** skill `muse-rsi` installed (`include_in_prompt: true`); registry at `skills/router/registry.json`.
 - **Visual check:** `visual-check` installed (Playwright + Chrome headless shell in `~/workspace/tools/visual-check/`).
 - **RSI loop:** cron `rsi-daily-self-improvement`, every 24h, with retry enabled.

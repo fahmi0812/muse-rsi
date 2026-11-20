@@ -101,6 +101,12 @@
       "expected_domains": [
         "Gap Fillers"
       ]
+    },
+    {
+      "query": "how do I contribute a new skill to muse-rsi",
+      "expected_domains": [
+        "Core RSI"
+      ]
     }
   ],
   "description": "Routing eval: each query must land in one of its expected domains in the top 3 keyword matches. Run with eval_routing.py after any registry change."

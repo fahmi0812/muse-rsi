@@ -1,12 +1,12 @@
 # muse-rsi Skill Router
 
-Route any task to the right verified skill before doing the work. The index lives in `registry.json` beside this file: 64 core listed skills, 32 further-reference skills, 8 original skills written for this system, and a 156-skill Lumitome reference index. The public index is at https://github.com/fahmi0812/muse-rsi.
+Route any task to the right verified skill before doing the work. The index lives in `registry.json` beside this file: 64 core listed skills, 32 further-reference skills, 9 original skills written for this system, and a 156-skill Lumitome reference index. The public index is at https://github.com/fahmi0812/muse-rsi.
 
 ## Route the request
 
 - Read the request and name its domain first: full-stack, DevOps, office, academic, research, health, design, video, security, or agent work.
 
-- Run the router as a program when the match is not obvious: `python3 scripts/route.py "<task>"` (in the muse-rsi repo; `route.py` scores the request against the same registry the eval tests — `scripts/eval_routing.py`, 15 queries, must pass). Use its top 3 as the starting point, then apply your judgment.
+- Run the router as a program when the match is not obvious: `python3 scripts/route.py "<task>"` (in the muse-rsi repo; `route.py` scores the request against the same registry the eval tests — `scripts/eval_routing.py`, 17 queries, must pass). Use its top 3 as the starting point, then apply your judgment.
 
 - Or open `registry.json` and match the request against each skill's `keywords`, `domain`, and `notes`.
 

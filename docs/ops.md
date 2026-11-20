@@ -43,7 +43,7 @@ branch `rsi-run-2026-11-20-backup` is a snapshot of the pre-RSI-run state.
 ## Router is a program
 
 `scripts/route.py "<task>"` routes a task against the registry — the same
-scoring the eval (`scripts/eval_routing.py`, 15 queries) tests. If the eval
+scoring the eval (`scripts/eval_routing.py`, 17 queries) tests. If the eval
 passes, the router works. After any registry change, run the eval.
 
 ## Usage meter

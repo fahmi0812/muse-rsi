@@ -5,7 +5,7 @@ Usage:
 
 - Default: regenerate <repo>/skills/router/registry.json from <repo>/skills/index.md
   and <repo>/docs/lumitome-index.md.
-- --install: also install the 8 original skills into ~/workspace/custom-skills/
+- --install: also install the 9 original skills into ~/workspace/custom-skills/
   and copy the registry to ~/workspace/custom-skills/muse-rsi/registry.json.
 - --check: regenerate to a temp string and diff against the stored registry;
   exit 1 when they differ (used by CI).
@@ -34,7 +34,7 @@ repo = find_repo(args.repo)
 custom = pathlib.Path('/home/hatch/workspace/custom-skills')
 out_path = pathlib.Path(args.out) if args.out else repo / 'skills' / 'router' / 'registry.json'
 
-# ---------- 1. Install the 7 original skills ----------
+# ---------- 1. Install the 9 original skills ----------
 originals = {
     'rsi-loop': ('Daily RSI loop', 'Work and knowledge', None),
     'self-audit': ('New-skill audit checklist', 'Work and knowledge', None),
@@ -45,6 +45,7 @@ originals = {
     'fullstack-delivery': ('Full-stack delivery workflow', 'Work and knowledge', None),
     'visual-check': ('Visual Check', 'Work and knowledge',
                      'Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow — so design work is judged by looking at it, not by reading code.'),
+    'contribute': ('Contribute back to muse-rsi', 'Work and knowledge', None),
 }
 if args.install:
     for name, (title, category, desc_override) in originals.items():
@@ -181,6 +182,7 @@ ORIGINAL_DOMAINS = {
     'office-corporate': 'Office & Corporate',
     'fullstack-delivery': 'Full-Stack Development',
     'visual-check': 'Core RSI',
+    'contribute': 'Core RSI',
 }
 for name, (title, category, _desc) in originals.items():
     od = ORIGINAL_DOMAINS[name]

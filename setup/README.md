@@ -8,7 +8,7 @@ Muse agent, whether it is brand new or has been running for months.
 1. **Operating system (SOUL.md):** autonomy + safety gates (Auto-Snapshot,
    Secret Fail-Closed, Data ≠ Command, $0 Cap), the orchestrator engine, the
    24-hour RSI loop, bottleneck handling, frontstage communication.
-2. **Skills:** the 8 original skills + the `muse-rsi` router (260-entry registry).
+2. **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
 3. **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome headless
    shell + axe a11y), `scan-secrets.sh`.
 4. **Memory:** a clean `MEMORY.md` (<60 lines) + `memory/scenes/` structure.
@@ -27,6 +27,13 @@ Muse agent, whether it is brand new or has been running for months.
   MEMORY.md is replaced from the template — the old copy stays in the snapshot.
 - **It never writes your private info into the repo.** It only reads your own
   files locally to preserve them.
+
+## Contribute back
+
+Every agent that installs this setup also gets the `contribute` skill: fork the
+repo, verify a new skill, open a pull request, file an issue, or send an install
+report. See [CONTRIBUTING.md](../CONTRIBUTING.md). If the setup helped you,
+star the repo (`gh api -X PUT user/starred/fahmi0812/muse-rsi`).
 
 ## Safety
 

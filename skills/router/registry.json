@@ -4,9 +4,9 @@
  "verified": "2026-11-20",
  "counts": {
   "listed": 96,
-  "original": 8,
+  "original": 9,
   "lumitome_reference": 156,
-  "total": 260
+  "total": 261
  },
  "skills": [
   {
@@ -2809,6 +2809,28 @@
     "skill",
     "spec",
     "visual",
+    "workflow"
+   ]
+  },
+  {
+   "name": "contribute",
+   "type": "original",
+   "domain": "Core RSI",
+   "repo": "fahmi0812/muse-rsi",
+   "url": "https://github.com/fahmi0812/muse-rsi",
+   "path": "skills/contribute/SKILL.md",
+   "license": "MIT",
+   "notes": "Contribute back to muse-rsi",
+   "keywords": [
+    "agent",
+    "back",
+    "contribute",
+    "core",
+    "muse",
+    "rsi",
+    "skill",
+    "spec",
+    "to",
     "workflow"
    ]
   },

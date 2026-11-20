@@ -11,7 +11,7 @@ What it does (new agent or long-running one):
   3. Repairs MEMORY.md (clean <60-line structure + memory/scenes/) without
      deleting the user's facts. A broken single-line MEMORY.md is replaced from
      the template, keeping the user's name when it can be found.
-  4. Installs the 8 original skills + the muse-rsi router (registry 260 entries)
+  4. Installs the 9 original skills + the muse-rsi router (registry 261 entries)
      into ~/workspace/custom-skills/.
   5. Installs the tools: gitleaks (secret scan) + visual-check (Playwright +
      Chrome headless shell + axe) + scan-secrets.sh.
@@ -47,6 +47,7 @@ ORIGINALS = {
     'fullstack-delivery': ('Full-stack delivery workflow', 'Work and knowledge', None),
     'visual-check': ('Visual Check', 'Work and knowledge',
                      'Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow — so design work is judged by looking at it, not by reading code.'),
+    'contribute': ('Contribute back to muse-rsi', 'Work and knowledge', None),
 }
 # Headings that belong to the operating system (matched by keyword, case-insensitive).
 SYSTEM_HEADING_KEYS = ['autonomy', 'orchestrator engine', 'bottleneck', 'self-improvement', 'frontstage']
@@ -327,7 +328,7 @@ def main():
         if 'memory/scenes/' not in new_mem:
             new_mem = new_mem.rstrip() + '\n\nSee `memory/scenes/` for details (env-stack, projects, auth-map, skills, bottlenecks, changelog).\n'
         if 'muse-rsi' not in new_mem:
-            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 64 listed + 32 reference + 8 originals + 156 Lumitome reference = 260 registry entries.\n'
+            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 64 listed + 32 reference + 9 originals + 156 Lumitome reference = 261 registry entries.\n'
         write_home('MEMORY.md', new_mem)
     if not args.dry_run:
         (home / 'memory' / 'scenes').mkdir(parents=True, exist_ok=True)
@@ -336,7 +337,7 @@ def main():
             'env-stack.md': '# env-stack — Work environment\n\n(Fill in: OS, Node/Python versions, tools in ~/workspace/tools/.)\n',
             'projects.md': '# projects — Active projects & repo rules\n\n(Fill in: the user\'s active projects and their rules.)\n',
             'auth-map.md': '# auth-map — Accounts & vault map\n\nMap only — NEVER write passwords/tokens/.env contents here.\n',
-            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (260 entries). Generator: `~/workspace/tools/registry-gen/generate_registry.py`.\n',
+            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (261 entries). Generator: `~/workspace/tools/registry-gen/generate_registry.py`.\n',
             'bottlenecks.md': '# bottlenecks — Bottleneck queue\n\nDelete an entry as soon as it is resolved.\n',
             'changelog.md': '# changelog — System changes\n\n- Setup: muse-rsi system installed.\n',
         }.items():
