@@ -62,6 +62,13 @@ browser work into batches under 45 minutes, save progress to a file after
 each batch, and resume from the file — never from memory. Record the batch
 plan in `.muse/journal.md` before starting.
 
+## Branch protection (main, set 20 Nov 2026 via website)
+
+- Required status check: `validate` (the "Validate registry" workflow). A PR with red CI cannot merge.
+- Force pushes blocked, deletions blocked.
+- Pull-request requirement is OFF on purpose: the classic rules form has no bypass list for the Muse GitHub App, so requiring PRs would block the owner's own direct pushes (push_files). Direct pushes to main keep working; external contributors still go through fork + PR, and CI + human review gate every merge.
+- Consequence: commits made on the website use GitHub's "Bypass rules and commit changes" button (owner bypass), because the required `validate` check blocks ordinary direct commits. API pushes via push_files are unaffected as long as the App is not blocked by the rule — if a push ever fails with 403 after this, check the rule's bypass list first.
+
 ## Checks (one command)
 
 ```text
