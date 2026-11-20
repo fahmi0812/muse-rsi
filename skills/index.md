@@ -1,6 +1,6 @@
 # Skill Index — muse-rsi
 
-> Complete index of the **21 core skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers, plus further reference for Tiers 2–6.
+> Complete index of the **37 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic, plus 7 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 156 Lumitome skills.
 >
 > **Verified:** 20 November 2026. Star counts are as recorded on that date and may have changed since.
 >
@@ -12,7 +12,12 @@
 |---|---|---|
 | Tier 1 — Core RSI | 6 | Passed; install first |
 | Gap fillers from the critique — 15 skills | 15 | Passed; close the 5 biggest gaps |
-| **Total core skills** | **21** | — |
+| Domain Pack — DevOps & Infra | 8 | Fully verified (SKILL.md + licence) |
+| Domain Pack — College & Academic | 8 | Fully verified (SKILL.md + licence) |
+| **Total listed skills** | **37** | — |
+| Original skills in this repository | 7 | Written for this RSI system |
+| Lumitome Reference Index (link only) | 156 | Verified locally from the Lumitome clone |
+| Pending re-check | 30 | SKILL.md + licence not yet verified — do not add yet |
 | Further reference, Tiers 2–6 | 32 | Verified; install only when needed |
 | Not recommended | 2 (plus offensive skills) | Do not install |
 
@@ -51,7 +56,68 @@ These close the 5 biggest gaps found in the critique (see [docs/critique.md](../
 | 14 | [evanklem/evanflow](https://github.com/evanklem/evanflow) | 419 | Yes | TDD, 16 skills. Small repo — read it first. |
 | 15 | [adhiprib/humanizer-indonesia](https://github.com/adhiprib/humanizer-indonesia) | 346 | Yes (at root) | Natural Indonesian writing. Small repo. |
 
-## Original Skills in This Repository (3)
+
+## Domain Pack — DevOps & Infra (8)
+
+Fully verified on 20 November 2026 (SKILL.md + licence checked directly). See [docs/expansion.md](../docs/expansion.md).
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [antonbabenko/terraform-skill](https://github.com/antonbabenko/terraform-skill) | 2,481 | Yes (`skills/terraform-skill/SKILL.md`) | Apache-2.0 | Terraform & OpenTofu, top pick. |
+| 2 | [BagelHole/DevOps-Security-Agent-Skills](https://github.com/BagelHole/DevOps-Security-Agent-Skills) | 1,210 | Yes (`skills/`, 80+ skills) | MIT | Widest coverage: K8s, Terraform, AWS/Azure/GCP, hardening, SOC2/ISO27001. Import selectively, not the whole tree. |
+| 3 | [LukasNiessen/kubernetes-skill](https://github.com/LukasNiessen/kubernetes-skill) | 479 | Yes (at root) | MIT | K8s/Helm/Kustomize, EKS/GKE/AKS, GitOps. |
+| 4 | [zxkane/aws-skills](https://github.com/zxkane/aws-skills) | 379 | Yes (`plugins/*/skills/*/SKILL.md`) | MIT | AWS IaC, serverless, cost ops. |
+| 5 | [aws/tools-for-devops-agent](https://github.com/aws/tools-for-devops-agent) | 143 | Yes (`skills/*/SKILL.md`) | Apache-2.0 | Official AWS org; AWS-only; 100 open issues — check the backlog first. |
+| 6 | [ollygarden/opentelemetry-agent-skills](https://github.com/ollygarden/opentelemetry-agent-skills) | 126 | Yes (`skills/otel-*/SKILL.md`) | Apache-2.0 | Vendor-neutral observability. |
+| 7 | [bregman-arie/devops-sre-skills](https://github.com/bregman-arie/devops-sre-skills) | 30 | Yes (`skills/argocd/...`) | Apache-2.0 | SRE runbooks. Small/new — read it first. |
+| 8 | [vstorm-co/production-stack-skills](https://github.com/vstorm-co/production-stack-skills) | 28 | Yes (`skills/production-check/SKILL.md`, `skills/production-deploy/SKILL.md`) | MIT | FastAPI/Postgres/Docker/deploy. Small/new. |
+
+## Domain Pack — College & Academic (8)
+
+Fully verified on 20 November 2026 (SKILL.md + licence checked directly). See [docs/expansion.md](../docs/expansion.md).
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [Gabberflast/academic-pptx-skill](https://github.com/Gabberflast/academic-pptx-skill) | 1,646 | Yes (at root) | **Proprietary** | Academic slides. Link only — read LICENSE.txt before any vendoring/redistribution. |
+| 2 | [917Dhj/DeepPaperNote](https://github.com/917Dhj/DeepPaperNote) | 1,417 | Yes (`skills/deeppapernote/SKILL.md`) | MIT | Paper → linked Obsidian notes; Zotero-aware. Also counts for Research. |
+| 3 | [LeonChaoX/qinyan-academic-skills](https://github.com/LeonChaoX/qinyan-academic-skills) | 1,055 | Yes (`skills/`) | MIT | Largest academic library (182 installable skills). |
+| 4 | [WenyuChiou/ai-research-skills](https://github.com/WenyuChiou/ai-research-skills) | 681 | **No** (only `catalog/skills.yml`) | MIT | Reference catalog only — nothing installable. |
+| 5 | [wp-a/nature-academic-search](https://github.com/wp-a/nature-academic-search) | 397 | Yes (at root) | MIT | Multi-source literature search, citation verification, Zotero/EndNote export. Docs partly Mandarin. |
+| 6 | [ShZhao27208/Aut_Sci_Write](https://github.com/ShZhao27208/Aut_Sci_Write) | 269 | Yes (`skills/sci-download/SKILL.md`) | MIT | Literature search/download, PDF extraction, Zotero sync. Some sources may need institutional access. |
+| 7 | [ShaishavMaisuria/research-paper-lifecycle-skills](https://github.com/ShaishavMaisuria/research-paper-lifecycle-skills) | 62 | Yes (`skills/add-venue-profile/SKILL.md`) | Apache-2.0 | 42 skills, full paper lifecycle incl. submission & rebuttal. |
+| 8 | [Nbill27/academic-writing-skills](https://github.com/Nbill27/academic-writing-skills) | 27 | Yes (`skills/academic-writing/SKILL.md`) | MIT | Indonesian thesis/article writing. Small but directly relevant. |
+
+## Lumitome Reference Index (156, link only)
+
+[Fahmi's own Lumitome](https://github.com/fahmi0812/Lumitome) (OpenCode-based coding assistant, v0.3.79) has 156 core skills in `.opencode/skills/`, all verified locally from a clone on 20 November 2026. The full table is in [docs/lumitome-index.md](../docs/lumitome-index.md). Link only — no `SKILL.md` content is copied here.
+
+| Domain | Skills | Assessment |
+|---|---|---|
+| Design & Media | 36 | Strong |
+| Full-Stack Development | 31 | Strong |
+| Security (defensive) | 30 | Strong (incl. 16 `hunt-*`) |
+| Agent & Orchestration | 28 | Strong |
+| DevOps & Infra | 8 | Thin (no K8s/Terraform/observability — covered by the DevOps pack above) |
+| Office & Corporate | 5 | Thin |
+| Writing & Language (ID) | 5 | Thin |
+| Finance & Business (ID) | 4 | Covered for Indonesian small business |
+| College & Academic | 4 | Thin (covered by the Academic pack above) |
+| Research | 2 | Thin |
+| Health & Medical | 0 | **Missing** — covered by the new `health-research-literacy` original skill |
+| Other | 3 | — |
+
+The Lumitome registry holds 930 skills in total (`router/skills-registry.json`, verified locally), of which 764 are routable — the 166-skill red-team pack is disabled by design and is **never** included here, even as a reference.
+
+## Pending Re-check (30) — do not add yet
+
+Existence, stars, and last update were verified, but `SKILL.md` and licence were **not** verified (GitHub rate limit, 20 November 2026). Re-check after the limit clears, then promote the ones that pass. Full list in [docs/expansion.md](../docs/expansion.md).
+
+- **Full-Stack (8):** petrkindlmann/qa-skills · PramodDutta/qaskills · wsimmonds/claude-nextjs-skills · laguagu/claude-code-nextjs-skills · kazdenc/builder-skills · PyModel/react-frontend-skills · leejpsd/typescript-react-nextjs-patterns · bleu-dragon/codex-web-dev-skills (already not recommended — 1 star).
+- **Office & Corporate (8):** chunkydotdev/email-skills · JunfengRan/PPTWork · Dangooy/trade-pipeline-skill · hearthbook-tools/spreadsheet-agent-skills · integrityauthority/office-agent-skills · ProfCiccio/Skills-Catalog · Ijam18/MAJI-Skills (AGPL v3 flag) · skillsaas/microsoft-outlook.
+- **Research (6):** WUBING2023/PaperSpine · Weizhena/Deep-Research-skills · zsyggg/paper-craft-skills · 199-biotechnologies/claude-deep-research-skill · lingzhi227/agent-research-skills · keemanxp/slr-prisma.
+- **Health & Medical (8):** aipoch/medical-research-skills · Aperivue/medsci-skills · BioTender-max/awesome-bio-agent-skills · awslabs/hcls-agent-skills · ajhcs/healthcare-agents · PhenoML/ClaudeFHIRSkill · NVIDIA/digital-health-skills · jmandel/health-skillz (already not recommended — handles real patient EHR data).
+
+## Original Skills in This Repository (7)
 
 Written for the KimiCharmi RSI — not copies of upstream skills:
 
@@ -60,6 +126,10 @@ Written for the KimiCharmi RSI — not copies of upstream skills:
 | rsi-loop | [rsi-loop/SKILL.md](rsi-loop/SKILL.md) | Daily RSI loop: audit → fix → test → snapshot → save or roll back. |
 | self-audit | [self-audit/SKILL.md](self-audit/SKILL.md) | Checklist for auditing a new skill before installation. |
 | anti-slop-checklist | [anti-slop-checklist/SKILL.md](anti-slop-checklist/SKILL.md) | Anti-slop checklist for UI, video, and writing. |
+| health-research-literacy | [health-research-literacy/SKILL.md](health-research-literacy/SKILL.md) | Read and appraise medical literature. Research only — never diagnose, treat, or handle patient data. |
+| academic-campus | [academic-campus/SKILL.md](academic-campus/SKILL.md) | Indonesian thesis lifecycle, citations (Zotero), campus documents, study planning. |
+| office-corporate | [office-corporate/SKILL.md](office-corporate/SKILL.md) | Email, meetings, spreadsheets, decks, internal comms. Never send/share without approval. |
+| fullstack-delivery | [fullstack-delivery/SKILL.md](fullstack-delivery/SKILL.md) | Spec → TDD → review → CI → deploy → observe. No prod deploy without tests + rollback plan. |
 
 ## Further Reference — Tiers 2–6
 
@@ -131,7 +201,12 @@ Research and backtesting only. **No automated live trading** without Fahmi's app
 | [guanmo-ai/guan](https://github.com/guanmo-ai/guan) | Not found (404) on 20 November 2026. |
 | [win4r/MuseAI-Skills](https://github.com/win4r/MuseAI-Skills) | Unofficial installation snapshot, not a standard skill package. Reference only. |
 | [Turnitout-Humanizer](https://github.com/AhmadHassan-BTed/Turnitout-Humanizer) | No `SKILL.md`; description is "Plagiarism Remover & Similarity Evader". |
+| [jmandel/health-skillz](https://github.com/jmandel/health-skillz) | Handles real patient EHR data via SMART on FHIR. Permanently excluded. |
+| [realactivity/tula](https://github.com/realactivity/tula) | Personal health intelligence, patient data + second opinion. Permanently excluded. |
+| [aizech/clinical-skills](https://github.com/aizech/clinical-skills) | Live clinical decision support. Permanently excluded. |
+| [rhavekost/clinical-toolkit](https://github.com/rhavekost/clinical-toolkit) | Live clinical calculators. Permanently excluded. |
 | Offensive skills (pentesting, exploits, SMS bombers, jailbreaks) | Not included in muse-rsi, even though they appear in the starred list. |
+| Lumitome red-team pack (166 skills) | Disabled by design in Lumitome. Never included, even as a reference. |
 
 ## How to Read the "SKILL.md?" Column
 

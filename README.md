@@ -7,14 +7,14 @@
 > Every skill in this repository was checked directly on GitHub on 20 November 2026 — existence, `SKILL.md`, licence, and last update — before it was listed. It powers the daily RSI loop of [KimiCharmi](https://github.com/fahmi0812), an autonomous Muse orchestrator.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Core skills](https://img.shields.io/badge/Core%20skills-21-blue)](skills/index.md)
+[![Core skills](https://img.shields.io/badge/Listed%20skills-37-blue)](skills/index.md)
 [![Verified](https://img.shields.io/badge/Verified-20%20Nov%202026-green)](docs/verification.md)
 [![RSI](https://img.shields.io/badge/RSI-Every%2024%20hours-purple)](skills/rsi-loop/SKILL.md)
 [![Language](https://img.shields.io/badge/Language-English%20%2B%20Bahasa%20Indonesia-lightgrey)](README.md)
 
 **Maintained by:** [Fahmi](https://github.com/fahmi0812) · **For:** [Muse](https://muse.ai) · **Verified:** 20 November 2026
 
-> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung, bukan sekadar daftar link. Ada 21 skill utama (6 Tier 1 + 15 penambal), 3 skill orisinal untuk RSI harian, dan aturan keamanan yang ketat. Semua skill berasal dari repo open-source gratis. Lihat [skills/index.md](skills/index.md) untuk daftar lengkap.
+> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung, bukan sekadar daftar link. Ada 37 skill terdaftar (6 Tier 1 + 15 penambal + 8 DevOps + 8 Akademik), 7 skill orisinal, plus indeks referensi 156 skill dari Lumitome — mencakup full-stack, DevOps, kantor, kuliah, riset, dan kesehatan. Lihat [skills/index.md](skills/index.md) untuk daftar lengkap.
 
 ---
 
@@ -22,7 +22,8 @@
 
 - [Why muse-rsi?](#why-muse-rsi)
 - [Quick Start](#quick-start)
-- [Core Skills (21)](#core-skills-21)
+- [Core Skills (37)](#core-skills-37)
+- [Lumitome Reference Index](#lumitome-reference-index)
 - [Further Reference by Tier](#further-reference-by-tier)
 - [Safety and RSI Guardrails](#safety-and-rsi-guardrails)
 - [What We Do Not Include](#what-we-do-not-include)
@@ -39,7 +40,8 @@ Most skill lists on the internet are just collections of links. **muse-rsi is di
 
 1. **Verified directly, not just suggested.** 40 repositories were checked one by one on GitHub on 20 November 2026 — existence, `SKILL.md`, licence, and last update. Result: 39 exist, 1 does not. See [docs/verification.md](docs/verification.md).
 2. **Critiqued before it was adopted.** After verification, we audited what was still missing across every category. The result was 5 major gaps and 15 verified additions. See [docs/critique.md](docs/critique.md).
-3. **Built for RSI.** This is not just a list. It includes 3 original skills: the daily RSI loop, a new-skill audit, and an anti-slop checklist. The RSI runs every 24 hours, and this repository is its fuel.
+3. **Built for RSI.** This is not just a list. It includes 7 original skills: the daily RSI loop, a new-skill audit, an anti-slop checklist, plus health research literacy, campus workflow, office workflow, and full-stack delivery. The RSI runs every 24 hours, and this repository is its fuel.
+6. **Full cross-domain.** Beyond coding: DevOps and infrastructure, college and academic work, office and corporate work, research, and health research literacy — with a link-only index of 156 skills from [Lumitome](https://github.com/fahmi0812/Lumitome). See [docs/expansion.md](docs/expansion.md).
 4. **Safe by default.** Defensive skills only. No offensive skills, no SMS bombers, no jailbreaks. Every new skill must pass a security checklist first.
 5. **Free ($0).** Every skill listed here comes from a free open-source repository. No paid API is required.
 
@@ -64,23 +66,27 @@ Install the 6 Tier 1 skills first. Do not install everything at once.
 
 To install a skill, open its repository link above and follow that repository's own `README` / `SKILL.md`. This repository **does not copy upstream `SKILL.md` content** — it only links to it, with a one-line description and a verification status. Upstream skills remain the property of their authors.
 
-### Step 2 — Add our 3 original skills
+### Step 2 — Add our 7 original skills
 
 These were written for this system and live in this repository under `skills/`:
 
 - [skills/rsi-loop/SKILL.md](skills/rsi-loop/SKILL.md) — the daily RSI loop: audit → fix → test → snapshot → save or roll back.
 - [skills/self-audit/SKILL.md](skills/self-audit/SKILL.md) — the checklist every new skill must pass before installation.
 - [skills/anti-slop-checklist/SKILL.md](skills/anti-slop-checklist/SKILL.md) — the anti-slop checklist for UI, video, and writing.
+- [skills/health-research-literacy/SKILL.md](skills/health-research-literacy/SKILL.md) — read and appraise medical literature. Research only — never diagnose or treat.
+- [skills/academic-campus/SKILL.md](skills/academic-campus/SKILL.md) — Indonesian thesis lifecycle, citations, campus documents.
+- [skills/office-corporate/SKILL.md](skills/office-corporate/SKILL.md) — email, meetings, spreadsheets, decks, internal comms.
+- [skills/fullstack-delivery/SKILL.md](skills/fullstack-delivery/SKILL.md) — spec → TDD → review → CI → deploy → observe.
 
 ### Step 3 — Add other tiers only when needed
 
-See [skills/index.md](skills/index.md) for the full list of 21 core skills. Add one tier, use it for a day, then add the next. Do not rush.
+See [skills/index.md](skills/index.md) for the full list of 37 listed skills. Add one tier, use it for a day, then add the next. Do not rush.
 
 ---
 
-## Core Skills (21)
+## Core Skills (37)
 
-21 core skills = **6 Tier 1 + 15 gap fillers** verified in the critique. Star counts are as recorded on 20 November 2026 and may have changed since.
+37 listed skills = **6 Tier 1 + 15 gap fillers + 8 DevOps + 8 Academic**, all verified on 20 November 2026. Star counts are as recorded on that date and may have changed since. See [docs/expansion.md](docs/expansion.md) for the expansion method and the 30 repos still pending re-check.
 
 ### Tier 1: Core RSI (6)
 
@@ -115,13 +121,47 @@ These 15 verified additions close the 5 biggest gaps found in the critique (see 
 | [evanklem/evanflow](https://github.com/evanklem/evanflow) | 419 | Yes | TDD, 16 skills. Small repo — read it first. |
 | [adhiprib/humanizer-indonesia](https://github.com/adhiprib/humanizer-indonesia) | 346 | Yes (at root) | Natural Indonesian writing. Small repo — the only verified Indonesian humanizer. |
 
+### Domain Pack — DevOps & Infra (8)
+
+| Skill | Stars | Licence | Notes |
+|---|---|---|---|
+| [antonbabenko/terraform-skill](https://github.com/antonbabenko/terraform-skill) | 2,481 | Apache-2.0 | Terraform & OpenTofu. |
+| [BagelHole/DevOps-Security-Agent-Skills](https://github.com/BagelHole/DevOps-Security-Agent-Skills) | 1,210 | MIT | K8s, Terraform, cloud, hardening. Import selectively. |
+| [LukasNiessen/kubernetes-skill](https://github.com/LukasNiessen/kubernetes-skill) | 479 | MIT | Kubernetes / Helm / Kustomize. |
+| [zxkane/aws-skills](https://github.com/zxkane/aws-skills) | 379 | MIT | AWS IaC, serverless, cost ops. |
+| [aws/tools-for-devops-agent](https://github.com/aws/tools-for-devops-agent) | 143 | Apache-2.0 | Official AWS org. AWS-only. |
+| [ollygarden/opentelemetry-agent-skills](https://github.com/ollygarden/opentelemetry-agent-skills) | 126 | Apache-2.0 | Vendor-neutral observability. |
+| [bregman-arie/devops-sre-skills](https://github.com/bregman-arie/devops-sre-skills) | 30 | Apache-2.0 | SRE runbooks. |
+| [vstorm-co/production-stack-skills](https://github.com/vstorm-co/production-stack-skills) | 28 | MIT | FastAPI/Postgres/Docker/deploy. |
+
+### Domain Pack — College & Academic (8)
+
+| Skill | Stars | Licence | Notes |
+|---|---|---|---|
+| [Gabberflast/academic-pptx-skill](https://github.com/Gabberflast/academic-pptx-skill) | 1,646 | **Proprietary** | Academic slides. Link only. |
+| [917Dhj/DeepPaperNote](https://github.com/917Dhj/DeepPaperNote) | 1,417 | MIT | Paper → linked Obsidian notes. |
+| [LeonChaoX/qinyan-academic-skills](https://github.com/LeonChaoX/qinyan-academic-skills) | 1,055 | MIT | 182 academic skills. |
+| [WenyuChiou/ai-research-skills](https://github.com/WenyuChiou/ai-research-skills) | 681 | MIT | Reference catalog only, no installable `SKILL.md`. |
+| [wp-a/nature-academic-search](https://github.com/wp-a/nature-academic-search) | 397 | MIT | Literature search, citation verification. |
+| [ShZhao27208/Aut_Sci_Write](https://github.com/ShZhao27208/Aut_Sci_Write) | 269 | MIT | Literature download, PDF extraction, Zotero. |
+| [ShaishavMaisuria/research-paper-lifecycle-skills](https://github.com/ShaishavMaisuria/research-paper-lifecycle-skills) | 62 | Apache-2.0 | Full paper lifecycle, 42 skills. |
+| [Nbill27/academic-writing-skills](https://github.com/Nbill27/academic-writing-skills) | 27 | MIT | Indonesian thesis/article writing. |
+
 The full index, including further reference by tier, is in [skills/index.md](skills/index.md).
+
+---
+
+## Lumitome Reference Index
+
+[Fahmi's own Lumitome](https://github.com/fahmi0812/Lumitome) (OpenCode-based coding assistant, v0.3.79) has 156 core skills in `.opencode/skills/`, verified locally from a clone on 20 November 2026. The registry holds 930 skills in total, 764 routable. The full link-only table is in [docs/lumitome-index.md](docs/lumitome-index.md) — no `SKILL.md` content is copied.
+
+Strongest in Lumitome: Design & Media (36), Full-Stack (31), Security defensive (30), Agent & Orchestration (28). Thinnest: Research (2), College & Academic (4), Office & Corporate (5). **Health & Medical: 0** — that gap is filled by the new `health-research-literacy` original skill. The 166-skill red-team pack is disabled by design and is never included here.
 
 ---
 
 ## Further Reference by Tier
 
-Beyond the 21 core skills above, these references were also verified (39 of 40 repositories). Install them only when needed, and read the notes in [skills/index.md](skills/index.md) first.
+Beyond the 37 listed skills above, these references were also verified (39 of 40 repositories). Install them only when needed, and read the notes in [skills/index.md](skills/index.md) first.
 
 | Tier | Contents | Verified |
 |---|---|---|
@@ -150,6 +190,9 @@ Additional rules for this repository:
 - Respect upstream licences. Some are AGPL-3.0 ([firecrawl](https://github.com/firecrawl/firecrawl), [trufflehog](https://github.com/trufflesecurity/trufflehog)) and GPL-3.0 ([freqtrade](https://github.com/freqtrade/freqtrade)) — read their obligations in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) before use in a closed project.
 - [useapi/muse-api](https://github.com/useapi/muse-api) is a third-party service, **not** Meta's official API. Evaluate account and privacy risks first, and never store credentials in this repository.
 - Tier 6 trading is research and backtesting only. **No automated live trading** without Fahmi's approval.
+- **Health:** research and health-informatics only. No diagnosis, no treatment advice, no clinical decisions, no patient data — ever. Skills that touch real patient records or live clinical tools are permanently excluded.
+- **Academic integrity:** no fabricated citations, data, or results; no AI-detection evasion.
+- **Licences:** AGPL/GPL and proprietary repos are link-only with a flag, never vendored. No repo enters the index until its `SKILL.md` and licence are verified directly — the 30 pending repos stay in the Pending section until then.
 
 ---
 
@@ -163,6 +206,8 @@ Being honest about this is part of the verification:
 | [win4r/MuseAI-Skills](https://github.com/win4r/MuseAI-Skills) | Exists, but it is an unofficial installation snapshot (`home/`, `opt/`), not a standard skill package. Reference only. |
 | [Turnitout-Humanizer](https://github.com/AhmadHassan-BTed/Turnitout-Humanizer) | No `SKILL.md`; its description is "Plagiarism Remover & Similarity Evader". Not included. |
 | Offensive skills: pentesting, exploits, SMS bombers, jailbreaks, and similar | Present in the starred list, but **not included** in muse-rsi. This repository contains defensive and productive skills only. |
+| Lumitome red-team pack (166 skills) | Disabled by design in Lumitome. Never included, even as a reference. |
+| Patient-data / live clinical skills: [jmandel/health-skillz](https://github.com/jmandel/health-skillz), [realactivity/tula](https://github.com/realactivity/tula), [aizech/clinical-skills](https://github.com/aizech/clinical-skills), [rhavekost/clinical-toolkit](https://github.com/rhavekost/clinical-toolkit) | Handle real patient data or live clinical decisions. Permanently excluded. |
 
 ---
 
@@ -175,6 +220,10 @@ Written for the RSI system in this repository — not copies of upstream skills:
 | rsi-loop | [skills/rsi-loop/SKILL.md](skills/rsi-loop/SKILL.md) | Daily RSI loop: audit → fix → test → snapshot → save or roll back. |
 | self-audit | [skills/self-audit/SKILL.md](skills/self-audit/SKILL.md) | Checklist for auditing a new skill before installation. |
 | anti-slop-checklist | [skills/anti-slop-checklist/SKILL.md](skills/anti-slop-checklist/SKILL.md) | Anti-slop checklist for UI, video, and writing. |
+| health-research-literacy | [skills/health-research-literacy/SKILL.md](skills/health-research-literacy/SKILL.md) | Read and appraise medical literature. Research only — never diagnose, treat, or handle patient data. |
+| academic-campus | [skills/academic-campus/SKILL.md](skills/academic-campus/SKILL.md) | Indonesian thesis lifecycle, citations, campus documents, study planning. |
+| office-corporate | [skills/office-corporate/SKILL.md](skills/office-corporate/SKILL.md) | Email, meetings, spreadsheets, decks, internal comms. |
+| fullstack-delivery | [skills/fullstack-delivery/SKILL.md](skills/fullstack-delivery/SKILL.md) | Spec → TDD → review → CI → deploy → observe. |
 
 ---
 
@@ -187,7 +236,7 @@ No. This is a community repository curated by Fahmi and KimiCharmi. Upstream ski
 The listed skills come from free open-source repositories. Some tools (for example, third-party services) may require an API key or an account — check the upstream repository first. Our limit is $0, with no new billing.
 
 **Why are not all 384 starred repositories included?**
-Because 384 is a starred list, not a recommendation list. Only the 21 core skills that passed verification and critique made it into the core list. The rest remain reference material, not install recommendations.
+Because 384 is a starred list, not a recommendation list. Only the 37 listed skills that passed verification made it into the list. The rest remain reference material, not install recommendations.
 
 **How does the RSI use this repository?**
 The daily RSI reads `skills/index.md`, checks whether any new skill has passed audit, then proposes additions or removals — always with a snapshot and a secret scan first. See [skills/rsi-loop/SKILL.md](skills/rsi-loop/SKILL.md).
@@ -209,7 +258,7 @@ Contributions that do not pass verification will not be merged — not because t
 
 ## License
 
-Original content in this repository (this README, the 3 original skills, and the documents in `docs/`) is licensed under the **MIT License** — see [LICENSE](LICENSE).
+Original content in this repository (this README, the 7 original skills, and the documents in `docs/`) is licensed under the **MIT License** — see [LICENSE](LICENSE).
 
 Upstream skills are **not** ours and keep their own licences. Known upstream licences are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
