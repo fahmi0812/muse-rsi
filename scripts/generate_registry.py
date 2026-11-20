@@ -122,7 +122,7 @@ print('lumitome skills parsed:', len(lumi))
 # ---------- 3. Domain keywords for routing ----------
 DOMAIN_KW = {
     'Core RSI': ['core', 'agent', 'skill', 'rsi', 'spec', 'workflow'],
-    'Gap Fillers': ['taste', 'design', 'designed', 'generic', 'slop', 'anti-slop', 'video', 'memory', 'seo', 'browser', 'presentation', 'accessibility', 'tdd', 'indonesian'],
+    'Gap Fillers': ['taste', 'design', 'designed', 'generic', 'slop', 'anti-slop', 'video', 'memory', 'seo', 'browser', 'presentation', 'accessibility', 'tdd', 'indonesian', 'redesign', 'landing', 'ui', 'polish', 'unslop'],
     'DevOps & Infra': ['terraform', 'kubernetes', 'k8s', 'docker', 'deploy', 'ci', 'cd', 'aws', 'cloud', 'observability', 'sre', 'infrastructure', 'production', 'helm'],
     'College & Academic': ['thesis', 'paper', 'academic', 'citation', 'zotero', 'skripsi', 'tesis', 'journal', 'literature', 'research paper', 'dissertation', 'campus', 'study'],
     'Full-Stack Development': ['full-stack', 'fullstack', 'frontend', 'react', 'nextjs', 'next.js', 'typescript', 'api', 'testing', 'qa', 'playwright', 'cypress'],
