@@ -1,0 +1,142 @@
+# Skill Index — muse-rsi
+
+> Complete index of the **21 core skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers, plus further reference for Tiers 2–6.
+>
+> **Verified:** 20 November 2026. Star counts are as recorded on that date and may have changed since.
+>
+> This repository does not copy upstream `SKILL.md` content. Each entry contains only a link, a one-line description, and a verification status.
+
+## Summary
+
+| Group | Count | Status |
+|---|---|---|
+| Tier 1 — Core RSI | 6 | Passed; install first |
+| Gap fillers from the critique — 15 skills | 15 | Passed; close the 5 biggest gaps |
+| **Total core skills** | **21** | — |
+| Further reference, Tiers 2–6 | 32 | Verified; install only when needed |
+| Not recommended | 2 (plus offensive skills) | Do not install |
+
+## Tier 1 — Core RSI (6)
+
+Install these first.
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [anthropics/skills](https://github.com/anthropics/skills) | 197,897 | Yes | Not detected | Official skills: articles, slides, spreadsheets. |
+| 2 | [obra/superpowers](https://github.com/obra/superpowers) | 322,499 | Yes | MIT | Research-to-writing workflow. |
+| 3 | [mattpocock/skills](https://github.com/mattpocock/skills) | 328,522 | Yes (in subfolders) | MIT | `SKILL.md` files live in subfolders under `skills/`. |
+| 4 | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | 119,305 | Yes | MIT | Production-grade engineering skills. |
+| 5 | [google/skills](https://github.com/google/skills) | 24,470 | Yes (in subfolders) | Apache-2.0 | `SKILL.md` files live in subfolders under `skills/`. |
+| 6 | [github/spec-kit](https://github.com/github/spec-kit) | 150,774 | No | MIT | Spec-driven toolkit, not a `SKILL.md` package. |
+
+## Gap Fillers — 15 Skills
+
+These close the 5 biggest gaps found in the critique (see [docs/critique.md](../docs/critique.md)): anti-slop / design taste, long-term memory, testing / QA / accessibility, Bahasa Indonesia, and browser + advanced video + presentations.
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Closes the gap in |
+|---|---|---|---|---|
+| 1 | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | 119,141 | Yes | Anti-slop / design taste. |
+| 2 | [browser-use/browser-use](https://github.com/browser-use/browser-use) | 121,585 | Yes | Browser agent. |
+| 3 | [OpenMontageInc/OpenMontage](https://github.com/OpenMontageInc/OpenMontage) | 81,870 | Yes | Full video production system. |
+| 4 | [mem0ai/mem0](https://github.com/mem0ai/mem0) | 69,274 | Yes (integration folder) | Long-term agent memory. |
+| 5 | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | 58,330 | Yes | Anti-slop design. |
+| 6 | [volcengine/OpenViking](https://github.com/volcengine/OpenViking) | 42,518 | Yes | Memory + RAG + self-evolving skills. |
+| 7 | [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo) | 31,050 | Yes | SEO / GEO. |
+| 8 | [meta/astryx](https://github.com/meta/astryx) | 31,198 | Yes | AI video editor. |
+| 9 | [heydamir/unslop](https://github.com/heydamir/unslop) | 18,976 | Yes | Anti-slop UI. |
+| 10 | [genspark-ai/genoffice](https://github.com/genspark-ai/genoffice) | 12,676 | Yes | AI office suite. |
+| 11 | [presenton/presenton](https://github.com/presenton/presenton) | 11,980 | No (app + API) | Presentation generator, used as a tool. |
+| 12 | [alchaincyf/darwin-skill](https://github.com/alchaincyf/darwin-skill) | 7,005 | Yes (at root) | Self-evolving skills. |
+| 13 | [plugin87/ux-ui-agent-skills](https://github.com/plugin87/ux-ui-agent-skills) | 3,209 | Yes | Accessibility, WCAG 2.2. |
+| 14 | [evanklem/evanflow](https://github.com/evanklem/evanflow) | 419 | Yes | TDD, 16 skills. Small repo — read it first. |
+| 15 | [adhiprib/humanizer-indonesia](https://github.com/adhiprib/humanizer-indonesia) | 346 | Yes (at root) | Natural Indonesian writing. Small repo. |
+
+## Original Skills in This Repository (3)
+
+Written for the KimiCharmi RSI — not copies of upstream skills:
+
+| Skill | File | Purpose |
+|---|---|---|
+| rsi-loop | [rsi-loop/SKILL.md](rsi-loop/SKILL.md) | Daily RSI loop: audit → fix → test → snapshot → save or roll back. |
+| self-audit | [self-audit/SKILL.md](self-audit/SKILL.md) | Checklist for auditing a new skill before installation. |
+| anti-slop-checklist | [anti-slop-checklist/SKILL.md](anti-slop-checklist/SKILL.md) | Anti-slop checklist for UI, video, and writing. |
+
+## Further Reference — Tiers 2–6
+
+Verified on 20 November 2026 (39 of 40 repositories). Install only when needed, and read the notes under each table first.
+
+### Tier 2 — Video (10)
+
+| Skill | Stars | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|
+| [masonmosen/muse-video-prompt-skill](https://github.com/masonmosen/muse-video-prompt-skill) | 66 | Yes (at root) | MIT | Small repo — read the `SKILL.md` first. |
+| [LuoJiangYong/muse-video-skill](https://github.com/LuoJiangYong/muse-video-skill) | 116 | Yes (at root) | MIT | Small repo — read the `SKILL.md` first. |
+| [sonlovinbot-team/Muse-animated-short-film](https://github.com/sonlovinbot-team/Muse-animated-short-film) | 84 | Yes (at root) | MIT | Small repo — read the `SKILL.md` first. |
+| [remotion-dev/skills](https://github.com/remotion-dev/skills) | 7,608 | Yes | Not detected | Official Remotion skills. |
+| [remotion-dev/remotion](https://github.com/remotion-dev/remotion) | 74,489 | Not at root | NOASSERTION | Code-based video library; has a `.claude/skills/` folder. |
+| [motiondivision/motion](https://github.com/motiondivision/motion) | 35,392 | No | MIT | Motion library, not a skill package. |
+| [greensock/gsap-skills](https://github.com/greensock/gsap-skills) | 18,804 | Yes | MIT | Official GSAP skills. |
+| [LottieFiles/motion-design-skill](https://github.com/LottieFiles/motion-design-skill) | 3,442 | Yes | MIT | Timing, easing, Disney's 12 principles. |
+| [harry0703/MoneyPrinterTurbo](https://github.com/harry0703/MoneyPrinterTurbo) | 144,783 | No | MIT | AI video-making app, not a `SKILL.md`. |
+| [useapi/muse-api](https://github.com/useapi/muse-api) | 32 | Yes | MIT | Third-party service, not Meta's official API. Evaluate account and privacy risks first. |
+
+### Tier 3 — Defensive Security (6)
+
+| Skill | Stars | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|
+| [trufflesecurity/trufflehog](https://github.com/trufflesecurity/trufflehog) | 29,540 | Not at root | AGPL-3.0 | Finds leaked credentials. Note the AGPL obligations. |
+| [trailofbits/skills](https://github.com/trailofbits/skills) | 8,313 | Not at root | CC-BY-SA-4.0 | Skills distributed via the `plugins/` folder. |
+| [kenryu42/cc-safety-net](https://github.com/kenryu42/cc-safety-net) | 2,079 | Yes | MIT | Automated Claude Code guardrails. |
+| [anthropics/claude-code-security-review](https://github.com/anthropics/claude-code-security-review) | 7,033 | No | MIT | Command plugin, not a `SKILL.md`. Last updated 11 February 2026 — the oldest in this list. |
+| [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | 76,062 | Yes | MIT | Multi-phase security audit. |
+| [agamm/claude-code-owasp](https://github.com/agamm/claude-code-owasp) | 456 | Not at root | MIT | OWASP Top 10. Has a `.claude/skills/` folder. |
+
+### Tier 4 — Research, Documents, Voice (8)
+
+| Skill | Stars | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|
+| [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) | 204,758 | Yes | AGPL-3.0 | Third-party service; check API key and cost. |
+| [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai) | 87,593 | No | Apache-2.0 | Crawler library, not a `SKILL.md`. |
+| [microsoft/markitdown](https://github.com/microsoft/markitdown) | 197,160 | No | MIT | Document-to-Markdown conversion tool. |
+| [marp-team/marp-cli](https://github.com/marp-team/marp-cli) | 3,940 | No | MIT | Text-to-slides tool. |
+| [kgmkm/muse-grok-x-search](https://github.com/kgmkm/muse-grok-x-search) | 211 | Yes (at root) | MIT | Small repo, empty description — read the `SKILL.md` first. |
+| [openai/whisper](https://github.com/openai/whisper) | 113,157 | No | MIT | Transcription tool, not a `SKILL.md`. |
+| [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) | 15,629 | No | MIT | Text-to-speech tool. |
+| [nothinx/naskah-id](https://github.com/nothinx/naskah-id) | 115 | Yes (at root) | NOASSERTION | Indonesian-language skill. Check its LICENSE file first. |
+
+### Tier 5 — Design, 3D (5)
+
+| Skill | Stars | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|
+| [arjun988/blender-skills](https://github.com/arjun988/blender-skills) | 4,450 | Not at root | MIT | Skills live in `.claude/skills/`. |
+| [ahujasid/mcp-for-blender](https://github.com/ahujasid/mcp-for-blender) | 35,111 | No | MIT | MCP server for Blender, not a `SKILL.md`. |
+| [majidmanzarpour/threejs-game-skills](https://github.com/majidmanzarpour/threejs-game-skills) | 2,863 | Yes | MIT | Three.js browser games. |
+| [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 152,002 | No | MIT | Distributed as a plugin — check the plugin contents first. |
+| [kaankiziltug/logo-design-skill](https://github.com/kaankiziltug/logo-design-skill) | 7,394 | Yes | MIT | Logo design. |
+
+### Tier 6 — Trading, Research Only (3)
+
+Research and backtesting only. **No automated live trading** without Fahmi's approval.
+
+| Skill | Stars | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|
+| [TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents) | 123,237 | No | Apache-2.0 | Multi-agent research framework. |
+| [microsoft/qlib](https://github.com/microsoft/qlib) | 50,447 | No | MIT | AI-oriented quantitative research platform. |
+| [freqtrade/freqtrade](https://github.com/freqtrade/freqtrade) | 57,094 | No | GPL-3.0 | Crypto trading bot — research only. |
+
+## Not Included in This Index
+
+| Repository | Reason |
+|---|---|
+| [guanmo-ai/guan](https://github.com/guanmo-ai/guan) | Not found (404) on 20 November 2026. |
+| [win4r/MuseAI-Skills](https://github.com/win4r/MuseAI-Skills) | Unofficial installation snapshot, not a standard skill package. Reference only. |
+| [Turnitout-Humanizer](https://github.com/AhmadHassan-BTed/Turnitout-Humanizer) | No `SKILL.md`; description is "Plagiarism Remover & Similarity Evader". |
+| Offensive skills (pentesting, exploits, SMS bombers, jailbreaks) | Not included in muse-rsi, even though they appear in the starred list. |
+
+## How to Read the "SKILL.md?" Column
+
+- **Yes** — a `SKILL.md` file was found and read in one example subfolder.
+- **Yes (at root)** — `SKILL.md` exists at the repository root.
+- **Yes (in subfolders)** — `SKILL.md` files exist in subfolders, not at the root.
+- **Not at root** — no `SKILL.md` at the root, but a `skills/` / `.claude/skills/` / `plugins/` folder exists.
+- **No** — no `SKILL.md` and no skill folder at the root. The repository is usually a library or a tool, not a skill package.

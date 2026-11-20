@@ -1,0 +1,35 @@
+# Secret dan environment — jangan pernah di-commit
+.env
+.env.*
+*.pem
+*.key
+*.p12
+credentials.json
+secrets/
+vault/
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS dan editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Hasil kerja lokal (bukan bagian repo)
+*.mp4
+*.mov
+output/
+tmp/
