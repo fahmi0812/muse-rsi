@@ -1,7 +1,7 @@
 # muse-rsi Expansion Plan — Full Cross-Domain (Full-Stack, DevOps, Office, College, Research, Health)
 
 **Date:** 20 November 2026
-**Status:** Implemented on 20 November 2026 — the 16 cleared repos, the Lumitome reference index, and the 4 new original skills are now in the repo (see §5). The 30 pending repos are still pending re-check.
+**Status:** Fully implemented on 20 November 2026. The 30 pending repos were re-checked via the web the same day (see [recheck-web.md](recheck-web.md)): 27 promoted into four new domain packs (Full-Stack 7, Office 8, Research 5, Health 7), 3 not promoted. Total listed skills: 64.
 **Sources (all verified, no invented numbers):**
 - Lumitome map (local clone): `lumitome-skills-map.md` — 156 core skills, all SKILL.md descriptions read locally; registry 930 skills confirmed in `router/skills-registry.json`.
 - External verification: `muse-rsi-expansion-verifikasi.md` — 48 external repos checked (46 unique); **only DevOps (8) and Academic (8) are fully verified** (SKILL.md + license). The other 32 are existence/stars/update only.
@@ -93,15 +93,15 @@ Keep everything that exists. Additions only — no file is deleted, no existing 
 | **NEW: Pending Re-check** | The 30 repos from §3, listed as PENDING with the reason (SKILL.md + license not yet verified). Not recommendations yet. | Ready to write |
 | Original skills | 3 → **7** (add the 4 from §4) | To write |
 | Docs | New `docs/expansion.md` (this plan, adapted) + update `docs/verification.md` | To write |
-| README + skills/index.md | New domain sections added; counts updated: 21 core + 16 domain additions = 37 listed skills + 7 originals; reference index 156 Lumitome skills; 30 pending. | Done |
+| README + skills/index.md | New domain sections added; counts updated: 37 listed + 27 promoted via web re-check = **64 listed skills** + 7 originals; reference index 156 Lumitome skills; 0 pending. | Done |
 
-**Counts after this expansion (if all cleared items are added):** 21 core + 16 domain additions = 37 listed skills, plus 7 original skills in-repo, plus a 156-skill Lumitome reference index, plus 30 pending re-checks. The repo stays link-only for upstream content (no SKILL.md copying), MIT for original content.
+**Counts after this expansion (final, 20 Nov 2026):** 37 listed + 27 promoted via web re-check = **64 listed skills**, plus 7 original skills in-repo, plus a 156-skill Lumitome reference index, plus 0 pending. The repo stays link-only for upstream content (no SKILL.md copying), MIT for original content.
 
 ## 6. Guardrails to add to the repo (update README/CONTRIBUTING)
 
 - **Health:** research and health-informatics only. No diagnosis, no treatment advice, no clinical decisions, no patient data — ever. Any skill that touches real patient records or live clinical tools is permanently excluded.
 - **Security:** defensive only. The Lumitome red-team pack (166 skills) and all offensive/exploit material stay excluded, even as reference.
-- **Licenses:** AGPL/GPL and proprietary repos are link-only with a flag, never vendored. Check the license before adding any repo (this is what the 30 pending re-checks are for).
+- **Licenses:** AGPL/GPL and proprietary repos are link-only with a flag, never vendored. Check the license before adding any repo.
 - **Verification rule (unchanged):** no repo enters the index until SKILL.md + license are verified directly. Pending items stay in the Pending section, not in the main tables.
 - **Academic integrity:** no fabricated citations/data/results; no AI-detection evasion.
 
@@ -110,4 +110,4 @@ Keep everything that exists. Additions only — no file is deleted, no existing 
 1. ~~Write the 4 new original skills (§4) into `~/workspace/muse-rsi/skills/` + update `skills/index.md`, README.md, `docs/expansion.md` (this plan).~~ Done on 20 November 2026 (commit `4ced01e`, plus follow-up fixes).
 2. Push to GitHub `fahmi0812/muse-rsi` (new commit on main; no history rewrite needed — history is already clean).
 3. Verify from GitHub: README + index + new skill files read back, no private data in the push.
-4. After the GitHub rate limit clears: re-check SKILL.md + license for the 30 pending repos (§3), promote the ones that pass, and update the Pending section.
+4. ~~After the GitHub rate limit clears: re-check SKILL.md + license for the 30 pending repos (§3), promote the ones that pass, and update the Pending section.~~ Done the same day via the web — 27 promoted, 3 not (see [recheck-web.md](recheck-web.md)).

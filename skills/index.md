@@ -1,6 +1,6 @@
 # Skill Index — muse-rsi
 
-> Complete index of the **37 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic, plus 7 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 156 Lumitome skills.
+> Complete index of the **64 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 7 Full-Stack + 8 Office + 5 Research + 7 Health, plus 7 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 156 Lumitome skills. All 64 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)).
 >
 > **Verified:** 20 November 2026. Star counts are as recorded on that date and may have changed since.
 >
@@ -14,10 +14,14 @@
 | Gap fillers from the critique — 15 skills | 15 | Passed; close the 5 biggest gaps |
 | Domain Pack — DevOps & Infra | 8 | Fully verified (SKILL.md + licence) |
 | Domain Pack — College & Academic | 8 | Fully verified (SKILL.md + licence) |
-| **Total listed skills** | **37** | — |
+| Domain Pack — Full-Stack Development | 7 | Verified via web 20 Nov 2026 |
+| Domain Pack — Office & Corporate | 8 | Verified via web 20 Nov 2026 |
+| Domain Pack — Research | 5 | Verified via web 20 Nov 2026 |
+| Domain Pack — Health & Medical | 7 | Verified via web 20 Nov 2026 |
+| **Total listed skills** | **64** | — |
 | Original skills in this repository | 7 | Written for this RSI system |
 | Lumitome Reference Index (link only) | 156 | Verified locally from the Lumitome clone |
-| Pending re-check | 30 | SKILL.md + licence not yet verified — do not add yet |
+| Pending re-check | 0 | All 30 re-checked via web on 20 Nov 2026 — 27 promoted, 3 not (see below) |
 | Further reference, Tiers 2–6 | 32 | Verified; install only when needed |
 | Not recommended | 2 (plus offensive skills) | Do not install |
 
@@ -108,14 +112,69 @@ Fully verified on 20 November 2026 (SKILL.md + licence checked directly). See [d
 
 The Lumitome registry holds 930 skills in total (`router/skills-registry.json`, verified locally), of which 764 are routable — the 166-skill red-team pack is disabled by design and is **never** included here, even as a reference.
 
-## Pending Re-check (30) — do not add yet
 
-Existence, stars, and last update were verified, but `SKILL.md` and licence were **not** verified (GitHub rate limit, 20 November 2026). Re-check after the limit clears, then promote the ones that pass. Full list in [docs/expansion.md](../docs/expansion.md).
+## Domain Pack — Full-Stack Development (7)
 
-- **Full-Stack (8):** petrkindlmann/qa-skills · PramodDutta/qaskills · wsimmonds/claude-nextjs-skills · laguagu/claude-code-nextjs-skills · kazdenc/builder-skills · PyModel/react-frontend-skills · leejpsd/typescript-react-nextjs-patterns · bleu-dragon/codex-web-dev-skills (already not recommended — 1 star).
-- **Office & Corporate (8):** chunkydotdev/email-skills · JunfengRan/PPTWork · Dangooy/trade-pipeline-skill · hearthbook-tools/spreadsheet-agent-skills · integrityauthority/office-agent-skills · ProfCiccio/Skills-Catalog · Ijam18/MAJI-Skills (AGPL v3 flag) · skillsaas/microsoft-outlook.
-- **Research (6):** WUBING2023/PaperSpine · Weizhena/Deep-Research-skills · zsyggg/paper-craft-skills · 199-biotechnologies/claude-deep-research-skill · lingzhi227/agent-research-skills · keemanxp/slr-prisma.
-- **Health & Medical (8):** aipoch/medical-research-skills · Aperivue/medsci-skills · BioTender-max/awesome-bio-agent-skills · awslabs/hcls-agent-skills · ajhcs/healthcare-agents · PhenoML/ClaudeFHIRSkill · NVIDIA/digital-health-skills · jmandel/health-skillz (already not recommended — handles real patient EHR data).
+Verified via the web on 20 November 2026 (SKILL.md + licence read from each repo page). See [docs/recheck-web.md](../docs/recheck-web.md).
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [petrkindlmann/qa-skills](https://github.com/petrkindlmann/qa-skills) | 291 | Yes (`skills/accessibility-testing/SKILL.md`) | MIT | QA / test automation (Playwright, Cypress, E2E). Top pick. |
+| 2 | [PramodDutta/qaskills](https://github.com/PramodDutta/qaskills) | 250 | Yes (`.claude/skills/ship-prod/SKILL.md`) | MIT | QA/testing directory. Overlaps with petrkindlmann — pick one. |
+| 3 | [wsimmonds/claude-nextjs-skills](https://github.com/wsimmonds/claude-nextjs-skills) | 115 | Yes (root folders, e.g. `nextjs-advanced-routing/SKILL.md`) | MIT | Next.js skills. Last commit 24 Oct 2025 — stale, over 1 year old. |
+| 4 | [laguagu/claude-code-nextjs-skills](https://github.com/laguagu/claude-code-nextjs-skills) | 74 | Yes (`skills/ai-app/SKILL.md`) | MIT | Next.js 16 + AI SDK 7 + pgvector + Bun. Active. |
+| 5 | [kazdenc/builder-skills](https://github.com/kazdenc/builder-skills) | 46 | Yes (`.claude/skills/dev/test/test-plan/SKILL.md`) | MIT | 47 skills: product, frontend, full-stack, browser automation. Last update 9 Mar 2026. |
+| 6 | [PyModel/react-frontend-skills](https://github.com/PyModel/react-frontend-skills) | 43 | Yes (`skills/react/SKILL.md`) | MIT | React 19 / Next.js 16 / TypeScript, testing, UI. |
+| 7 | [leejpsd/typescript-react-nextjs-patterns](https://github.com/leejpsd/typescript-react-nextjs-patterns) | 22 | Yes (at root) | MIT | TypeScript/React/Next.js decision guides. Small repo. |
+
+## Domain Pack — Office & Corporate (8)
+
+Verified via the web on 20 November 2026. See [docs/recheck-web.md](../docs/recheck-web.md).
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [chunkydotdev/email-skills](https://github.com/chunkydotdev/email-skills) | 8 | Yes (`skills/diagnostics/email-diagnostics/SKILL.md`) | MIT | Email deliverability, auth, bounce, compliance. |
+| 2 | [JunfengRan/PPTWork](https://github.com/JunfengRan/PPTWork) | 7 | Yes (`ppt/SKILL.md`) | MIT | Plan, write, and export PowerPoint decks. Last update 22 Jul 2026. |
+| 3 | [Dangooy/trade-pipeline-skill](https://github.com/Dangooy/trade-pipeline-skill) | 41 | Yes (`.claude/skills/trade-pipeline-run/SKILL.md`) | MIT | Excel inquiry → Quotation / PI / CI / Packing List. Trade-docs niche. |
+| 4 | [hearthbook-tools/spreadsheet-agent-skills](https://github.com/hearthbook-tools/spreadsheet-agent-skills) | 0 | Yes (`skills/formula-first-workbook/SKILL.md`) | MIT | Excel formula-first: linter, break-even pricing, month-end close. 0 stars — unproven. |
+| 5 | [integrityauthority/office-agent-skills](https://github.com/integrityauthority/office-agent-skills) | 2 | Yes (`.agents/skills/office-live/SKILL.md`) | MIT | MS Office + Microsoft 365. Live editing is Windows-COM only. |
+| 6 | [ProfCiccio/Skills-Catalog](https://github.com/ProfCiccio/Skills-Catalog) | 0 | Yes (`ai-workflow-infographic/SKILL.md`) | None shown | Executive comms, project delivery, knowledge management. No licence shown — check before use. |
+| 7 | [Ijam18/MAJI-Skills](https://github.com/Ijam18/MAJI-Skills) | 19 | Yes (`.agents/skills/maji-commit/SKILL.md`) | **AGPL v3** | Planning/shipping/docs playbooks. Link only — never vendor (AGPL). |
+| 8 | [skillsaas/microsoft-outlook](https://github.com/skillsaas/microsoft-outlook) | 0 | Yes (at root) | MIT | Outlook: inspect .msg/.eml/.ics, triage, drafts via Graph. 0 stars. |
+
+## Domain Pack — Research (5)
+
+Verified via the web on 20 November 2026. See [docs/recheck-web.md](../docs/recheck-web.md). PaperSpine is NOT here — it has no `SKILL.md` (see Not Included).
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [Weizhena/Deep-Research-skills](https://github.com/Weizhena/Deep-Research-skills) | 2,581 | Yes (`skills/research-en/research/SKILL.md`) | MIT | Structured deep research, multi-agent. Last update 23 Aug 2026. |
+| 2 | [zsyggg/paper-craft-skills](https://github.com/zsyggg/paper-craft-skills) | 1,519 | Yes (`skills/paper-analyzer/SKILL.md`) | MIT (README) | Paper analysis, comics, summaries. Licence stated in README only. |
+| 3 | [199-biotechnologies/claude-deep-research-skill](https://github.com/199-biotechnologies/claude-deep-research-skill) | 1,226 | Yes (at root) | MIT (README) | 8-phase deep-research pipeline. Licence stated in README only. |
+| 4 | [lingzhi227/agent-research-skills](https://github.com/lingzhi227/agent-research-skills) | 474 | Yes (`skills/deep-research/SKILL.md`) | None shown | Systematic literature review + 10 more skills (incl. Zotero). No licence shown. Last update 27 Feb 2026. |
+| 5 | [keemanxp/slr-prisma](https://github.com/keemanxp/slr-prisma) | 126 | Yes (at root) | MIT | Systematic literature review following PRISMA 2020. Only PRISMA-specific skill found. |
+
+## Domain Pack — Health & Medical (7)
+
+Verified via the web on 20 November 2026. Research and health-informatics only — see the health guardrail in the README. See [docs/recheck-web.md](../docs/recheck-web.md).
+
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
+|---|---|---|---|---|---|
+| 1 | [aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills) | 2,073 | Yes (subfolders, e.g. `scientific-skills/Academic Writing/abstract-summarizer/SKILL.md`) | MIT | Hundreds of skills: protocol design, data analysis, evidence insight, academic writing. |
+| 2 | [Aperivue/medsci-skills](https://github.com/Aperivue/medsci-skills) | 391 | Yes (`skills/analyze-stats/SKILL.md`) | MIT | Medical research: literature search, reporting guidelines, statistics, figures, submission. |
+| 3 | [BioTender-max/awesome-bio-agent-skills](https://github.com/BioTender-max/awesome-bio-agent-skills) | 225 | Yes (`skills/claude-science/alphafold2/SKILL.md`) | CC0 1.0 | Curated list for biomedical research (genomics, proteomics, single-cell, protein design). Discovery index, not a package. Last update 1 Jul 2026. |
+| 4 | [awslabs/hcls-agent-skills](https://github.com/awslabs/hcls-agent-skills) | 78 | Yes (`skills/variant-calling/SKILL.md`) | MIT-0 | 43 skills across 13 HCLS domains: medical coding, claims, genomics, imaging, drug discovery. Check skills one by one. |
+| 5 | [ajhcs/healthcare-agents](https://github.com/ajhcs/healthcare-agents) | 54 | Yes (`skills/healthcare-agents/SKILL.md`) | Apache-2.0 | 51 specialist agents for US healthcare *admin* workflows only. |
+| 6 | [PhenoML/ClaudeFHIRSkill](https://github.com/PhenoML/ClaudeFHIRSkill) | 53 | Yes (at root) | Apache-2.0 | Build FHIR artefacts/apps with Claude. Pure health-informatics. Last update 2 Mar 2026. |
+| 7 | [NVIDIA/digital-health-skills](https://github.com/NVIDIA/digital-health-skills) | 18 | Yes (`skills/digital-health-clinical-asr-setup/SKILL.md`) | Apache-2.0 | Agent-guided health AI workflows: evaluation, data generation, deployment. Vendor repo, small. |
+
+## Pending Re-check — resolved
+
+All 30 pending repos were re-checked via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)). **27 were promoted** into the four domain packs above. **3 were not:**
+
+- [WUBING2023/PaperSpine](https://github.com/WUBING2023/PaperSpine) — no `SKILL.md` at all (tool/app, not an installable skill). Reference only.
+- [bleu-dragon/codex-web-dev-skills](https://github.com/bleu-dragon/codex-web-dev-skills) — no visible `SKILL.md` (skills only inside a `.rar` archive), no licence, 1 star.
+- [jmandel/health-skillz](https://github.com/jmandel/health-skillz) — handles real patient EHR data. Permanently excluded.
 
 ## Original Skills in This Repository (7)
 
@@ -201,7 +260,9 @@ Research and backtesting only. **No automated live trading** without Fahmi's app
 | [guanmo-ai/guan](https://github.com/guanmo-ai/guan) | Not found (404) on 20 November 2026. |
 | [win4r/MuseAI-Skills](https://github.com/win4r/MuseAI-Skills) | Unofficial installation snapshot, not a standard skill package. Reference only. |
 | [Turnitout-Humanizer](https://github.com/AhmadHassan-BTed/Turnitout-Humanizer) | No `SKILL.md`; description is "Plagiarism Remover & Similarity Evader". |
-| [jmandel/health-skillz](https://github.com/jmandel/health-skillz) | Handles real patient EHR data via SMART on FHIR. Permanently excluded. |
+| [jmandel/health-skillz](https://github.com/jmandel/health-skillz) | Handles real patient EHR data via SMART on FHIR. Permanently excluded. Confirmed by web re-check: no `SKILL.md` found either. |
+| [bleu-dragon/codex-web-dev-skills](https://github.com/bleu-dragon/codex-web-dev-skills) | No visible `SKILL.md` (inside a `.rar` archive), no licence, 1 star. Confirmed by web re-check. |
+| [WUBING2023/PaperSpine](https://github.com/WUBING2023/PaperSpine) | No `SKILL.md` at all (6,363 stars, MIT). A tool/app, not an installable skill. Reference only. |
 | [realactivity/tula](https://github.com/realactivity/tula) | Personal health intelligence, patient data + second opinion. Permanently excluded. |
 | [aizech/clinical-skills](https://github.com/aizech/clinical-skills) | Live clinical decision support. Permanently excluded. |
 | [rhavekost/clinical-toolkit](https://github.com/rhavekost/clinical-toolkit) | Live clinical calculators. Permanently excluded. |
