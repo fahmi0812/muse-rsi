@@ -83,7 +83,7 @@ These were written for this system and live in this repository under `skills/`:
 
 To let Muse pick the right skill for each task automatically, install the router skill:
 
-- **In Muse:** the router lives in this repo at [skills/router/SKILL.md](skills/router/SKILL.md) with its routing table in [skills/router/registry.json](skills/router/registry.json) (259 entries: 64 core + 32 reference + 7 originals + 156 Lumitome reference). Install it as a custom skill together with the 7 original skills under `skills/`.
+- **In Muse:** the router lives in this repo at [skills/router/SKILL.md](skills/router/SKILL.md) with its routing table in [skills/router/registry.json](skills/router/registry.json) (260 entries: 64 core + 32 reference + 8 originals + 156 Lumitome reference). Install it as a custom skill together with the 8 original skills under `skills/`.
 - **How it routes:** it reads the request, names its domain, matches `keywords` + `domain` + `notes` in `registry.json`, and loads the smallest set that covers the task — core before reference, original when it matches exactly. It never installs from the Pending or Not Included lists, and it never copies upstream `SKILL.md` content.
 
 ### Step 3 — Add other tiers only when needed

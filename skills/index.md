@@ -180,7 +180,7 @@ All 30 pending repos were re-checked via the web on 20 November 2026 (see [docs/
 
 [skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (259 entries: 64 core + 32 reference + 7 originals + 156 Lumitome reference). Install the router as a custom skill together with the 7 original skills. It routes each request by domain, then by `keywords` + `notes`, preferring core over reference and originals on exact matches. Routing was tested on 7 sample requests on 20 November 2026 — all 7 landed in the correct domain (Next.js → K8s/Terraform → DevOps; thesis + Zotero → academic-campus; medical paper → health-research-literacy; email + meetings → office-corporate; CI + observability → DevOps; logo + landing page → Design; leaked secrets → Security).
 
-## Original Skills in This Repository (7)
+## Original Skills in This Repository (8)
 
 Written for the KimiCharmi RSI — not copies of upstream skills:
 
