@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.jpg" width="200" alt="Muse, the muse-rsi mascot: a strong fluffy creature wearing glasses, flexing">
+</p>
+
 <h1 align="center">muse-rsi</h1>
 
 <p align="center">Checked Muse skills — and the setup that installs them.<br>Every entry was verified by hand before it was listed. No guesses, no paid tools.</p>
