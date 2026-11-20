@@ -61,7 +61,7 @@ def log(msg):
 
 
 def run(cmd, cwd=None, check=False):
-    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=600)
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=600, stdin=subprocess.DEVNULL)
     if check and r.returncode != 0:
         raise RuntimeError(f'command failed: {" ".join(cmd)}\n{r.stdout}\n{r.stderr}')
     return r
@@ -187,7 +187,10 @@ def install_gitleaks(home, dry):
             return f'already installed ({r.stdout.strip()})'
     if dry:
         return '[dry-run] would download latest gitleaks release'
-    tag = http_get_json('https://api.github.com/repos/gitleaks/gitleaks/releases/latest')['tag_name']
+    try:
+        tag = http_get_json('https://api.github.com/repos/gitleaks/gitleaks/releases/latest')['tag_name']
+    except Exception:  # noqa: BLE001 - GitHub API rate limit: fall back to a pinned, verified release
+        tag = 'v8.30.1'
     url = f'https://github.com/gitleaks/gitleaks/releases/download/{tag}/gitleaks_{tag.lstrip("v")}_linux_x64.tar.gz'
     dest_dir.mkdir(parents=True, exist_ok=True)
     run(['curl', '-sL', '--max-time', '300', '-o', str(dest_dir / 'gitleaks.tar.gz'), url], check=True)
