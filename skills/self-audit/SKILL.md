@@ -39,9 +39,20 @@ Kalau ada **satu saja** poin wajib jawabannya "Tidak" → **jangan pasang**. Cat
 1. Buka repo upstream, catat star, bahasa, dan tanggal update terakhir.
 2. Buka `SKILL.md` (atau satu subfolder contoh kalau paket besar).
 3. Isi tabel checklist di atas.
-4. Jalankan secret scan pada file yang akan ditambahkan ke repo ini.
+4. Jalankan secret scan (wajib, lihat bagian "Secret scan" di bawah) pada file yang akan ditambahkan ke repo ini, dan pada seluruh repo sebelum push publik.
 5. Kalau lolos → tambahkan ke `skills/index.md` dengan kolom status yang benar.
 6. Kalau tidak lolos → tulis di bagian "Yang TIDAK kami pasang" di README, beserta alasannya.
+
+## Secret scan (wajib sebelum push publik)
+
+Alat: `gitleaks` 8.30.1 di `~/workspace/tools/gitleaks/gitleaks`, wrapper `~/workspace/tools/scan-secrets.sh`.
+
+```text
+~/workspace/tools/scan-secrets.sh ~/workspace/muse-rsi
+~/workspace/tools/scan-secrets.sh --history ~/workspace/muse-rsi
+```
+
+Aturan: exit 0 = bersih, lanjut push. Exit 1 = ada kebocoran → **HALT, jangan push**. Hapus secret-nya dari file DAN dari history git (hapus file saja tidak cukup kalau secret sudah masuk commit), scan ulang sampai bersih, baru push. Jangan pernah menulis secret yang ketahuan ke chat, log, atau memory — sebutkan saja jenis dan lokasinya.
 
 ## Yang dilarang
 
