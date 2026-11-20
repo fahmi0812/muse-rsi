@@ -37,6 +37,7 @@ else
     echo "Removing incomplete $REPO_DIR (it has no setup/setup.py) ..."
     rm -rf "$REPO_DIR"
   fi
+  mkdir -p "$(dirname "$REPO_DIR")"
   mv "$tmp_dir/muse-rsi-main" "$REPO_DIR"
   rm -rf "$tmp_dir"
   echo "Downloaded to $REPO_DIR."
