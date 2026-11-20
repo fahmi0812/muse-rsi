@@ -1,0 +1,42 @@
+name: Validate registry
+
+on:
+  push:
+    paths:
+      - 'skills/**'
+      - 'scripts/**'
+      - '.github/workflows/validate.yml'
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'scripts/**'
+      - '.github/workflows/validate.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Registry matches the generator
+        run: python3 scripts/generate_registry.py --check
+      - name: Routing eval (15 queries)
+        run: python3 scripts/eval_routing.py --registry skills/router/registry.json
+      - name: Validate registry structure
+        run: python3 scripts/validate_registry.py
+      - name: All skill.yaml files parse
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys, yaml
+          for d in sorted(pathlib.Path('skills').iterdir()):
+              if not d.is_dir():
+                  continue
+              yf = d / 'skill.yaml'
+              if yf.exists():
+                  yaml.safe_load(yf.read_text(encoding='utf-8'))
+          print('skill.yaml files OK')
+          PY
