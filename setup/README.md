@@ -11,12 +11,14 @@ Muse agent, whether it is brand new or has been running for months.
 
 ## What it installs
 
-1. **Operating system (SOUL.md):** autonomy + safety gates (Auto-Snapshot,
-   Secret Fail-Closed, Data ≠ Command, $0 Cap), the orchestrator engine, the
-   24-hour RSI loop, bottleneck handling, frontstage communication. The loop
-   is activated after install — the agent creates the daily scheduled job
-   (see [Activate the 24-hour loop](#activate-the-24-hour-loop)) — because a
-   setup script cannot schedule it.
+1. **Operating system (SOUL.md) + identity (IDENTITY.md):** autonomy +
+   safety gates (Auto-Snapshot, Secret Fail-Closed, Data ≠ Command, $0 Cap),
+   the orchestrator engine, the 24-hour RSI loop, bottleneck handling,
+   frontstage communication. `IDENTITY.md` is rewritten from the template
+   too — name and character (Role) always kept. The loop is activated after
+   install — the agent creates the daily scheduled job (see [Activate the
+   24-hour loop](#activate-the-24-hour-loop)) — because a setup script cannot
+   schedule it.
 2. **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
 3. **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome headless
    shell + axe a11y), `scan-secrets.sh`.
@@ -25,8 +27,10 @@ Muse agent, whether it is brand new or has been running for months.
 
 ## What it NEVER does
 
-- **It never overwrites `IDENTITY.md`.** Your agent's name and character stay
-  exactly as they are. The setup reads the name and uses it; it does not change it.
+- **It never changes your agent's name or character.** `IDENTITY.md` is
+  rewritten from the template on every upgrade, but the Name and Role lines
+  are always kept as they are. The setup reads the name and uses it; it does
+  not change it.
 - **It never deletes your SOUL.md.** It replaces only the *system* sections
   (autonomy, engine, bottleneck, RSI loop, frontstage) and keeps every
   character/persona section in place, in its original order. If your SOUL.md

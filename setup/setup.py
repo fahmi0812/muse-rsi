@@ -7,7 +7,9 @@ What it does (new agent or long-running one):
      overwritten).
   2. Merges the muse-rsi operating system into SOUL.md: only the system sections
      are replaced; every character/persona section stays exactly as it is.
-     IDENTITY.md is NEVER overwritten — the agent's name and character survive.
+     IDENTITY.md is rewritten from the template on every upgrade — but the
+     agent's name and character (Role) always survive; only those two lines
+     are kept.
   3. Repairs MEMORY.md (clean <60-line structure + memory/scenes/) without
      deleting the user's facts. A broken single-line MEMORY.md is replaced from
      the template, keeping the user's name when it can be found.
@@ -127,6 +129,11 @@ def merge_soul(existing, template, agent_name):
                 k in oh.lower() and k in h.lower() for k in SYSTEM_HEADING_KEYS) for oh, _ in secs):
             out.append(h + '\n' + b.strip() + '\n')
     return '\n\n'.join(s.rstrip() for s in out) + '\n'
+
+
+def merge_identity(existing, template, agent_name, agent_role):
+    """Rewrite IDENTITY.md from the template, keeping name + character (Role)."""
+    return template.replace('{AGENT_NAME}', agent_name).replace('{AGENT_ROLE}', agent_role)
 
 
 def find_name(text, key='Name'):
@@ -337,12 +344,15 @@ def main():
         log(f'[2] SOUL.md: kept {len(kept)} character section(s) ({", ".join(h[3:][:28] for h in kept) or "none"}), replaced system sections')
     write_home('SOUL.md', new_soul)
 
-    # --- 3. IDENTITY.md: never overwrite ---
+    # --- 3. IDENTITY.md: rewrite from template, keep name + character (Role) ---
+    identity_tpl = (tpl / 'IDENTITY.md').read_text(encoding='utf-8')
+    agent_role = find_name(identity, 'Role') or 'Personal AI agent, upgraded with the muse-rsi operating system.'
+    new_identity = merge_identity(identity, identity_tpl, agent_name, agent_role)
     if identity is None:
-        log('[3] IDENTITY.md: fresh install — wrote template (edit the name to your agent\'s name)')
-        write_home('IDENTITY.md', (tpl / 'IDENTITY.md').read_text(encoding='utf-8'))
+        log(f'[3] IDENTITY.md: fresh install — wrote template (name {agent_name!r})')
     else:
-        log(f'[3] IDENTITY.md: kept as-is (name {agent_name!r} preserved)')
+        log(f'[3] IDENTITY.md: rewrote from template (name {agent_name!r} + character kept)')
+    write_home('IDENTITY.md', new_identity)
 
     # --- 4. USER.md: keep, or minimal template ---
     if user_md is None:

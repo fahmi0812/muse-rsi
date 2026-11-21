@@ -2,8 +2,8 @@
 
 One system, four ways to install it. Pick the one that fits your machine.
 Every method ends with the same verification — all 4 checks green — and the
-same activation: the agent becomes fully autonomous, with its name and
-character unchanged.
+same activation: the agent becomes fully autonomous. Only its name and
+character stay; SOUL, MEMORY, and IDENTITY follow the full muse-rsi setup.
 
 > **Short version for another Muse agent:** clone this repo to `~/muse-rsi`,
 > read this file, and follow it exactly. The copy-paste prompt lives in
@@ -75,7 +75,7 @@ your agent's operating files.
 | `--no-gitleaks` | Skip gitleaks (already installed, or offline). |
 | `--skills-only` | Install skills + tools only. No system files touched. |
 | `--dry-run` | Preview only. Writes nothing. |
-| `--name Nova` | Name for a fresh agent (existing `IDENTITY.md` is never overwritten). |
+| `--name Nova` | Name for a fresh agent (an existing agent's name is never changed). |
 | `--home PATH` / `--repo PATH` | Install into a different home, or use a repo clone elsewhere. |
 
 ## What the setup installs
@@ -88,13 +88,19 @@ your agent's operating files.
 - **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
 - **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome +
   axe), `scan-secrets.sh`, `run_all_checks.sh`.
+- **Identity (`IDENTITY.md`):** rewritten from the muse-rsi template (Core
+  Split, Operating Standard, Evolution Mandate) — but the agent's name and
+  character (Role) are always kept.
 - **Memory:** a clean `MEMORY.md` (<60 lines) + `memory/scenes/` structure.
+  Your facts are kept; the structure follows the setup.
 - **Vault:** `~/.config/muse/vault/` (chmod 700).
 
 ## What it NEVER does
 
-- Never overwrites `IDENTITY.md`. Your agent's name and character stay.
-- Never deletes your `SOUL.md` or your facts in `MEMORY.md`.
+- Never changes your agent's name or character. `IDENTITY.md` is rewritten
+  from the template, but the Name and Role lines stay exactly as they are.
+- Never deletes your facts in `MEMORY.md`. The file gains the muse-rsi
+  structure (scene index + system state); your facts stay.
 - Never writes your private info into the repo.
 - Before writing anything, it snapshots your current files to
   `~/.muse-backup/<timestamp>/` — your rollback point.

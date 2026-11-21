@@ -98,10 +98,12 @@ the muse-rsi operating system into `SOUL.md`. After install the agent activates
 the daily RSI loop (a scheduled job it creates itself), so it keeps improving
 on its own — fully autonomous, with its name and character unchanged.
 
-**The guarantee:** your agent's character survives. `IDENTITY.md` is never
-overwritten — the name stays. `SOUL.md` keeps every character/persona section;
-only the system sections (autonomy, engine, bottleneck, RSI loop, frontstage)
-are replaced. Your facts in `MEMORY.md` are kept. Before writing anything, the
+**The guarantee:** only your agent's name and character survive untouched.
+`IDENTITY.md` is rewritten from the muse-rsi template, but the Name and Role
+lines stay exactly as they are. `SOUL.md` keeps every character/persona
+section; only the system sections (autonomy, engine, bottleneck, RSI loop,
+frontstage) are replaced. `MEMORY.md` gains the muse-rsi structure; your facts
+are kept. Before writing anything, the
 setup snapshots your current files to `~/.muse-backup/<timestamp>/` — that is
 your rollback point. See [INSTALL.md](INSTALL.md) for every install method,
 all flags, and what to do when a step fails.

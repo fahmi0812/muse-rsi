@@ -10,9 +10,9 @@ clone https://github.com/fahmi0812/muse-rsi ke ~/muse-rsi, baca INSTALL.md,
 dan ikuti persis sampai selesai — termasuk verifikasi, aktivasi loop 24 jam,
 dan laporan install.
 
-Nama dan karakter saya tetap, SOUL dan MEMORY tetap seperti sekarang. Kalau
-ada langkah gagal, laporkan langkahnya, pesan errornya, dan apa yang sudah
-dicoba — jangan lanjut diam-diam.
+Yang tidak berubah hanya nama dan karakter saya. SOUL, MEMORY, dan IDENTITY
+mengikuti full setup muse-rsi. Kalau ada langkah gagal, laporkan langkahnya,
+pesan errornya, dan apa yang sudah dicoba — jangan lanjut diam-diam.
 ```
 
 That is the whole prompt. Do not paste a longer version — if the install
