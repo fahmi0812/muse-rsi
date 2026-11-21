@@ -5,11 +5,19 @@ on:
     paths:
       - 'skills/**'
       - 'scripts/**'
+      - 'docs/lumitome-index.md'
+      - 'setup/**'
+      - 'install.sh'
+      - 'tools/**'
       - '.github/workflows/validate.yml'
   pull_request:
     paths:
       - 'skills/**'
       - 'scripts/**'
+      - 'docs/lumitome-index.md'
+      - 'setup/**'
+      - 'install.sh'
+      - 'tools/**'
       - '.github/workflows/validate.yml'
 
 jobs:
@@ -20,23 +28,56 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install PyYAML
-        run: pip install pyyaml
       - name: Registry matches the generator
         run: python3 scripts/generate_registry.py --check
-      - name: Routing eval (17 queries)
+      - name: Routing eval (full suite)
         run: python3 scripts/eval_routing.py --registry skills/router/registry.json
+      - name: Router self-test
+        run: python3 scripts/route.py --self-test
+      - name: Canary regression tests
+        run: python3 scripts/test_canary.py
       - name: Validate registry structure
         run: python3 scripts/validate_registry.py
-      - name: All skill.yaml files parse
+      - name: SKILL.md frontmatter is present and parses
         run: |
+          pip install pyyaml
           python3 - <<'PY'
           import pathlib, sys, yaml
-          for d in sorted(pathlib.Path('skills').iterdir()):
-            if not d.is_dir():
-              continue
-            yf = d / 'skill.yaml'
-            if yf.exists():
-              yaml.safe_load(yf.read_text(encoding='utf-8'))
-          print('skill.yaml files OK')
+          bad = []
+          for p in sorted(pathlib.Path('skills').glob('*/SKILL.md')):
+              text = p.read_text(encoding='utf-8')
+              if not text.startswith('---\n'):
+                  bad.append(f'{p}: missing YAML frontmatter')
+                  continue
+              end = text.find('\n---\n', 4)
+              if end < 0:
+                  bad.append(f'{p}: unterminated frontmatter')
+                  continue
+              try:
+                  fm = yaml.safe_load(text[4:end])
+              except Exception as e:
+                  bad.append(f'{p}: frontmatter does not parse: {e}')
+                  continue
+              if not isinstance(fm, dict) or not fm.get('name') or not fm.get('description'):
+                  bad.append(f'{p}: frontmatter needs name + description')
+          if bad:
+              print('\n'.join(bad))
+              sys.exit(1)
+          print('SKILL.md frontmatter OK')
           PY
+      - name: Shell scripts parse
+        run: |
+          for f in install.sh scripts/*.sh tools/scan-secrets.sh; do bash -n "$f"; done
+          echo "bash -n OK"
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Node files parse
+        run: node --check tools/visual-check/check.mjs && echo "node --check OK"
+      - name: Secret scan (gitleaks, redacted)
+        run: |
+          curl -sSL -o /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks dir --no-banner --redact .
+          echo "SECRET SCAN CLEAN"
