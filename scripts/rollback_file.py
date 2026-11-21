@@ -18,7 +18,7 @@ import subprocess
 import sys
 import tarfile
 
-REPO = pathlib.Path('/home/hatch/workspace/muse-rsi')
+REPO = pathlib.Path('/home/hatch/muse-rsi')
 MIRROR = pathlib.Path('/home/hatch/workspace/muse-rsi-remote')
 BACKUPS = pathlib.Path('/home/hatch/workspace/backups')
 

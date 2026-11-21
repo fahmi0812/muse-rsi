@@ -10,7 +10,7 @@ Rules learned the hard way on 20 November 2026. Follow them before any push.
   is normal, not a bug.
 - Verify content sync with the read-only mirror clone:
   `cd ~/workspace/muse-rsi-remote && git pull` then
-  `diff -rq ~/workspace/muse-rsi ~/workspace/muse-rsi-remote -x .git`.
+  `diff -rq ~/muse-rsi ~/workspace/muse-rsi-remote -x .git`.
   Empty output = in sync.
 
 ## Push procedure
