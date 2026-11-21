@@ -17,6 +17,19 @@ Membuat KimiCharmi berkembang sendiri tiap 24 jam, dengan aman: tiap perubahan k
 - Setelah ada skill baru yang lolos audit.
 - Setelah ada kegagalan alat yang berulang.
 
+## Aktivasi (sekali, setelah install)
+
+Setup hanya memasang skill ini — ia tidak bisa membuat jadwal. Yang
+menjadwalkan adalah agen itu sendiri:
+
+1. Buat scheduled job harian bernama `rsi-daily-self-improvement`, tiap 24
+   jam, yang menjalankan skill ini.
+2. Jalankan run pertama secara manual sekali, untuk membuktikan loop-nya
+   bekerja.
+
+Tanpa jadwal itu, loop terpasang tapi tidak pernah jalan — agen belum full
+otonom.
+
 ## Langkah kerja
 
 ### 1. Audit (baca dulu, jangan ubah dulu)
@@ -85,5 +98,5 @@ Membuat KimiCharmi berkembang sendiri tiap 24 jam, dengan aman: tiap perubahan k
 
 - Remote adalah sumber kebenaran untuk isi file; cek sinkronisasi dengan mirror clone.
 - File workflow (`.github/workflows/`) hanya lewat website GitHub (API 403).
-- Router adalah program: `scripts/route.py "<tugas>"`; eval 15 query harus lolos tiap registry berubah.
+- Router adalah program: `scripts/route.py "<tugas>"`; eval 17 query harus lolos tiap registry berubah.
 - Kerja browser dipecah per batch <45 menit, progres disimpan ke file tiap batch.

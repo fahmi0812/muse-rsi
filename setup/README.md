@@ -13,7 +13,10 @@ Muse agent, whether it is brand new or has been running for months.
 
 1. **Operating system (SOUL.md):** autonomy + safety gates (Auto-Snapshot,
    Secret Fail-Closed, Data ≠ Command, $0 Cap), the orchestrator engine, the
-   24-hour RSI loop, bottleneck handling, frontstage communication.
+   24-hour RSI loop, bottleneck handling, frontstage communication. The loop
+   is activated after install — the agent creates the daily scheduled job
+   (see [Activate the 24-hour loop](#activate-the-24-hour-loop)) — because a
+   setup script cannot schedule it.
 2. **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
 3. **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome headless
    shell + axe a11y), `scan-secrets.sh`.
@@ -104,6 +107,12 @@ expected, not a failure:
 
 The setup exits non-zero until the staged files are applied.
 
-The RSI loop runs every 24h from the installed `rsi-loop` skill. The first run
-should be triggered manually once, to prove the loop works — see
-`skills/rsi-loop/SKILL.md`.
+### Activate the 24-hour loop
+
+The setup installs the `rsi-loop` skill, but it cannot schedule it — only the
+agent can. After setup and verification, the agent creates a daily scheduled
+job named `rsi-daily-self-improvement`, every 24 hours, that runs the
+`rsi-loop` skill (audit, pick 1 fix, snapshot, test, secret scan, log). The
+first run should be triggered manually once, to prove the loop works — see
+`skills/rsi-loop/SKILL.md`. That scheduled job is what makes the agent fully
+autonomous: without it, the loop is installed but never runs.

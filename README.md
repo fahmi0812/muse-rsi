@@ -94,7 +94,9 @@ python3 ~/muse-rsi/setup/setup.py --yes
 
 It installs the 9 original skills + the router, gitleaks (secret scan),
 visual-check, the vault dir, a clean `MEMORY.md` + `memory/scenes/`, and merges
-the muse-rsi operating system into `SOUL.md`.
+the muse-rsi operating system into `SOUL.md`. After install the agent activates
+the daily RSI loop (a scheduled job it creates itself), so it keeps improving
+on its own — fully autonomous, with its name and character unchanged.
 
 **The guarantee:** your agent's character survives. `IDENTITY.md` is never
 overwritten — the name stays. `SOUL.md` keeps every character/persona section;

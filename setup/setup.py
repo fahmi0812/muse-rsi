@@ -471,6 +471,12 @@ def main():
     else:
         log(f'Selesai: muse-rsi system installed. Backup (rollback point): {backup}')
         log(f'Pengaman: snapshot before any change; identity {agent_name!r} preserved; secret scan mandatory before public push.')
+    if not args.dry_run:
+        log('')
+        log('NEXT STEP — activate the 24h RSI loop (the setup cannot schedule it; the agent must):')
+        log('  Create a daily scheduled job named rsi-daily-self-improvement, every 24h,')
+        log('  that runs the rsi-loop skill: audit, pick 1 fix, snapshot, test, secret scan, log.')
+        log('  Then trigger the first run manually once, to prove the loop works.')
     if staged:
         log('')
         log('ACTION REQUIRED — the shell cannot write these files on this machine:')

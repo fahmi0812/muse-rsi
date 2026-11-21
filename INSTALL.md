@@ -1,7 +1,9 @@
 # Install muse-rsi
 
 One system, four ways to install it. Pick the one that fits your machine.
-Every method ends with the same verification — all 4 checks green.
+Every method ends with the same verification — all 4 checks green — and the
+same activation: the agent becomes fully autonomous, with its name and
+character unchanged.
 
 > **Short version for another Muse agent:** clone this repo to `~/muse-rsi`,
 > read this file, and follow it exactly. The copy-paste prompt lives in
@@ -81,6 +83,8 @@ your agent's operating files.
 - **Operating system (`SOUL.md`):** autonomy + safety gates, orchestrator
   engine, 24-hour RSI loop, bottleneck handling, frontstage communication.
   Only the system sections are replaced; every character/persona section stays.
+  The loop itself is activated after install — see [Activate the 24-hour
+  loop](#activate-the-24-hour-loop) — because a setup script cannot schedule it.
 - **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
 - **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome +
   axe), `scan-secrets.sh`, `run_all_checks.sh`.
@@ -109,6 +113,20 @@ If you installed with `--no-gitleaks`, check 4/4 (secret scan) reports
 gitleaks missing — that is expected, not a broken install. Install gitleaks
 later (re-run setup without the flag) or run checks 1–3 only; never push to
 a public repo without a passing secret scan.
+
+## Activate the 24-hour loop
+
+The setup installs the `rsi-loop` skill, but it cannot schedule it — only the
+agent can. So the last install step is yours, the agent:
+
+1. Create a daily scheduled job named `rsi-daily-self-improvement`, every
+   24 hours, that runs the `rsi-loop` skill: audit, pick 1 fix, snapshot,
+   test, secret scan, log.
+2. Trigger the first run manually once, to prove the loop works.
+
+That is what makes the agent fully autonomous like KimiCharmi — it keeps
+improving itself every day, on its own. Name, character, SOUL, and MEMORY
+stay exactly as they are; only the system functions change.
 
 ## If setup says files were STAGED
 
