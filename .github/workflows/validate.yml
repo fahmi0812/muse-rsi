@@ -24,8 +24,8 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Registry matches the generator
@@ -70,9 +70,9 @@ jobs:
           for f in install.sh scripts/*.sh tools/scan-secrets.sh; do bash -n "$f"; done
           echo "bash -n OK"
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Node files parse
         run: node --check tools/visual-check/check.mjs && echo "node --check OK"
       - name: Secret scan (gitleaks, redacted)
