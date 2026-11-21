@@ -7,7 +7,8 @@ character stay; SOUL, MEMORY, and IDENTITY follow the full muse-rsi setup.
 
 > **Short version for another Muse agent:** clone this repo to `~/muse-rsi`,
 > read this file, and follow it exactly. The copy-paste prompt lives in
-> [setup/INSTALL-PROMPT.md](setup/INSTALL-PROMPT.md).
+> [setup/INSTALL-PROMPT.md](setup/INSTALL-PROMPT.md). Already installed?
+> The same prompt updates too — see [Update](#update-sudah-pernah-install).
 
 ## Method 1 — One line (fastest)
 
@@ -70,6 +71,34 @@ python3 ~/muse-rsi/setup/setup.py --yes --skills-only
 
 Use this when you only want the skills, or when another system already owns
 your agent's operating files.
+
+## Update (sudah pernah install)
+
+Satu perintah yang sama untuk install baru dan update — `install.sh`
+menyesuaikan sendiri: kalau `~/muse-rsi` sudah ada sebagai git checkout,
+ia `git pull --ff-only` dulu; kalau belum ada, ia clone; lalu setup +
+verifikasi jalan seperti biasa:
+
+```text
+curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh | bash
+```
+
+Atau manual: `git pull --ff-only origin main` di `~/muse-rsi`, lalu
+`python3 ~/muse-rsi/setup/setup.py --yes`, lalu
+`~/workspace/tools/run_all_checks.sh`.
+
+Yang berubah saat update: SOUL, MEMORY, dan IDENTITY ditulis ulang dari
+template (nama + karakter tetap dipertahankan), skill + tools diperbarui
+ke versi terbaru. Fakta di MEMORY.md dipertahankan; snapshot rollback
+dibuat dulu seperti biasa. Kalau dulu install pakai `--skills-only`,
+update juga pakai `--skills-only` supaya file sistem tidak disentuh.
+
+Setelah update, buktikan versi baru: registry 246 entri, routing eval
+125/125, 12 skill terpasang. Kalau angkanya masih angka lama (mis.
+registry 261, eval 17/17, 10 skill), copy repo tidak ter-update — ambil
+ulang (clone baru atau ZIP), jangan lanjut. Cek juga job
+`rsi-daily-self-improvement` masih ada; kalau hilang, buat ulang (lihat
+[Activate the 24-hour loop](#activate-the-24-hour-loop)).
 
 ## Options (all methods)
 
