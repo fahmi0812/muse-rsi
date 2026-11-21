@@ -48,14 +48,22 @@ Add one row to the right table in `skills/index.md`:
 
 Do not copy the full upstream `SKILL.md` into this repository. Link + one line only.
 
-Then regenerate the registry and run every check — all four must pass:
+Then **regenerate** the registry (a bare `--check` will fail after editing
+`index.md`, because the stored registry is now stale) and run every check —
+all four must pass:
 
 ```text
+python3 scripts/generate_registry.py
 python3 scripts/generate_registry.py --check
 python3 scripts/eval_routing.py
 python3 scripts/validate_registry.py
 gitleaks git .
 ```
+
+The validator is schema-based, not count-based: it checks field presence,
+unique names, known domains, licence sanity, and keyword hygiene, and that
+the stored registry matches what the generator produces. Adding a skill
+never requires editing validator constants or count numbers in docs.
 
 ### 3. Open a pull request
 
@@ -63,6 +71,10 @@ gitleaks git .
 - **Body:** repository link, star count, verification date, audit checklist results, and why this skill is useful for the RSI.
 - Make sure no `.env` file, token, or secret is included in the commit.
 - CI runs on every pull request (`Validate registry`). A red check means the PR cannot merge — fix it, do not ask for an exception.
+
+## Bug → regression test
+
+Every bug fix must leave a test behind: reproduce it first, add a failing case to `scripts/eval_routing.json` (routing bug) or `scripts/test_canary.py` (CLI/format bug), then fix the code. The new case must go green without breaking the other 125, then regenerate the manifest (`scripts/eval_manifest.py` + `--verify`) and log the decision in `decision.tsv`. A fix with no test will regress — the full workflow is in `skills/rsi-loop/SKILL.md`.
 
 ## How to report a problem
 

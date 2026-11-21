@@ -18,7 +18,7 @@
 | College & Academic | 4 — THIN, all Indonesian academic writing: `laporan-generator`, `naskah-id`, `penulis-ilmiah`, `smartbook-ingest` (semester modules). No citation/Zotero workflow, no thesis lifecycle, no study planning. | **8 — CLEARED NOW** (see §2) | Thesis lifecycle + study workflow still need a new original skill (§4). |
 | Research | 2 — THIN: `deep-research`, `research` only. | 2 already verified via Academic pass: `917Dhj/DeepPaperNote` (MIT, SKILL.md yes) and `WenyuChiou/ai-research-skills` (MIT, catalog only — no installable SKILL.md). **Plus 5 promoted via web re-check 20 Nov 2026** (Deep-Research-skills, paper-craft, claude-deep-research, agent-research-skills, slr-prisma); PaperSpine has no SKILL.md, so it is reference only. | Systematic review (PRISMA) is now covered by `keemanxp/slr-prisma`. |
 | Health & Medical | **0 — MISSING.** Verified by grep on the clone: no skill dir, no pack dir, no FHIR string anywhere. Only false positives (document "health audit", PubMed listed as a source, `/api/health` endpoints). | **7 — CLEARED via web re-check 20 Nov 2026** (see [recheck-web.md](recheck-web.md)); 1 permanently excluded (`jmandel/health-skillz`, handles real patient EHR data). | Covered by the 7 external research-only repos plus the new original skill `health-research-literacy` (§4). |
-| Security (defensive) | 30 — STRONG: 16 `hunt-*`, `code-audit`, `owasp-security`, `security-audit`, `fp-check`, `triage-validation`, `cvss-scoring` | — | Nothing missing. Red-team pack (166) is DISABLED by design and must never be added. |
+| Security (defensive) | 30 in the upstream Lumitome core pack — including 16 `hunt-*` plus `code-audit`, `owasp-security`, `security-audit`, `fp-check`, `triage-validation`, `cvss-scoring`. The 16 `hunt-*` (and `redteam-mindset`) live only in the upstream pack: they were removed from the muse-rsi registry in v2.0 (21 Nov 2026) under the "No offensive skills" rule, so the registry's Lumitome reference is 139, not 156. | — | Nothing missing. Red-team pack (166) is DISABLED by design and must never be added. |
 | Design & Media | 36 — STRONG, the biggest core domain | Covered by existing gap fillers (taste, hallmark, unslop) | Nothing missing. |
 | Finance & Business (ID) | 4 — `akuntansi-umkm`, `analisis-laporan-keuangan`, `keuangan-pribadi`, `pajak-dasar-id` | — | Out of scope for this expansion (already covered for Indonesian small business). |
 
@@ -72,7 +72,7 @@ aipoch/medical-research-skills (2,073) · Aperivue/medsci-skills (391) · BioTen
 
 ## 4. New original skills to write for muse-rsi (4)
 
-Write these as new `SKILL.md` files under `skills/` in muse-rsi (original content, same style as the existing 3). Each must state its guardrails up front.
+Write these as new `SKILL.md` files under `skills/` in muse-rsi (original content, same style as the existing original skills). Each must state its guardrails up front.
 
 1. **`health-research-literacy`** — Health research literacy, NOT clinical care. How to read medical literature (study designs, RCT vs cohort vs case report), appraise evidence (risk of bias, GRADE-style certainty), find guidelines and systematic reviews, and explain findings in plain language. **Hard guardrails:** never diagnose, never recommend treatment, never interpret a person's symptoms/labs, never handle patient data, always say "consult a clinician" and cite sources with uncertainty stated. Fills the 0-skill health gap without clinical risk.
 2. **`academic-campus`** — College workflow for Indonesian students. Thesis lifecycle (topic → proposal → seminar → sidang → revision), citation management (Zotero/BibTeX), campus admin documents (surat, laporan magang), study planning and exam prep. Links to `Nbill27/academic-writing-skills`, Lumitome `penulis-ilmiah` / `laporan-generator` / `smartbook-ingest`. **Guardrail:** writing help only — never fabricate citations, data, or results; flag AI-detection evasion requests as out of scope.
@@ -91,11 +91,11 @@ Keep everything that exists. Additions only — no file is deleted, no existing 
 | **NEW: Domain Pack — College & Academic** | 8 repos from §2b (incl. 1 proprietary link-only + 1 catalog-only) | **Cleared now** |
 | **NEW: Lumitome Reference Index** | Link-only index of the 156 core Lumitome skills, grouped by the 12 domains in `lumitome-skills-map.md`. Link only — never copy SKILL.md content. Red-team pack excluded, with the reason stated. | Done |
 | **NEW: Pending Re-check** | The 30 repos from §3, re-checked via the web 20 Nov 2026: 27 promoted, 3 not (see §3 / [recheck-web.md](recheck-web.md)). 0 pending. | Done |
-| Original skills | 3 → **7** (add the 4 from §4) | Done |
-| Docs | New `docs/expansion.md` (this plan, adapted) + update `docs/verification.md` | To write |
-| README + skills/index.md | New domain sections added; counts updated: 37 listed + 27 promoted via web re-check = **64 listed skills** + 7 originals; reference index 156 Lumitome skills; 0 pending. | Done |
+| Original skills | 3 → **9** (the 4 from §4, plus `visual-check` and `contribute` added later) | Done |
+| Docs | New `docs/expansion.md` (this plan, adapted) + update `docs/verification.md` | Done |
+| README + skills/index.md | New domain sections added; counts updated: 37 listed + 27 promoted via web re-check = **64 listed skills** + 11 originals; reference index 139 Lumitome skills (21 Nov 2026 — the upstream Lumitome core pack itself still has 156 dirs); 0 pending. | Done |
 
-**Counts after this expansion (final, 20 Nov 2026):** 37 listed + 27 promoted via web re-check = **64 listed skills**, plus 7 original skills in-repo, plus a 156-skill Lumitome reference index, plus 0 pending. The repo stays link-only for upstream content (no SKILL.md copying), MIT for original content.
+**Counts after this expansion (final, 20 Nov 2026):** 37 listed + 27 promoted via web re-check = **64 listed skills**, plus 11 original skills in-repo (9 after this plan, plus `visual-check` and `contribute`, plus `council` and `interrogate-claim` added 21 Nov 2026), plus a 139-skill Lumitome reference index (21 Nov 2026; the upstream Lumitome core pack itself still has 156 dirs), plus 0 pending. The repo stays link-only for upstream content (no full `SKILL.md` copying — Lumitome frontmatter descriptions are the one exception, copied/trimmed into the registry `notes` field), MIT for original content.
 
 ## 6. Guardrails to add to the repo (update README/CONTRIBUTING)
 

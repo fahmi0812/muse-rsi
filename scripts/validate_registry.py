@@ -1,59 +1,115 @@
-"""Validate the muse-rsi registry and repo structure. Stdlib only (CI-safe).
+#!/usr/bin/env python3
+"""Validate skills/router/registry.json against the generator. (v2)
 
-Checks:
-- skills/router/registry.json parses and counts match the actual entries.
-- Core listed skills == 64, reference listed == 32, originals == 9, Lumitome == 156.
-- Every entry has name/type/domain/url/repo, and every URL is github.com.
+Schema checks (no hardcoded counts — a valid 'Add skill' PR must pass):
+- registry.json parses; version is 2; counts match the actual entries.
+- Every entry has name/type/domain/url/repo; every URL is github.com.
+- Names are unique.
+- Every domain is a known domain (see KNOWN_DOMAINS).
+- license is present, is not the notes text, and contains no Markdown bold.
+- keywords are non-empty, lowercase, and contain no 1-2 letter junk
+  (except the technical whitelist) and no stopwords.
 - Every original skill's SKILL.md exists in the repo.
+- The stored registry matches what generate_registry.py produces
+  (run the generator in --check mode as the source of truth).
 Exit 0 when everything passes, 1 otherwise.
-Usage: python3 scripts/validate_registry.py
 """
-import json, pathlib, sys
+import json, pathlib, subprocess, sys
 
-root = pathlib.Path(__file__).resolve().parent.parent
-reg_path = root / 'skills' / 'router' / 'registry.json'
-registry = json.loads(reg_path.read_text(encoding='utf-8'))
+HERE = pathlib.Path(__file__).resolve().parent
+REPO = HERE.parent
+
+KNOWN_DOMAINS = {
+    'Core RSI', 'Gap Fillers', 'DevOps & Infra', 'College & Academic',
+    'Full-Stack Development', 'Office & Corporate', 'Research',
+    'Health & Medical', 'Video', 'Defensive Security', 'Security',
+    'Design & 3D', 'Trading (Research Only)', 'Research, Documents & Voice',
+    'Writing & Language (ID)', 'Finance & Business (ID)',
+    'Agent & Orchestration', 'Design & Media', 'Other',
+}
+SHORT_WHITELIST = {
+    'ui', 'ux', 'qa', 'ci', 'cd', '3d', 'ai', 'ml', 'db', 'id', 'go',
+    'js', 'ts', 'sql', 'api', 'r', 'c',
+}
+STOPWORDS = {
+    'a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'on', 'for', 'with',
+    'how', 'what', 'is', 'are', 'be', 'do', 'it', 'this', 'that',
+}
+
 errors = []
+reg_path = REPO / 'skills' / 'router' / 'registry.json'
+try:
+    registry = json.loads(reg_path.read_text(encoding='utf-8'))
+except Exception as e:
+    print(f'FAIL: cannot parse registry.json: {e}')
+    sys.exit(1)
 
-counts = registry.get('counts', {})
 skills = registry.get('skills', [])
+if registry.get('version') != 2:
+    errors.append(f"registry version is {registry.get('version')}, expected 2")
+counts = registry.get('counts', {})
 by_type = {}
 for s in skills:
-    # entry type uses a hyphen ('lumitome-reference'); counts key uses underscore
     by_type.setdefault(s.get('type', '').replace('-', '_'), []).append(s)
-core = [s for s in by_type.get('listed', []) if s.get('tier') == 'core']
-ref = [s for s in by_type.get('listed', []) if s.get('tier') == 'reference']
-
-expected = {'listed': len(by_type.get('listed', [])), 'original': len(by_type.get('original', [])),
-            'lumitome_reference': len(by_type.get('lumitome_reference', [])), 'total': len(skills)}
+expected = {'listed': len(by_type.get('listed', [])),
+            'original': len(by_type.get('original', [])),
+            'lumitome_reference': len(by_type.get('lumitome_reference', [])),
+            'total': len(skills)}
 for k, v in expected.items():
     if counts.get(k) != v:
         errors.append(f'counts.{k} is {counts.get(k)}, actual {v}')
-if len(core) != 64:
-    errors.append(f'core listed skills: {len(core)}, expected 64')
-if len(ref) != 32:
-    errors.append(f'reference listed skills: {len(ref)}, expected 32')
-if len(by_type.get('original', [])) != 9:
-    errors.append(f"original skills: {len(by_type.get('original', []))}, expected 9")
-if len(by_type.get('lumitome_reference', [])) != 156:
-    errors.append(f"lumitome_reference: {len(by_type.get('lumitome_reference', []))}, expected 156")
 
+seen = set()
 for s in skills:
-    for field in ('name', 'type', 'domain', 'url', 'repo'):
+    name = s.get('name', '')
+    if not name:
+        errors.append('entry without a name')
+        continue
+    if name in seen:
+        errors.append(f'duplicate name: {name}')
+    seen.add(name)
+    for field in ('type', 'domain', 'url', 'repo'):
         if not s.get(field):
-            errors.append(f"entry {s.get('name', '?')} missing field: {field}")
-    if s.get('url', '').startswith('https://github.com/') is False:
-        errors.append(f"entry {s.get('name')} url is not github.com: {s.get('url')}")
+            errors.append(f'{name}: missing {field}')
+    if s.get('url') and not s['url'].startswith('https://github.com/'):
+        errors.append(f"{name}: url is not github.com: {s['url']}")
+    if s.get('domain') and s['domain'] not in KNOWN_DOMAINS:
+        errors.append(f"{name}: unknown domain {s['domain']!r}")
+    lic = s.get('license', '')
+    if not lic:
+        errors.append(f'{name}: missing license')
+    elif lic == s.get('notes', ''):
+        errors.append(f'{name}: license == notes (positional parse bug)')
+    elif '**' in lic:
+        errors.append(f"{name}: license contains Markdown bold: {lic!r}")
+    kws = s.get('keywords', [])
+    if not kws:
+        errors.append(f'{name}: no keywords')
+    for k in kws:
+        if k != k.lower():
+            errors.append(f"{name}: keyword not lowercase: {k!r}")
+        if k in STOPWORDS:
+            errors.append(f"{name}: stopword keyword: {k!r}")
+        if len(k) < 3 and ' ' not in k and k not in SHORT_WHITELIST:
+            errors.append(f"{name}: junk short keyword: {k!r}")
     if s.get('type') == 'original':
-        path = root / s.get('path', '')
-        if not path.exists():
-            errors.append(f"original skill file missing: {s.get('path')}")
+        p = REPO / 'skills' / name / 'SKILL.md'
+        if not p.exists():
+            errors.append(f'{name}: original SKILL.md missing at {p}')
+
+# The generator is the source of truth for registry content.
+gen = subprocess.run([sys.executable, str(HERE / 'generate_registry.py'), '--check'],
+                     capture_output=True, text=True)
+if gen.returncode != 0:
+    errors.append('generate_registry.py --check failed (stored registry is stale)')
+    print(gen.stdout[-2000:])
+    print(gen.stderr[-2000:])
 
 if errors:
-    print(f'VALIDATE FAIL ({len(errors)} problems):')
+    print(f'FAIL ({len(errors)} problems):')
     for e in errors:
         print(' -', e)
     sys.exit(1)
-print(f"VALIDATE OK: {len(skills)} entries "
-      f"({len(core)} core + {len(ref)} reference + {len(by_type.get('original', []))} original "
-      f"+ {len(by_type.get('lumitome_reference', []))} lumitome)")
+print(f'OK: registry valid — {len(skills)} entries '
+      f'({counts.get("listed")} listed, {counts.get("original")} original, '
+      f'{counts.get("lumitome_reference")} lumitome-reference)')

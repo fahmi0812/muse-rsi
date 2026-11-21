@@ -16,8 +16,10 @@ curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh |
 ```
 
 This clones the repo to `~/muse-rsi`, runs the setup, then runs all 4 checks.
-Read `install.sh` first if you like — it is short. To skip the heavy parts,
-pass flags after `--`:
+If `~/muse-rsi` already exists as a git checkout, `install.sh` updates it
+first with `git pull --ff-only` (and continues with the existing copy if the
+pull fails); an existing non-git copy is used as-is. Read `install.sh` first
+if you like — it is short. To skip the heavy parts, pass flags after `--`:
 
 ```text
 curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh | bash -s -- --no-visual-check
@@ -55,9 +57,11 @@ Or let `install.sh` do it for you: `MUSE_RSI_USE_ZIP=1 bash install.sh`.
 
 ## Method 4 — Skills only (no system files touched)
 
-Only the 9 original skills + the router. Your `SOUL.md`, `IDENTITY.md`,
+The 11 original skills + the router + the tools (gitleaks, visual-check,
+`scan-secrets.sh`, `run_all_checks.sh`). Your `SOUL.md`, `IDENTITY.md`,
 `MEMORY.md`, and `AGENTS.md` are left completely alone — no snapshot, no
-merge, no vault changes:
+merge, no vault changes. The tools are still installed because the checks
+need them; only the system files are skipped:
 
 ```text
 python3 ~/muse-rsi/setup/setup.py --yes --skills-only
@@ -82,25 +86,38 @@ your agent's operating files.
 
 - **Operating system (`SOUL.md`):** autonomy + safety gates, orchestrator
   engine, 24-hour RSI loop, bottleneck handling, frontstage communication.
-  Only the system sections are replaced; every character/persona section stays.
-  The loop itself is activated after install — see [Activate the 24-hour
+  Only the system block between the `<!-- muse-rsi:system:start -->` and
+  `<!-- muse-rsi:system:end -->` markers is replaced — every other section,
+  including persona sections, is left byte-identical. On a first install
+  from a `SOUL.md` without markers, only sections whose heading exactly
+  matches a template system heading are replaced, then the marked block is
+  appended. The loop itself is activated after install — see [Activate the 24-hour
   loop](#activate-the-24-hour-loop) — because a setup script cannot schedule it.
-- **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
+- **Skills:** the 11 original skills + the `muse-rsi` router (246-entry registry).
 - **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome +
   axe), `scan-secrets.sh`, `run_all_checks.sh`.
 - **Identity (`IDENTITY.md`):** rewritten from the muse-rsi template (Core
   Split, Operating Standard, Evolution Mandate) — but the agent's name and
-  character (Role) are always kept.
+  character (Role) are carried over whenever the setup can read them. It
+  reads them with a case-insensitive parser that understands bullet, plain,
+  bold, table-row, and heading formats. If no name can be read, the setup
+  uses `--name` when given, otherwise the fallback name `Muse`.
 - **Memory:** a clean `MEMORY.md` (<60 lines) + `memory/scenes/` structure.
-  Your facts are kept; the structure follows the setup.
+  Your facts are kept; the structure follows the setup. Exception: a broken
+  single-line `MEMORY.md` (fewer than 3 newlines) is replaced from the
+  template — the old copy stays in the snapshot.
 - **Vault:** `~/.config/muse/vault/` (chmod 700).
 
 ## What it NEVER does
 
 - Never changes your agent's name or character. `IDENTITY.md` is rewritten
-  from the template, but the Name and Role lines stay exactly as they are.
-- Never deletes your facts in `MEMORY.md`. The file gains the muse-rsi
-  structure (scene index + system state); your facts stay.
+  from the template, but the Name and Role are carried over whenever the
+  setup can read them (see above). If no name can be read, the fallback is
+  `--name` when given, otherwise `Muse`.
+- Never deletes your facts in `MEMORY.md` — as long as the file is
+  parseable. It gains the muse-rsi structure (scene index + system state);
+  your facts stay. Only a broken single-line `MEMORY.md` is replaced from
+  the template, and the old copy stays in the snapshot.
 - Never writes your private info into the repo.
 - Before writing anything, it snapshots your current files to
   `~/.muse-backup/<timestamp>/` — your rollback point.
@@ -131,8 +148,10 @@ agent can. So the last install step is yours, the agent:
 2. Trigger the first run manually once, to prove the loop works.
 
 That is what makes the agent fully autonomous like KimiCharmi — it keeps
-improving itself every day, on its own. Name, character, SOUL, and MEMORY
-stay exactly as they are; only the system functions change.
+improving itself every day, on its own. Name and character stay; `SOUL.md`
+keeps everything outside the marked system block, and `MEMORY.md` keeps your
+facts (unless the file is broken — see above). Only the system functions
+change.
 
 ## If setup says files were STAGED
 

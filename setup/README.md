@@ -19,7 +19,7 @@ Muse agent, whether it is brand new or has been running for months.
    install — the agent creates the daily scheduled job (see [Activate the
    24-hour loop](#activate-the-24-hour-loop)) — because a setup script cannot
    schedule it.
-2. **Skills:** the 9 original skills + the `muse-rsi` router (261-entry registry).
+2. **Skills:** the 11 original skills + the `muse-rsi` router (246-entry registry).
 3. **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome headless
    shell + axe a11y), `scan-secrets.sh`.
 4. **Memory:** a clean `MEMORY.md` (<60 lines) + `memory/scenes/` structure.
@@ -28,13 +28,18 @@ Muse agent, whether it is brand new or has been running for months.
 ## What it NEVER does
 
 - **It never changes your agent's name or character.** `IDENTITY.md` is
-  rewritten from the template on every upgrade, but the Name and Role lines
-  are always kept as they are. The setup reads the name and uses it; it does
-  not change it.
-- **It never deletes your SOUL.md.** It replaces only the *system* sections
-  (autonomy, engine, bottleneck, RSI loop, frontstage) and keeps every
-  character/persona section in place, in its original order. If your SOUL.md
-  has no system sections at all, the new ones are appended at the end.
+  rewritten from the template on every upgrade, but the Name and Role are
+  carried over whenever the setup can read them — it uses a case-insensitive
+  parser that understands bullet, plain, bold, table-row, and heading
+  formats. If no name can be read, the setup uses `--name` when given,
+  otherwise the fallback name `Muse`.
+- **It never deletes your SOUL.md.** It replaces only the system block
+  between the `<!-- muse-rsi:system:start -->` and
+  `<!-- muse-rsi:system:end -->` markers and keeps everything else in place,
+  byte-identical — including persona sections whose headings happen to
+  contain words like "autonomy" or "frontstage". On a first install from a
+  `SOUL.md` without markers, only sections whose heading exactly matches a
+  template system heading are replaced, then the marked block is appended.
 - **It never deletes your facts from `MEMORY.md`.** A parseable MEMORY.md is
   kept and only gains the scene index + system state. A broken single-line
   MEMORY.md is replaced from the template — the old copy stays in the snapshot.

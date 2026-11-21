@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """usage_log.py — the honest usage meter for the muse-rsi harness.
 
+DEPRECATED as the loop's logger: use scripts/decision_log.py instead
+(`log` for decisions, `usage` for per-run usage) — same data, one tool,
+called at the decision points so it cannot be skipped. This file is kept
+working for existing installs (back-compat), but the rsi-loop skill no
+longer calls it.
+
 There is no token meter inside this harness, so this log records what IS
 measurable: each run's date, duration, context-window usage (read from the
 agent's own session status at the end of the run), what it changed, and
@@ -20,7 +26,7 @@ from zoneinfo import ZoneInfo
 import pathlib
 import sys
 
-LOG = pathlib.Path('/home/hatch/workspace/tools/usage-log/usage.jsonl')
+LOG = pathlib.Path.home() / 'workspace' / 'tools' / 'usage-log' / 'usage.jsonl'
 
 
 def main():

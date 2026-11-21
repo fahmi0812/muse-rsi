@@ -15,8 +15,8 @@
 | With a directly verified `SKILL.md` | 17 |
 | With a skill/plugin folder, `SKILL.md` per subfolder not checked one by one | 7 |
 | Potentially skill-bearing in total (17 + 7) | 24 |
-| Recommended (Yes) | 14 |
-| Recommended with notes (Yes with notes) | 24 |
+| Recommended (Yes) | 18 |
+| Recommended with notes (Yes with notes) | 20 |
 | Not recommended | 2 |
 
 ## How to Read the "SKILL.md?" Column

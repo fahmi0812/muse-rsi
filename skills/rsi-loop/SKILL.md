@@ -68,11 +68,35 @@ otonom.
 - Kalau tes gagal → rollback ke snapshot, catat kenapa gagal, dan jangan ulangi cara yang sama di run berikutnya. Rollback konten (bukan history): `python3 scripts/rollback_file.py <path> --from mirror` (versi remote terakhir) atau `--from backup` (tarball terakhir). History tidak bisa ditulis ulang dari sini (tidak ada force-push) — restore selalu sebagai commit baru.
 - Diam (silent) kalau tidak ada perbaikan nyata atau bottleneck. Lapor hanya kalau ada yang benar-benar perlu tindakan Fahmi.
 
-### 7. Catat pemakaian (usage log)
+### 7. Catat keputusan dan pemakaian (decision log)
 
-- Di akhir tiap run, baca status sesi (context window terpakai / tersisa) dan catat 1 entri: `python3 scripts/usage_log.py --run-id <id> --context-used <N> --context-remaining <M> --duration-min <N> --checks PASS|FAIL --note "<1 kalimat>"`.
-- Tidak ada meter token di harness ini — yang diukur adalah context window. Jangan mengarang angka; kalau angkanya tidak tersedia, kosongkan dan tulis alasannya di note.
-- Lihat tren: `python3 scripts/usage_log.py --report`.
+- Di tiap titik keputusan, catat 1 baris: `python3 scripts/decision_log.py log --task "<tugas>" --decision "<yang dipilih>" --options "<a|b>" --evidence "<bukti singkat>" --outcome pending|succeeded|failed|rolled-back --confidence <0-1> --reversible yes|no`. File: `~/.muse-rsi/decision.tsv` (data runtime agen, bukan isi repo — jangan commit). Script ini hanya append, tidak pernah menulis ulang history.
+- Di akhir tiap run, catat pemakaian: `python3 scripts/decision_log.py usage --task "<tugas>" --router-top3 "<skill:skor|skill:skor>" --result ok|fail --notes "<1 kalimat>"`. Jangan mengarang angka context window; kalau angkanya tidak tersedia, kosongkan dan tulis alasannya di notes.
+- Lihat tren: `python3 scripts/decision_log.py report` (hitung per outcome + kegagalan terakhir).
+- `scripts/usage_log.py` sudah tidak dipakai loop ini (deprecated, dipertahankan untuk instalasi lama).
+
+## Bug → regression test (wajib untuk tiap bug)
+
+Jangan perbaiki bug tanpa meninggalkan tes yang menangkapnya — kalau
+tidak, bug yang sama akan kembali di run berikutnya:
+
+1. **Reproduksi dulu** — buktikan bug-nya nyata (perintah + output), jangan dari dugaan.
+2. **Tulis tes yang gagal dulu (red)** — tambah 1 kasus ke `scripts/eval_routing.json` (kalau bug routing) atau 1 tes ke `scripts/test_canary.py` (kalau bug CLI/format). Jalankan dan pastikan tes baru itu GAGAL.
+3. **Baru perbaiki kodenya** — ubah sesedikit mungkin.
+4. **Tes baru harus hijau tanpa merusak yang lain** — eval penuh 125/125, canary lolos, `run_all_checks.sh` hijau.
+5. **Regenerasi manifest** — `python3 scripts/eval_manifest.py`, lalu `--verify`.
+6. **Catat keputusannya** — `decision_log.py log` dengan outcome `succeeded` (atau `failed` kalau akhirnya rollback).
+
+Contoh nyata (21 Nov 2026): `route.py` belum punya `--json`, jadi output
+CLI tidak bisa diparse mesin. Tes canary `JsonOutputTests` ditulis dulu
+→ gagal merah (`JSONDecodeError`, stdout kosong) → `--json` diimplementasi
+→ canary 7/7 hijau. Tes ditulis sebelum perbaikan, bukan sesudah.
+
+## Context-reset protocol (sebelum compaction / reset)
+
+1. **Sebelum reset:** snapshot state ke `.muse/journal.md` — tugas yang sedang jalan, apa yang sudah selesai, langkah berikutnya, keputusan terbuka — lalu update `MEMORY.md` dengan fakta baru yang penting.
+2. **Setelah reset:** baca `.muse/journal.md` dulu sebelum melanjutkan apa pun; jangan mulai dari ringkasan yang tidak terverifikasi.
+3. Kalau journal tidak ada atau kosong, anggap state hilang: verifikasi ulang dari file sumber (repo, registry, log) sebelum melanjutkan.
 
 ## Pengaman yang tidak boleh dimatikan
 
@@ -98,5 +122,5 @@ otonom.
 
 - Remote adalah sumber kebenaran untuk isi file; cek sinkronisasi dengan mirror clone.
 - File workflow (`.github/workflows/`) hanya lewat website GitHub (API 403).
-- Router adalah program: `scripts/route.py "<tugas>"`; eval 17 query harus lolos tiap registry berubah.
+- Router adalah program: `scripts/route.py "<tugas>"`; eval 125 query harus lolos tiap registry berubah.
 - Kerja browser dipecah per batch <45 menit, progres disimpan ke file tiap batch.

@@ -1,3 +1,8 @@
+---
+name: fullstack-delivery
+description: Full-stack delivery workflow — spec, TDD, review, CI, deploy, observe.
+---
+
 # fullstack-delivery
 
 > Full-stack delivery workflow: spec → TDD → review → CI → deploy → observe.

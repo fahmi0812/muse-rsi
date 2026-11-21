@@ -13,7 +13,7 @@ What it does (new agent or long-running one):
   3. Repairs MEMORY.md (clean <60-line structure + memory/scenes/) without
      deleting the user's facts. A broken single-line MEMORY.md is replaced from
      the template, keeping the user's name when it can be found.
-  4. Installs the 9 original skills + the muse-rsi router (registry 261 entries)
+  4. Installs the 9 original skills + the muse-rsi router (registry 244 entries)
      into ~/workspace/custom-skills/.
   5. Installs the tools: gitleaks (secret scan) + visual-check (Playwright +
      Chrome headless shell + axe) + scan-secrets.sh + run_all_checks.sh.
@@ -40,7 +40,9 @@ files locally to preserve them.
 """
 import argparse
 import datetime
+import hashlib
 import json
+import platform
 import os
 import pathlib
 import re
@@ -60,9 +62,14 @@ ORIGINALS = {
     'visual-check': ('Visual Check', 'Work and knowledge',
                      'Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow — so design work is judged by looking at it, not by reading code.'),
     'contribute': ('Contribute back to muse-rsi', 'Work and knowledge', None),
+    'council': ('Blind multi-model council', 'Work and knowledge', None),
+    'interrogate-claim': ('Interrogate a claim', 'Work and knowledge', None),
 }
-# Headings that belong to the operating system (matched by keyword, case-insensitive).
-SYSTEM_HEADING_KEYS = ['autonomy', 'orchestrator engine', 'bottleneck', 'self-improvement', 'frontstage']
+# Marker pair that delimits the muse-rsi system block inside SOUL.md.
+# Everything between the markers is owned by the template; everything
+# outside them belongs to the agent and is never touched by a merge.
+SYS_START = '<!-- muse-rsi:system:start -->'
+SYS_END = '<!-- muse-rsi:system:end -->'
 RUNTIME_FILES = ['SOUL.md', 'IDENTITY.md', 'USER.md', 'MEMORY.md', 'AGENTS.md', 'TOOLS.md']
 
 log_lines = []
@@ -96,39 +103,39 @@ def split_sections(text):
     return preamble, sections
 
 
-def is_system_heading(heading):
-    h = heading.lower()
-    return any(k in h for k in SYSTEM_HEADING_KEYS)
+def system_template_body(template):
+    """The template's operating content: everything from the first '>'
+    quote line onward. The explanatory preamble above it describes the
+    template itself and must never be written into an agent's SOUL.md."""
+    lines = template.split('\n')
+    for i, ln in enumerate(lines):
+        if ln.startswith('>'):
+            return '\n'.join(lines[i:]).strip() + '\n'
+    return template.strip() + '\n'
 
 
 def merge_soul(existing, template, agent_name):
-    """Replace system sections, keep character sections, preserve order."""
-    template = template.replace('{AGENT_NAME}', agent_name)
-    t_pre, t_secs = split_sections(template)
-    sys_secs = [(h, b) for h, b in t_secs if is_system_heading(h)]
+    """Replace ONLY the marker-delimited system block; keep everything
+    else in the agent's SOUL.md byte-identical, including persona sections
+    whose headings happen to contain words like 'autonomy' or 'frontstage'.
+
+    Legacy files without markers: drop only sections whose heading EXACTLY
+    matches a template heading, then append the marked block."""
+    body = system_template_body(template).replace('{AGENT_NAME}', agent_name)
+    block = SYS_START + '\n' + body.rstrip() + '\n' + SYS_END
     if existing is None:
-        return template
+        return block + '\n'
+    if SYS_START in existing and SYS_END in existing:
+        pre, rest = existing.split(SYS_START, 1)
+        _, post = rest.split(SYS_END, 1)
+        return pre + block + post
+    _, t_secs = split_sections(body)
+    sys_heads = {h.strip() for h, _ in t_secs}
     pre, secs = split_sections(existing)
-    replaced = set()
-    out = [pre.rstrip() + '\n'] if pre.strip() else []
-    for h, b in secs:
-        if is_system_heading(h):
-            # replace with the template's matching system section
-            match = next((tb for th, tb in sys_secs if any(
-                k in th.lower() and k in h.lower() for k in SYSTEM_HEADING_KEYS)), None)
-            if match is not None:
-                out.append(h + '\n' + match.strip() + '\n')
-                replaced.add(h)
-            else:
-                out.append(h + '\n' + b.strip() + '\n')
-        else:
-            out.append(h + '\n' + b.strip() + '\n')
-    # any template system section not present in the old file gets appended
-    for h, b in sys_secs:
-        if not any(is_system_heading(oh) and any(
-                k in oh.lower() and k in h.lower() for k in SYSTEM_HEADING_KEYS) for oh, _ in secs):
-            out.append(h + '\n' + b.strip() + '\n')
-    return '\n\n'.join(s.rstrip() for s in out) + '\n'
+    out = [pre.rstrip()] if pre.strip() else []
+    out += [h + '\n' + b.strip() for h, b in secs if h.strip() not in sys_heads]
+    out.append(block)
+    return '\n\n'.join(x.rstrip() for x in out if x.strip()) + '\n'
 
 
 def merge_identity(existing, template, agent_name, agent_role):
@@ -137,13 +144,26 @@ def merge_identity(existing, template, agent_name, agent_role):
 
 
 def find_name(text, key='Name'):
+    """Find a `Name:` / `Role:` value in any common Markdown shape:
+    bullet or plain, bold inside or outside the colon, any case, table
+    row, or heading. Returns None (with no crash) when nothing matches."""
     if not text:
         return None
-    m = re.search(r'(?m)^[*-]\s*\*?\*?' + key + r':\*?\*?\s*(.+?)\s*$', text)
-    if m:
-        return m.group(1).strip().strip('*').strip()
-    m = re.search(r'(?m)^#+\s*' + key + r':\s*(.+?)\s*$', text)
-    return m.group(1).strip() if m else None
+    patterns = [
+        # - **Name**: X | - **Name:** X | Name: X | - name: x
+        r'(?m)^\s*[-*]?\s*\*?\*?' + key + r'\*?\*?\s*:?\s*(.+?)\s*$',
+        # | Name | X |  or  | **Name** | X |
+        r'(?m)^\s*\|?\s*\*{0,2}' + key + r'\*{0,2}\s*\|\s*(.+?)\s*\|?\s*$',
+        # ## Name: X
+        r'(?m)^#+\s*' + key + r':\s*(.+?)\s*$',
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.IGNORECASE)
+        if m:
+            v = m.group(1).strip().strip('*').strip().strip('"').strip("'").strip()
+            if v and 'fill in' not in v.lower() and v.lower() not in ('name', key.lower()):
+                return v
+    return None
 
 
 def strip_frontmatter(text):
@@ -196,6 +216,25 @@ def install_skills(repo, home, dry):
     return installed
 
 
+def _sha256(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _gitleaks_arch():
+    system, machine = platform.system().lower(), platform.machine().lower()
+    mapping = {('linux', 'x86_64'): 'linux_x64', ('linux', 'amd64'): 'linux_x64',
+               ('linux', 'aarch64'): 'linux_arm64', ('linux', 'arm64'): 'linux_arm64',
+               ('darwin', 'arm64'): 'darwin_arm64', ('darwin', 'x86_64'): 'darwin_x64'}
+    arch = mapping.get((system, machine))
+    if not arch:
+        raise RuntimeError(f'unsupported platform for gitleaks: {system} {machine}')
+    return arch
+
+
 def install_gitleaks(home, dry):
     dest_dir = home / 'workspace' / 'tools' / 'gitleaks'
     exe = dest_dir / 'gitleaks'
@@ -205,19 +244,48 @@ def install_gitleaks(home, dry):
             return f'already installed ({r.stdout.strip()})'
     if dry:
         return '[dry-run] would download latest gitleaks release'
+    arch = _gitleaks_arch()
     try:
         tag = http_get_json('https://api.github.com/repos/gitleaks/gitleaks/releases/latest')['tag_name']
     except Exception:  # noqa: BLE001 - GitHub API rate limit: fall back to a pinned, verified release
         tag = 'v8.30.1'
-    url = f'https://github.com/gitleaks/gitleaks/releases/download/{tag}/gitleaks_{tag.lstrip("v")}_linux_x64.tar.gz'
+    ver = tag.lstrip('v')
+    asset = f'gitleaks_{ver}_{arch}.tar.gz'
+    base = f'https://github.com/gitleaks/gitleaks/releases/download/{tag}'
     dest_dir.mkdir(parents=True, exist_ok=True)
-    run(['curl', '-sL', '--max-time', '300', '-o', str(dest_dir / 'gitleaks.tar.gz'), url], check=True)
-    run(['tar', '-xzf', str(dest_dir / 'gitleaks.tar.gz'), '--no-same-owner', 'gitleaks'],
+    tarball = dest_dir / asset
+    run(['curl', '-sL', '--max-time', '300', '-o', str(tarball), f'{base}/{asset}'], check=True)
+    # SHA-256 verification against the release's own checksums file.
+    # A mismatch aborts the install — never extract an unverified binary.
+    sums = dest_dir / f'gitleaks_{ver}_checksums.txt'
+    run(['curl', '-sL', '--max-time', '120', '-o', str(sums), f'{base}/gitleaks_{ver}_checksums.txt'], check=True)
+    expected = None
+    for line in sums.read_text(encoding='utf-8').splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[1].strip('*') == asset:
+            expected = parts[0]
+    if not expected:
+        raise RuntimeError(f'no SHA-256 entry for {asset} in the release checksums file')
+    actual = _sha256(tarball)
+    if actual != expected:
+        tarball.unlink(missing_ok=True)
+        raise RuntimeError(f'gitleaks checksum mismatch for {asset} (expected {expected[:16]}…, got {actual[:16]}…) — refusing to install')
+    run(['tar', '-xzf', str(tarball), '--no-same-owner', 'gitleaks'],
         cwd=str(dest_dir), check=True)
-    (dest_dir / 'gitleaks.tar.gz').unlink(missing_ok=True)
+    tarball.unlink(missing_ok=True)
+    sums.unlink(missing_ok=True)
     os.chmod(exe, 0o755)
     r = run([str(exe), 'version'], check=True)
-    return f'installed {r.stdout.strip()} (release {tag})'
+    return f'installed {r.stdout.strip()} (release {tag}, SHA-256 verified)'
+
+
+def _chrome_platform():
+    system, machine = platform.system().lower(), platform.machine().lower()
+    if system == 'linux' and machine in ('x86_64', 'amd64'):
+        return 'linux64', 'chrome-headless-shell-linux64'
+    if system == 'darwin' and machine == 'arm64':
+        return 'mac-arm64', 'chrome-headless-shell-mac-arm64'
+    raise RuntimeError(f'unsupported platform for Chrome headless shell: {system} {machine}')
 
 
 def install_visual_check(repo, home, dry):
@@ -226,17 +294,44 @@ def install_visual_check(repo, home, dry):
     if dry:
         return '[dry-run] would install Playwright + Chrome headless shell + axe'
     dest_dir.mkdir(parents=True, exist_ok=True)
-    for f in ('check.mjs', 'package.json'):
-        shutil.copyfile(src_dir / f, dest_dir / f)
-    run(['npm', 'install', '--save-exact', 'playwright@1.65.1', '@axe-core/playwright@4.11.0'],
-        cwd=str(dest_dir), check=True)
-    chrome_dir = dest_dir / 'chrome-headless-shell-linux64'
+    for f in ('check.mjs', 'package.json', 'package-lock.json'):
+        if (src_dir / f).exists():
+            shutil.copyfile(src_dir / f, dest_dir / f)
+    if (dest_dir / 'package-lock.json').exists():
+        run(['npm', 'ci'], cwd=str(dest_dir), check=True)
+    else:
+        run(['npm', 'install', '--save-exact', 'playwright@1.65.1', '@axe-core/playwright@4.11.0'],
+            cwd=str(dest_dir), check=True)
+    plat, dirname = _chrome_platform()
+    chrome_dir = dest_dir / dirname
     if not (chrome_dir / 'chrome-headless-shell').exists():
-        url = ('https://storage.googleapis.com/chrome-for-testing-public/'
-               '159.0.8154.6/linux64/chrome-headless-shell-linux64.zip')
-        run(['curl', '-sL', '--max-time', '600', '-o', str(dest_dir / 'chrome-headless-shell.zip'), url], check=True)
-        run(['unzip', '-q', '-o', str(dest_dir / 'chrome-headless-shell.zip')], cwd=str(dest_dir), check=True)
-        (dest_dir / 'chrome-headless-shell.zip').unlink(missing_ok=True)
+        zip_path = dest_dir / 'chrome-headless-shell.zip'
+        verified = False
+        try:
+            data = http_get_json('https://googlechromelabs.github.io/chrome-for-testing/'
+                                 'last-known-good-versions-with-downloads.json')
+            stable = data['channels']['Stable']
+            dl = next(d for d in stable['downloads']['chrome-headless-shell']
+                      if d['platform'] == plat)
+            url, expected_sha = dl['url'], dl['sha256']
+            run(['curl', '-sL', '--max-time', '600', '-o', str(zip_path), url], check=True)
+            actual = _sha256(zip_path)
+            if actual != expected_sha:
+                zip_path.unlink(missing_ok=True)
+                raise RuntimeError(f'Chrome headless shell checksum mismatch (expected {expected_sha[:16]}…, got {actual[:16]}…) — refusing to install')
+            verified = True
+            log(f'    Chrome headless shell {stable["version"]} ({plat}), SHA-256 verified')
+        except Exception as e:  # noqa: BLE001 - JSON endpoint unreachable: pinned fallback
+            if isinstance(e, RuntimeError) and 'checksum mismatch' in str(e):
+                raise
+            url = ('https://storage.googleapis.com/chrome-for-testing-public/'
+                   '159.0.8154.6/linux64/chrome-headless-shell-linux64.zip')
+            run(['curl', '-sL', '--max-time', '600', '-o', str(zip_path), url], check=True)
+            run(['unzip', '-t', '-q', str(zip_path)], check=True)
+            log('    WARNING: chrome-for-testing JSON unreachable — installed pinned 159.0.8154.6 '
+                'with zip-integrity test only (no upstream SHA-256 available for the pinned build)')
+        run(['unzip', '-q', '-o', str(zip_path)], cwd=str(dest_dir), check=True)
+        zip_path.unlink(missing_ok=True)
     r = run([str(chrome_dir / 'chrome-headless-shell'), '--version'], check=True)
     return f'installed (Playwright 1.65.1 + axe 4.11.0 + {r.stdout.strip()})'
 
@@ -275,11 +370,20 @@ def main():
     user_md = read_home('USER.md')
     memory = read_home('MEMORY.md')
     agents = read_home('AGENTS.md')
-    agent_name = find_name(identity) or args.name or 'Muse'
+    found_name = find_name(identity)
+    agent_name = found_name or args.name or 'Muse'
     user_name = find_name(user_md) or args.user_name
 
     log(f'muse-rsi setup — home: {home}  repo: {repo}')
-    log(f'agent detected: {agent_name!r} (from IDENTITY.md)' if identity else 'agent: fresh install, name defaults to "Muse"')
+    if identity:
+        if found_name:
+            log(f'agent detected: {agent_name!r} (from IDENTITY.md)')
+        elif args.name:
+            log(f'agent name: {agent_name!r} (from --name; IDENTITY.md had no readable name)')
+        else:
+            log(f'WARNING: no name found in IDENTITY.md — using fallback name {agent_name!r}. Pass --name to set it.')
+    else:
+        log('agent: fresh install, name defaults to "Muse"')
     if user_name:
         log(f'user detected: {user_name!r}')
     if args.dry_run:
@@ -340,8 +444,10 @@ def main():
     if soul is None:
         log('[2] SOUL.md: fresh install — wrote template sections')
     else:
-        kept = [h for h, _ in split_sections(soul)[1] if not is_system_heading(h)]
-        log(f'[2] SOUL.md: kept {len(kept)} character section(s) ({", ".join(h[3:][:28] for h in kept) or "none"}), replaced system sections')
+        _t_secs = split_sections(soul_tpl)[1]
+        sys_heads = {h.strip() for h, _ in _t_secs}
+        kept = [h for h, _ in split_sections(soul)[1] if h.strip() not in sys_heads]
+        log(f'[2] SOUL.md: kept {len(kept)} character section(s) ({", ".join(h[3:][:28] for h in kept) or "none"}), replaced system block (marker-delimited)')
     write_home('SOUL.md', new_soul)
 
     # --- 3. IDENTITY.md: rewrite from template, keep name + character (Role) ---
@@ -376,7 +482,7 @@ def main():
         if 'memory/scenes/' not in new_mem:
             new_mem = new_mem.rstrip() + '\n\nSee `memory/scenes/` for details (env-stack, projects, auth-map, skills, bottlenecks, changelog).\n'
         if 'muse-rsi' not in new_mem:
-            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 64 listed + 32 reference + 9 originals + 156 Lumitome reference = 261 registry entries.\n'
+            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 96 listed (64 core + 32 reference) + 9 originals + 139 Lumitome reference = 244 registry entries.\n'
         write_home('MEMORY.md', new_mem)
     if not args.dry_run and not args.skills_only:
         (home / 'memory' / 'scenes').mkdir(parents=True, exist_ok=True)
@@ -385,7 +491,7 @@ def main():
             'env-stack.md': '# env-stack — Work environment\n\n(Fill in: OS, Node/Python versions, tools in ~/workspace/tools/.)\n',
             'projects.md': '# projects — Active projects & repo rules\n\n(Fill in: the user\'s active projects and their rules.)\n',
             'auth-map.md': '# auth-map — Accounts & vault map\n\nMap only — NEVER write passwords/tokens/.env contents here.\n',
-            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (261 entries). Generator: `~/workspace/tools/registry-gen/generate_registry.py`.\n',
+            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (244 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`.\n',
             'bottlenecks.md': '# bottlenecks — Bottleneck queue\n\nDelete an entry as soon as it is resolved.\n',
             'changelog.md': '# changelog — System changes\n\n- Setup: muse-rsi system installed.\n',
         }.items():
@@ -454,6 +560,18 @@ def main():
     # --- 10. verify ---
     if not args.dry_run:
         try:
+            scan = repo / 'tools' / 'scan-secrets.sh'
+            gitleaks = home / 'workspace' / 'tools' / 'gitleaks' / 'gitleaks'
+            if scan.exists() and gitleaks.exists():
+                r = run(['bash', str(scan), str(repo)], cwd=str(repo))
+                log('[10] secret scan: ' + ('CLEAN' if r.returncode == 0 else 'LEAKS FOUND — halt, do not push\n' + r.stdout + r.stderr))
+                if r.returncode != 0:
+                    bottlenecks.append('secret scan found leaks (or gitleaks failed)')
+            else:
+                log('[10] secret scan: skipped (gitleaks not installed)')
+        except Exception as e:  # noqa: BLE001
+            bottlenecks.append(f'secret scan error: {e}')
+        try:
             r = run([sys.executable, str(repo / 'scripts' / 'generate_registry.py'), '--check'],
                     cwd=str(repo))
             log('[10] registry --check: ' + ('OK' if r.returncode == 0 else 'FAILED\n' + r.stdout + r.stderr))
@@ -499,7 +617,10 @@ def main():
         log('Bottleneck:')
         for b in bottlenecks:
             log(' - ' + b)
-    return 1 if (bottlenecks or staged) else 0
+    if staged and not bottlenecks:
+        log('Exit code 20 = STAGED_OK: setup finished, but files above are staged — apply them, then verify.')
+        return 20
+    return 1 if bottlenecks else 0
 
 
 if __name__ == '__main__':

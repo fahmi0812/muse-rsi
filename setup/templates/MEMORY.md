@@ -23,16 +23,16 @@
 ## Pre-Authorized Fast Lanes
 
 - All local workspace actions, git branch/commit/push to the user's repos, background workers, and audit/install of GitHub skills that pass the Security Gate = **auto-execute**.
-- Crucial actions (deploy, migration, big refactor, publish) = **auto-execute after Auto-Snapshot + Test + Secret Scan pass**.
+- Crucial actions (deploy, migration, big refactor, publish) = approval gate: snapshot + test + secret scan first, then the runtime approval card — never auto-executed.
 
 ## System State
 
-- **Repo:** `muse-rsi` — 64 listed skills + 32 reference + 9 originals + 156 Lumitome reference = **261 registry entries**.
+- **Repo:** `muse-rsi` — 96 listed (64 core + 32 reference) + 11 originals + 139 Lumitome reference = **246 registry entries**.
 - **Router:** skill `muse-rsi` installed (`include_in_prompt: true`); registry at `skills/router/registry.json`.
 - **Visual check:** `visual-check` installed (Playwright + Chrome headless shell in `~/workspace/tools/visual-check/`).
-- **RSI loop:** cron `rsi-daily-self-improvement`, every 24h, with retry enabled.
+- **RSI loop:** NOT active until the agent creates the daily job `rsi-daily-self-improvement` (every 24h) — the setup cannot schedule it; see the setup's NEXT STEP message.
 - **Secret scan:** gitleaks in `~/workspace/tools/gitleaks/`; mandatory before any public push (see skill `self-audit`).
-- **Registry generator:** `~/workspace/tools/registry-gen/generate_registry.py` (durable copy; also in the repo under `scripts/`).
+- **Registry generator:** `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`.
 
 ## Memory Hygiene
 

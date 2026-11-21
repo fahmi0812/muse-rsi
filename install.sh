@@ -13,15 +13,31 @@
 #
 # Env: MUSE_RSI_DIR (default ~/muse-rsi), MUSE_RSI_USE_ZIP=1 (skip git,
 # download the repo ZIP instead).
+#   MUSE_RSI_FORCE_REPLACE=1: allow replacing a non-empty MUSE_RSI_DIR that
+#   is not a muse-rsi checkout (default: refuse — this script never deletes
+#   user data on its own).
 set -e
 
 REPO_DIR="${MUSE_RSI_DIR:-$HOME/muse-rsi}"
 REPO_URL="https://github.com/fahmi0812/muse-rsi"
 
+# Never delete these, whatever the user sets MUSE_RSI_DIR to.
+case "$REPO_DIR" in
+  "/"|"$HOME"|"$HOME/workspace"|"$HOME/"|"$HOME/workspace/"|"/tmp"|"/tmp/")
+    echo "MUSE_RSI_DIR must not be $REPO_DIR — pick an empty or new directory (e.g. ~/muse-rsi)."
+    exit 1
+    ;;
+esac
+
 command -v python3 >/dev/null 2>&1 || { echo "python3 not found — install Python 3 first."; exit 1; }
 
 if [ -d "$REPO_DIR/setup" ]; then
-  echo "Using existing copy at $REPO_DIR (run 'git -C $REPO_DIR pull' first if you want the latest)."
+  if [ -d "$REPO_DIR/.git" ]; then
+    echo "Updating existing copy at $REPO_DIR ..."
+    git -C "$REPO_DIR" pull --ff-only || echo "WARNING: git pull failed — continuing with the copy already at $REPO_DIR."
+  else
+    echo "Using existing copy at $REPO_DIR (not a git checkout — no update attempted)."
+  fi
 elif [ -z "$MUSE_RSI_USE_ZIP" ] && command -v git >/dev/null 2>&1; then
   echo "Cloning $REPO_URL to $REPO_DIR ..."
   git clone "$REPO_URL" "$REPO_DIR"
@@ -34,8 +50,19 @@ else
   curl -sSL -o "$tmp_zip" "$REPO_URL/archive/refs/heads/main.zip"
   unzip -q -o "$tmp_zip" -d "$tmp_dir"
   if [ -e "$REPO_DIR" ]; then
-    echo "Removing incomplete $REPO_DIR (it has no setup/setup.py) ..."
-    rm -rf "$REPO_DIR"
+    if [ -z "$(ls -A "$REPO_DIR" 2>/dev/null)" ]; then
+      echo "$REPO_DIR exists but is empty — reusing it."
+      rmdir "$REPO_DIR"
+    elif [ -n "$MUSE_RSI_FORCE_REPLACE" ]; then
+      echo "WARNING: MUSE_RSI_FORCE_REPLACE=1 — deleting non-empty $REPO_DIR (it has no setup/setup.py)."
+      rm -rf "$REPO_DIR"
+    else
+      echo "ERROR: $REPO_DIR already exists and is not a muse-rsi checkout."
+      echo "Move it aside yourself, pick another MUSE_RSI_DIR, or re-run with MUSE_RSI_FORCE_REPLACE=1."
+      echo "This installer never deletes a non-empty directory on its own."
+      rm -rf "$tmp_dir"
+      exit 1
+    fi
   fi
   mkdir -p "$(dirname "$REPO_DIR")"
   mv "$tmp_dir/muse-rsi-main" "$REPO_DIR"
@@ -43,7 +70,19 @@ else
   echo "Downloaded to $REPO_DIR."
 fi
 
+# setup.py exit codes: 0 = done, 20 = STAGED_OK (system files staged for
+# the agent's file tool — setup is otherwise complete), anything else = fail.
+set +e
 python3 "$REPO_DIR/setup/setup.py" --yes "$@"
+setup_code=$?
+set -e
+if [ "$setup_code" -ne 0 ] && [ "$setup_code" -ne 20 ]; then
+  echo "setup.py failed (exit $setup_code) — verification skipped."
+  exit "$setup_code"
+fi
+if [ "$setup_code" -eq 20 ]; then
+  echo "NOTE: setup finished with files STAGED (exit 20) — apply the staged files first (see the ACTION REQUIRED lines above), then run the verification below."
+fi
 
 echo "Verifying ..."
 if [ -x "$HOME/workspace/tools/gitleaks/gitleaks" ]; then

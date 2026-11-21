@@ -1,6 +1,6 @@
 # Skill Index — muse-rsi
 
-> Complete index of the **64 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 7 Full-Stack + 8 Office + 5 Research + 7 Health, plus 9 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 156 Lumitome skills. All 64 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)).
+> Complete index of the **64 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 7 Full-Stack + 8 Office + 5 Research + 7 Health, plus 11 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 139 Lumitome skills. All 64 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)).
 >
 > To install the whole system at once (skills + router + tools + memory + SOUL merge, keeping your agent's character), run `python3 setup/setup.py --yes` — see [setup/README.md](../setup/README.md).
 >
@@ -21,8 +21,8 @@
 | Domain Pack — Research | 5 | Verified via web 20 Nov 2026 |
 | Domain Pack — Health & Medical | 7 | Verified via web 20 Nov 2026 |
 | **Total listed skills** | **64** | — |
-| Original skills in this repository | 9 | Written for this RSI system |
-| Lumitome Reference Index (link only) | 156 | Verified locally from the Lumitome clone |
+| Original skills in this repository | 11 | Written for this RSI system |
+| Lumitome Reference Index (link only) | 139 | Verified locally from the Lumitome clone |
 | Pending re-check | 0 | All 30 re-checked via web on 20 Nov 2026 — 27 promoted, 3 not (see below) |
 | Further reference, Tiers 2–6 | 32 | Verified; install only when needed |
 | Not recommended | 2 (plus offensive skills) | Do not install |
@@ -44,23 +44,23 @@ Install these first.
 
 These close the 5 biggest gaps found in the critique (see [docs/critique.md](../docs/critique.md)): anti-slop / design taste, long-term memory, testing / QA / accessibility, Bahasa Indonesia, and browser + advanced video + presentations.
 
-| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Closes the gap in |
-|---|---|---|---|---|
-| 1 | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | 119,141 | Yes | Anti-slop / design taste. |
-| 2 | [browser-use/browser-use](https://github.com/browser-use/browser-use) | 121,585 | Yes | Browser agent. |
-| 3 | [OpenMontageInc/OpenMontage](https://github.com/OpenMontageInc/OpenMontage) | 81,870 | Yes | Full video production system. |
-| 4 | [mem0ai/mem0](https://github.com/mem0ai/mem0) | 69,274 | Yes (integration folder) | Long-term agent memory. |
-| 5 | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | 58,330 | Yes | Anti-slop design. |
-| 6 | [volcengine/OpenViking](https://github.com/volcengine/OpenViking) | 42,518 | Yes | Memory + RAG + self-evolving skills. |
-| 7 | [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo) | 31,050 | Yes | SEO / GEO. |
-| 8 | [meta/astryx](https://github.com/meta/astryx) | 31,198 | Yes | AI video editor. |
-| 9 | [heydamir/unslop](https://github.com/heydamir/unslop) | 18,976 | Yes | Anti-slop UI. |
-| 10 | [genspark-ai/genoffice](https://github.com/genspark-ai/genoffice) | 12,676 | Yes | AI office suite. |
-| 11 | [presenton/presenton](https://github.com/presenton/presenton) | 11,980 | No (app + API) | Presentation generator, used as a tool. |
-| 12 | [alchaincyf/darwin-skill](https://github.com/alchaincyf/darwin-skill) | 7,005 | Yes (at root) | Self-evolving skills. |
-| 13 | [plugin87/ux-ui-agent-skills](https://github.com/plugin87/ux-ui-agent-skills) | 3,209 | Yes | Accessibility, WCAG 2.2. |
-| 14 | [evanklem/evanflow](https://github.com/evanklem/evanflow) | 419 | Yes | TDD, 16 skills. Small repo — read it first. |
-| 15 | [adhiprib/humanizer-indonesia](https://github.com/adhiprib/humanizer-indonesia) | 346 | Yes (at root) | Natural Indonesian writing. Small repo. |
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Closes the gap in |
+|---|---|---|---|---|---|
+| 1 | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | 119,141 | Yes | MIT | Anti-slop / design taste. |
+| 2 | [browser-use/browser-use](https://github.com/browser-use/browser-use) | 121,585 | Yes | MIT | Browser agent. |
+| 3 | [OpenMontageInc/OpenMontage](https://github.com/OpenMontageInc/OpenMontage) | 81,870 | Yes | AGPL-3.0 | Full video production system. |
+| 4 | [mem0ai/mem0](https://github.com/mem0ai/mem0) | 69,274 | Yes (integration folder) | Apache-2.0 | Long-term agent memory. |
+| 5 | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | 58,330 | Yes | MIT | Anti-slop design. |
+| 6 | [volcengine/OpenViking](https://github.com/volcengine/OpenViking) | 42,518 | Yes | AGPL-3.0 | Memory + RAG + self-evolving skills. |
+| 7 | [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo) | 31,050 | Yes | MIT | SEO / GEO. |
+| 8 | [meta/astryx](https://github.com/meta/astryx) | 31,198 | Yes | MIT | AI video editor. |
+| 9 | [heydamir/unslop](https://github.com/heydamir/unslop) | 18,976 | Yes | CC-BY-4.0 | Anti-slop UI. |
+| 10 | [genspark-ai/genoffice](https://github.com/genspark-ai/genoffice) | 12,676 | Yes | Apache-2.0 | AI office suite. |
+| 11 | [presenton/presenton](https://github.com/presenton/presenton) | 11,980 | No (app + API) | Apache-2.0 | Presentation generator, used as a tool. |
+| 12 | [alchaincyf/darwin-skill](https://github.com/alchaincyf/darwin-skill) | 7,005 | Yes (at root) | MIT | Self-evolving skills. |
+| 13 | [plugin87/ux-ui-agent-skills](https://github.com/plugin87/ux-ui-agent-skills) | 3,209 | Yes | MIT | Accessibility, WCAG 2.2. |
+| 14 | [evanklem/evanflow](https://github.com/evanklem/evanflow) | 419 | Yes | NOASSERTION | TDD, 16 skills. Small repo — read it first. |
+| 15 | [adhiprib/humanizer-indonesia](https://github.com/adhiprib/humanizer-indonesia) | 346 | Yes (at root) | MIT | Natural Indonesian writing. Small repo. |
 
 
 ## Domain Pack — DevOps & Infra (8)
@@ -93,15 +93,15 @@ Fully verified on 20 November 2026 (SKILL.md + licence checked directly). See [d
 | 7 | [ShaishavMaisuria/research-paper-lifecycle-skills](https://github.com/ShaishavMaisuria/research-paper-lifecycle-skills) | 62 | Yes (`skills/add-venue-profile/SKILL.md`) | Apache-2.0 | 42 skills, full paper lifecycle incl. submission & rebuttal. |
 | 8 | [Nbill27/academic-writing-skills](https://github.com/Nbill27/academic-writing-skills) | 27 | Yes (`skills/academic-writing/SKILL.md`) | MIT | Indonesian thesis/article writing. Small but directly relevant. |
 
-## Lumitome Reference Index (156, link only)
+## Lumitome Reference Index (139, link only)
 
-[Fahmi's own Lumitome](https://github.com/fahmi0812/Lumitome) (OpenCode-based coding assistant, v0.3.79) has 156 core skills in `.opencode/skills/`, all verified locally from a clone on 20 November 2026. The full table is in [docs/lumitome-index.md](../docs/lumitome-index.md). Link only — no `SKILL.md` content is copied here.
+[Fahmi's own Lumitome](https://github.com/fahmi0812/Lumitome) (OpenCode-based coding assistant, v0.3.79) has 139 core skills in `.opencode/skills/` (17 offensive excluded per repo policy), all verified locally from a clone on 20 November 2026. The full table is in [docs/lumitome-index.md](../docs/lumitome-index.md). Link only — no `SKILL.md` content is copied here.
 
 | Domain | Skills | Assessment |
 |---|---|---|
 | Design & Media | 36 | Strong |
 | Full-Stack Development | 31 | Strong |
-| Security (defensive) | 30 | Strong (incl. 16 `hunt-*`) |
+| Security (defensive) | 13 | Strong (defensive only) |
 | Agent & Orchestration | 28 | Strong |
 | DevOps & Infra | 8 | Thin (no K8s/Terraform/observability — covered by the DevOps pack above) |
 | Office & Corporate | 5 | Thin |
@@ -180,9 +180,9 @@ All 30 pending repos were re-checked via the web on 20 November 2026 (see [docs/
 
 ## Router — Install and Route (skills/router/)
 
-[skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (261 entries: 64 core + 32 reference + 9 originals + 156 Lumitome reference). Install the router as a custom skill together with the 9 original skills. It routes each request by domain, then by `keywords` + `notes`, preferring core over reference and originals on exact matches. Routing is covered by a 17-case eval (`scripts/eval_routing.py`) — all 17 passed on 20 November 2026.
+[skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (246 entries: 64 core + 32 reference + 11 originals + 139 Lumitome reference). Install the router as a custom skill together with the 11 original skills. It scores each request with a BM25-style ranker over `keywords` (3.0) + `domain` (2.0) + `notes` (1.0), breaks ties by tier (original > core > reference > lumitome-reference), and returns `NO_MATCH` when no keyword matches. Routing is covered by a 125-case eval (`scripts/eval_routing.py`) — all 125 passed on 21 November 2026.
 
-## Original Skills in This Repository (9)
+## Original Skills in This Repository (11)
 
 Written for the KimiCharmi RSI — not copies of upstream skills:
 
@@ -197,6 +197,12 @@ Written for the KimiCharmi RSI — not copies of upstream skills:
 | fullstack-delivery | [fullstack-delivery/SKILL.md](fullstack-delivery/SKILL.md) | Spec → TDD → review → CI → deploy → observe. No prod deploy without tests + rollback plan. |
 | visual-check | [visual-check/SKILL.md](visual-check/SKILL.md) | Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow. |
 | contribute | [contribute/SKILL.md](contribute/SKILL.md) | Contribute back to the repo from any Muse agent: fork, verify, PR, file issues, star, and send an install report. |
+| council | [council/SKILL.md](council/SKILL.md) | Blind multi-model council — three judges from three providers decide high-stakes calls. |
+| interrogate-claim | [interrogate-claim/SKILL.md](interrogate-claim/SKILL.md) | Adversarial interrogation — stress-test a claim, artifact, or plan before trusting it. |
+
+> Note (21 Nov 2026): the original is named `interrogate-claim` because the
+> name `interrogate` is already taken in the registry by a lumitome-reference
+> entry (Agent & Orchestration, from Lumitome) with a near-identical purpose.
 
 ## Further Reference — Tiers 2–6
 

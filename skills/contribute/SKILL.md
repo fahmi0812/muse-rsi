@@ -1,6 +1,6 @@
 ---
 name: contribute
-description: Contribute back to the muse-rsi repo from any Muse agent: fork, verify a new skill, open a pull request, file issues, star the repo, and send an install report.
+description: Contribute back to the muse-rsi repo from any Muse agent — fork, verify a new skill, open a pull request, file issues, star the repo, and send an install report.
 ---
 
 # contribute
@@ -34,14 +34,20 @@ git checkout -b add-skill/owner-repo
 ```
 
 3. Tambah satu baris ke tabel yang tepat di `skills/index.md`. Jangan salin isi `SKILL.md` upstream — link + satu baris saja.
-4. Regenerasi registry dan jalankan semua checks — keempatnya wajib hijau:
+4. Regenerate the registry first (a bare `--check` fails after editing
+   `index.md`, because the stored registry is now stale), then run all the
+   checks — all four must be green:
 
 ```text
+python3 scripts/generate_registry.py
 python3 scripts/generate_registry.py --check
 python3 scripts/eval_routing.py
 python3 scripts/validate_registry.py
 gitleaks git .
 ```
+
+   The validator is schema-based, not count-based — adding a skill never
+   requires editing validator constants.
 
 5. Push dan buka PR. Judul `Add skill: owner/repo`, isi: link repo, jumlah star, tanggal cek, hasil checklist, dan kenapa skill ini berguna.
 

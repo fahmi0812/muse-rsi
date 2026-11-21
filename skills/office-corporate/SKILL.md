@@ -1,6 +1,11 @@
+---
+name: office-corporate
+description: Office and corporate workflow — email, meetings, spreadsheets, decks, and internal communication.
+---
+
 # office-corporate
 
-> Office and corporate workflow: email, meetings, spreadsheets, decks, and internal communication.
+> Office and corporate workflow — email, meetings, spreadsheets, decks, and internal communication.
 
 ## Guardrails (read first)
 

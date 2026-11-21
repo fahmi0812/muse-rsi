@@ -26,6 +26,13 @@ echo "== 3/4 validate registry =="
 python3 "$REPO/scripts/validate_registry.py"
 
 echo "== 4/4 secret scan =="
-"$TOOLS/scan-secrets.sh" "$REPO"
+if [ -x "$REPO/tools/scan-secrets.sh" ]; then
+  "$REPO/tools/scan-secrets.sh" "$REPO"
+elif [ -x "$TOOLS/scan-secrets.sh" ]; then
+  "$TOOLS/scan-secrets.sh" "$REPO"
+else
+  echo "ERROR: scan-secrets.sh not found (looked in $REPO/tools/ and $TOOLS/). Install gitleaks via setup.py first."
+  exit 2
+fi
 
 echo "ALL CHECKS PASSED"

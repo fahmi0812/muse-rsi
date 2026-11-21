@@ -107,7 +107,646 @@
       "expected_domains": [
         "Core RSI"
       ]
+    },
+    {
+      "query": "build a Next.js app with React and TypeScript",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "create a REST API with FastAPI and PostgreSQL",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "scaffold a full-stack project with database and auth",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "debug my TypeScript React component",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "write unit tests for my frontend components",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "help me build a next.js dashboard",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "full-stack developer portfolio website",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "build a multi-agent system with subagent orchestration",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "use a subagent for each independent task",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "add a circuit breaker to stop my agent looping forever",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "design the system prompt for my agent",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "run browser automation with my agent",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "create a brand identity with a color palette",
+      "expected_domains": [
+        "Design & Media"
+      ]
+    },
+    {
+      "query": "generate a banner image for social media",
+      "expected_domains": [
+        "Design & Media"
+      ]
+    },
+    {
+      "query": "design a poster with brand colors",
+      "expected_domains": [
+        "Design & Media"
+      ]
+    },
+    {
+      "query": "create a banner design for social media",
+      "expected_domains": [
+        "Design & Media"
+      ]
+    },
+    {
+      "query": "write a Terraform module for AWS infrastructure",
+      "expected_domains": [
+        "DevOps & Infra"
+      ]
+    },
+    {
+      "query": "monitor my production services with OpenTelemetry",
+      "expected_domains": [
+        "DevOps & Infra"
+      ]
+    },
+    {
+      "query": "configure a Kubernetes cluster for my services",
+      "expected_domains": [
+        "DevOps & Infra"
+      ]
+    },
+    {
+      "query": "build a spreadsheet model for quarterly planning",
+      "expected_domains": [
+        "Office & Corporate"
+      ]
+    },
+    {
+      "query": "draft a professional email to a client",
+      "expected_domains": [
+        "Office & Corporate"
+      ]
+    },
+    {
+      "query": "create a PowerPoint deck for the board meeting",
+      "expected_domains": [
+        "Office & Corporate"
+      ]
+    },
+    {
+      "query": "manage my Outlook calendar and inbox",
+      "expected_domains": [
+        "Office & Corporate"
+      ]
+    },
+    {
+      "query": "search academic papers on Nature",
+      "expected_domains": [
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "format my thesis in LaTeX",
+      "expected_domains": [
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "buatkan PPT untuk presentasi skripsi",
+      "expected_domains": [
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "tulis abstrak skripsi",
+      "expected_domains": [
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "jadwal belajar untuk skripsi",
+      "expected_domains": [
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "security review of my API",
+      "expected_domains": [
+        "Security",
+        "Defensive Security"
+      ]
+    },
+    {
+      "query": "score this vulnerability with CVSS",
+      "expected_domains": [
+        "Security"
+      ]
+    },
+    {
+      "query": "review my code for security vulnerabilities",
+      "expected_domains": [
+        "Security",
+        "Defensive Security"
+      ]
+    },
+    {
+      "query": "audit my API for broken access control",
+      "expected_domains": [
+        "Security"
+      ]
+    },
+    {
+      "query": "run an OWASP security audit on my web app",
+      "expected_domains": [
+        "Security",
+        "Defensive Security"
+      ]
+    },
+    {
+      "query": "scan my repo for leaked secrets with trufflehog",
+      "expected_domains": [
+        "Defensive Security"
+      ]
+    },
+    {
+      "query": "scan dependencies for a known vulnerability",
+      "expected_domains": [
+        "Defensive Security",
+        "Security"
+      ]
+    },
+    {
+      "query": "run the daily RSI self-improvement loop",
+      "expected_domains": [
+        "Core RSI"
+      ]
+    },
+    {
+      "query": "audit a new skill before adding it to the registry",
+      "expected_domains": [
+        "Core RSI"
+      ]
+    },
+    {
+      "query": "write a spec for a new feature",
+      "expected_domains": [
+        "Core RSI"
+      ]
+    },
+    {
+      "query": "improve this agent's skills automatically every day",
+      "expected_domains": [
+        "Core RSI"
+      ]
+    },
+    {
+      "query": "create a video animation with motion graphics",
+      "expected_domains": [
+        "Video"
+      ]
+    },
+    {
+      "query": "edit a video with transitions and captions",
+      "expected_domains": [
+        "Video"
+      ]
+    },
+    {
+      "query": "make a video prompt for AI video generation",
+      "expected_domains": [
+        "Video"
+      ]
+    },
+    {
+      "query": "build an animation with Remotion",
+      "expected_domains": [
+        "Video"
+      ]
+    },
+    {
+      "query": "explain this FHIR patient record",
+      "expected_domains": [
+        "Health & Medical"
+      ]
+    },
+    {
+      "query": "summarize clinical trial results",
+      "expected_domains": [
+        "Health & Medical"
+      ]
+    },
+    {
+      "query": "check patient medicine interactions",
+      "expected_domains": [
+        "Health & Medical"
+      ]
+    },
+    {
+      "query": "transcribe voice audio with whisper",
+      "expected_domains": [
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "convert a PDF document to Markdown",
+      "expected_domains": [
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "crawl this website and extract the content",
+      "expected_domains": [
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "clone a voice with F5-TTS text to speech",
+      "expected_domains": [
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "create slides from Markdown with Marp",
+      "expected_domains": [
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "do a systematic review with PRISMA for my paper",
+      "expected_domains": [
+        "Research"
+      ]
+    },
+    {
+      "query": "systematic review of machine learning papers",
+      "expected_domains": [
+        "Research"
+      ]
+    },
+    {
+      "query": "run deep research on this topic and cite sources",
+      "expected_domains": [
+        "Research"
+      ]
+    },
+    {
+      "query": "find relevant papers for my literature review",
+      "expected_domains": [
+        "Research",
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "write a research paper draft",
+      "expected_domains": [
+        "Research",
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "model a 3D character in Blender",
+      "expected_domains": [
+        "Design & 3D"
+      ]
+    },
+    {
+      "query": "build a Three.js 3D game",
+      "expected_domains": [
+        "Design & 3D"
+      ]
+    },
+    {
+      "query": "design a 3D product render",
+      "expected_domains": [
+        "Design & 3D"
+      ]
+    },
+    {
+      "query": "tulis ulang artikel bahasa Indonesia agar tidak terdeteksi AI",
+      "expected_domains": [
+        "Writing & Language (ID)"
+      ]
+    },
+    {
+      "query": "edit artikel bahasa Indonesia agar natural",
+      "expected_domains": [
+        "Writing & Language (ID)"
+      ]
+    },
+    {
+      "query": "buat naskah video YouTube Bahasa Indonesia",
+      "expected_domains": [
+        "Writing & Language (ID)",
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "analisis laporan keuangan UMKM",
+      "expected_domains": [
+        "Finance & Business (ID)"
+      ]
+    },
+    {
+      "query": "hitung pajak penghasilan usaha kecil",
+      "expected_domains": [
+        "Finance & Business (ID)"
+      ]
+    },
+    {
+      "query": "pengelolaan keuangan pribadi UMKM",
+      "expected_domains": [
+        "Finance & Business (ID)"
+      ]
+    },
+    {
+      "query": "simulate a trading strategy with paper trading",
+      "expected_domains": [
+        "Trading (Research Only)"
+      ]
+    },
+    {
+      "query": "improve website SEO and page speed",
+      "expected_domains": [
+        "Gap Fillers"
+      ]
+    },
+    {
+      "query": "add browser automation to scrape a web page",
+      "expected_domains": [
+        "Gap Fillers"
+      ]
+    },
+    {
+      "query": "edit a video with OpenMontage",
+      "expected_domains": [
+        "Gap Fillers"
+      ]
+    },
+    {
+      "query": "brainstorming for a new feature idea",
+      "expected_domains": [
+        "Other"
+      ]
+    },
+    {
+      "query": "audit this document for compliance",
+      "expected_domains": [
+        "Defensive Security",
+        "Security"
+      ],
+      "note": "Was ['Other'] (the lumitome 'audit' entry) under pre-stem scoring; that entry is an empty stub ('Not pinned'), and the domain-name bonus now fires on 'document' for the Research/Documents domain. The real audit skills are the security-audit ones; 'compliance' is now a Security domain keyword so they win."
+    },
+    {
+      "query": "program an Arduino with PlatformIO",
+      "expected_domains": [
+        "Other"
+      ]
+    },
+    {
+      "query": "design a landing page with modern UI layout",
+      "expected_domains": [
+        "Gap Fillers",
+        "Design & Media"
+      ]
+    },
+    {
+      "query": "automate my workflow",
+      "expected_domains": [
+        "Agent & Orchestration",
+        "Office & Corporate"
+      ]
+    },
+    {
+      "query": "hello",
+      "expect_no_match": true
+    },
+    {
+      "query": "apa kabar",
+      "expect_no_match": true
+    },
+    {
+      "query": "what is the weather in Jakarta tomorrow",
+      "expect_no_match": true
+    },
+    {
+      "query": "how to write it in a doc",
+      "expect_no_match": true
+    },
+    {
+      "query": "good morning",
+      "expect_no_match": true
+    },
+    {
+      "query": "tell me a joke",
+      "expect_no_match": true
+    },
+    {
+      "query": "what time is it",
+      "expect_no_match": true
+    },
+    {
+      "query": "who won the football match last night",
+      "expect_no_match": true
+    },
+    {
+      "query": "play some music",
+      "expect_no_match": true
+    },
+    {
+      "query": "terima kasih",
+      "expect_no_match": true
+    },
+    {
+      "query": "how are you doing today",
+      "expect_no_match": true
+    },
+    {
+      "query": "what should I eat for lunch",
+      "expect_no_match": true
+    },
+    {
+      "query": "orchestrate multiple agents working in parallel",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "check my dependencies for known vulnerabilities",
+      "expected_domains": [
+        "Security",
+        "Defensive Security"
+      ]
+    },
+    {
+      "query": "transcribe this audio recording to text",
+      "expected_domains": [
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "agents working together on a task",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "create an animated video for my product",
+      "expected_domains": [
+        "Video"
+      ]
+    },
+    {
+      "query": "brainstorm ideas for the new campaign",
+      "expected_domains": [
+        "Agent & Orchestration",
+        "Other"
+      ]
+    },
+    {
+      "query": "dispatch tasks to subagents",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "run agents in parallel",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ]
+    },
+    {
+      "query": "analisis laporan keuangan perusahaan",
+      "expected_domains": [
+        "Finance & Business (ID)"
+      ]
+    },
+    {
+      "query": "atur keuangan pribadi saya",
+      "expected_domains": [
+        "Finance & Business (ID)"
+      ]
+    },
+    {
+      "query": "create an infographic explaining the data",
+      "expected_domains": [
+        "Office & Corporate"
+      ]
+    },
+    {
+      "query": "write technical documentation in clear English",
+      "expected_domains": [
+        "Writing & Language (ID)",
+        "Office & Corporate",
+        "Research, Documents & Voice"
+      ]
+    },
+    {
+      "query": "design a dashboard for my app",
+      "expected_domains": [
+        "Full-Stack Development",
+        "Design & Media"
+      ]
+    },
+    {
+      "query": "write a formal letter for campus administration",
+      "expected_domains": [
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "buat surat resmi untuk kampus",
+      "expected_domains": [
+        "Office & Corporate",
+        "College & Academic"
+      ]
+    },
+    {
+      "query": "train a machine learning model with Python",
+      "expect_no_match": true,
+      "note": "No ML-training skill in the registry; must stay NO_MATCH, not guess."
+    },
+    {
+      "query": "integrate the payment SDK into my app",
+      "expect_no_match": true,
+      "note": "No SDK-integration skill in the registry."
+    },
+    {
+      "query": "remove the background from a photo",
+      "expect_no_match": true,
+      "note": "No photo-editing skill in the registry."
+    },
+    {
+      "query": "scan my repo for hardcoded API keys",
+      "expected_domains": [
+        "Security",
+        "Defensive Security"
+      ]
+    },
+    {
+      "query": "design a dashboard UI",
+      "expected_domains": [
+        "Full-Stack Development"
+      ]
+    },
+    {
+      "query": "make my website load faster and rank better on Google",
+      "expected_domains": [
+        "Gap Fillers"
+      ]
+    },
+    {
+      "query": "tulis email resmi untuk perusahaan",
+      "expected_domains": [
+        "Office & Corporate"
+      ]
     }
   ],
-  "description": "Routing eval: each query must land in one of its expected domains in the top 3 keyword matches. Run with eval_routing.py after any registry change."
+  "description": "Routing eval: 125 cases — every domain in the registry, multi-word phrases, Indonesian queries, ambiguous queries, stemming/hyphen cases (router v2.1), and NO_MATCH negatives (expect_no_match). Each query must land in one of its expected domains in the top 3 matches, or return no match at all for the negatives. Run with eval_routing.py after any registry change."
 }

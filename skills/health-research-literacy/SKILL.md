@@ -1,3 +1,8 @@
+---
+name: health-research-literacy
+description: Health research literacy — read and appraise medical literature, explain it in plain language.
+---
+
 # health-research-literacy
 
 > Health research literacy — read and appraise medical literature, explain it in plain language.

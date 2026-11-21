@@ -22,13 +22,16 @@ red-team 166, seo 113 — total 930. And 930 − 166 (red-team) = **764 routable
 against the registry. File counts are higher (997 dirs / 1048 `SKILL.md` files) because packs contain nested
 sub-skills and `-2`/`-3` variant dirs that are not all separately registered.
 
-## Domain counts — core 156 skills
+
+> **Policy (v2.0):** 17 offensive skills (16 `hunt-*` + `redteam-mindset`) are excluded from this index per the repo rule "No offensive skills". The upstream Lumitome core pack still has 156 skill dirs; this index lists 139 of them.
+
+## Domain counts — core 139 skills (17 offensive excluded, see policy note)
 
 | Domain | Count | Assessment |
 |---|---:|---|
 | Full-Stack Development | 31 | STRONG |
 | Design & Media | 36 | STRONG |
-| Security | 30 | STRONG (incl. 16 `hunt-*` skills; defensive use only) |
+| Security | 13 | STRONG (defensive only) |
 | Agent & Orchestration | 28 | STRONG |
 | DevOps & Infra | 8 | THIN — 8 skills, no K8s/Terraform/observability depth |
 | Office & Corporate | 5 | THIN — 5 skills |
@@ -38,9 +41,9 @@ sub-skills and `-2`/`-3` variant dirs that are not all separately registered.
 | Research | 2 | THIN — 2 skills |
 | Health & Medical | 0 | MISSING — 0 skills |
 | Other | 3 | — |
-| **Total** | **156** | — |
+| **Total** | **139** | — |
 
-## Full table — all 156 core skills (sorted by domain, then name)
+## Full table — all 139 core skills (sorted by domain, then name)
 
 Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 chars).
 
@@ -122,24 +125,7 @@ Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 c
 | `evidence-hygiene` | Evidence-capture and PoC-redaction discipline for bug-bounty submissions: cookie redaction protocol (which fields to mask, Preview annotati… | Security |
 | `fp-check` | Systematically verifies suspected security bugs to eliminate false positives, producing a TRUE POSITIVE or FALSE POSITIVE verdict with docu… | Security |
 | `full-audit-keamanan` | Comprehensive security auditing, code vulnerability scanning, and threat surface mapping. | Security |
-| `hunt-auth-bypass` | Hunting skill for auth bypass vulnerabilities. Built from 12 public bug bounty reports across SAML XSW / parser-differential (GitHub Enterp… | Security |
-| `hunt-csrf` | Hunting skill for csrf vulnerabilities. Built from 15 public bug bounty reports including modern variants — SameSite=Lax sibling-subdomain… | Security |
-| `hunt-deserialization` | Hunt Insecure Deserialization — Java gadget chains (ysoserial), PHP object injection (phpggc), Python pickle RCE, .NET BinaryFormatter, Rub… | Security |
-| `hunt-graphql` | Hunting skill for graphql vulnerabilities. Built from 12 public bug bounty reports across IDOR via node() / GID, mutation IDOR including AI… | Security |
-| `hunt-idor` | Hunting skill for idor vulnerabilities. Built from 26 public bug bounty reports. Use when hunting idor on any target. | Security |
-| `hunt-jwt-crypto` | Hunt JWT cryptographic failures — alg:none signature-stripping and RS256→HS256 key-confusion that let an attacker forge a token for any ide… | Security |
-| `hunt-lfi` | Hunt Local File Inclusion (LFI), Remote File Inclusion (RFI), and Path Traversal — /etc/passwd read, log poisoning → RCE, PHP filter-chain… | Security |
-| `hunt-llm-ai` | Hunt LLM/AI feature bugs — prompt injection, indirect injection, exfiltration via tool-use/markdown, ASCII smuggling, agentic AI security (… | Security |
-| `hunt-oauth` | Hunting skill for oauth vulnerabilities. Built from 19 public bug bounty reports. Use when hunting oauth on any target. | Security |
-| `hunt-rce` | Hunting skill for rce vulnerabilities. Built from 67 public bug bounty reports. Use when hunting rce on any target. | Security |
-| `hunt-session` | Hunt Session Management vulnerabilities — session fixation (no regeneration on login), insufficient invalidation on logout / password-chang… | Security |
-| `hunt-sqli` | Hunting skill for sqli vulnerabilities. Built from 12 public bug bounty reports including modern NoSQL injection (Rocket.Chat CVE-2021-2291… | Security |
-| `hunt-ssrf` | Hunting skill for ssrf vulnerabilities. Built from 15 public bug bounty reports including AWS metadata SSRF (HackerOne $25k Analytics PDF,… | Security |
-| `hunt-ssti` | Hunt server-side template injection (SSTI) across Jinja2 (Flask/Django), Twig (Symfony), Freemarker (Java), ERB (Rails), Spring, Velocity,… | Security |
-| `hunt-xss` | Hunting skill for xss vulnerabilities. Built from 174 public bug bounty reports. Use when hunting xss on any target. For markup injection t… | Security |
-| `hunt-xxe` | Hunting skill for xxe vulnerabilities. Built from 10 public bug bounty reports including SVG-upload XXE, Office-doc (PPTX/DOCX) XXE, SOAP X… | Security |
 | `owasp-security` | Reviews code for security vulnerabilities and guides secure implementation using OWASP Top 10:2025, ASVS 5.0, the OWASP Top 10 for LLM Appl… | Security |
-| `redteam-mindset` | Red-team operator discipline — the mindset corrections that separate offensive testing from defensive WAPT. Built from authorized red-team… *(Defensive WAPT discipline; not an offensive pack.)* | Security |
 | `reverse-engineer-anything` | Reverse engineer native, managed, Electron/JavaScript, packaged, firmware, and browser targets with REA, and build agent environments (Agen… | Security |
 | `security-audit` | Security guidance and vulnerability review for codebases, APIs, services, CLI tools, libraries, and daemons. Use for security questions, fo… | Security |
 | `triage-validation` | Finding validation before writing any report — 7-Question Gate (all 7 questions), 4 pre-submission gates, always-rejected list, conditional… | Security |
@@ -209,7 +195,7 @@ Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 c
 - No `FHIR` string anywhere in `.opencode/` or `packs/`.
 - The only "health" hits are false positives: `laporan-generator` has a *document* health-audit command
   (`laporan doctor` = audit the report, not a person); `naskah-id` lists PubMed only as a *source* for scientific
-  writing; `design-assets` / `floorplan` / `hunt-csrf` use "health-check" / `/api/health` for code and services.
+  writing; `design-assets` / `floorplan` use "health-check" / `/api/health` for code and services.
 - Conclusion: Health & Medical is a genuine gap in Lumitome — it must be filled from outside (research-only,
   health-informatics) or by a new original skill with a strict no-clinical-decision guardrail.
 
@@ -236,8 +222,9 @@ Registry counts are authoritative (from `router/skills-registry.json`); dir coun
 Pack notes:
 - **`red-team` (166 registered / 168 dirs) stays DISABLED by design** (README, since v0.3.27: "one corpus, no dormant packs").
   It is offensive-security content (reverse engineering, exploit chains, APK/binary reversing). It must NOT be
-  recommended for muse-rsi. The defensive subset already in core (`hunt-*`, `code-audit`, `owasp-security`,
-  `security-audit`, `fp-check`, `triage-validation`, `cvss-scoring`, `redteam-mindset`) is the only security material to link.
+  recommended for muse-rsi. The defensive subset already in core (`code-audit`, `owasp-security`,
+  `security-audit`, `fp-check`, `triage-validation`, `cvss-scoring`) is the only security material to link.
+  The 17 offensive `hunt-*` / `redteam-mindset` skills were removed from this index in v2.0.
 - **`penulisan` (42)** is the Indonesian writing/business pack: `brand-copy`, `business-plan`, `business-report`,
   `contract-drafter`, `course-slides`, `data-analyst`, `budget-planner`, `campaign-planner` — relevant to Office,
   College and Finance domains, but pack skills are not in the core registry list above.

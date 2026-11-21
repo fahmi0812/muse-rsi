@@ -23,6 +23,7 @@ SOFTWARE.
 ---
 
 Catatan penting: lisensi MIT di atas hanya berlaku untuk konten orisinal
-repo ini (README, 3 skill orisinal di folder skills/, dan dokumen di docs/).
+repo ini (README, 11 skill orisinal di folder skills/, dokumen di docs/,
+serta kode di setup/, scripts/, tools/, dan assets/logo.png).
 Skill upstream yang ditautkan di repo ini tetap milik pembuatnya masing-masing
 dengan lisensi masing-masing. Lihat THIRD-PARTY-NOTICES.md.

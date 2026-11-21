@@ -1,3 +1,8 @@
+---
+name: visual-check
+description: Screenshot any page or local HTML file at three widths plus dark mode, and report console errors, failed requests, horizontal overflow, and axe accessibility violations.
+---
+
 # visual-check
 
 Screenshot any page or local HTML file at three widths plus dark mode, and report console errors, failed requests, horizontal overflow, and axe accessibility violations (light and dark). Use it whenever design work must be judged by looking at it, not by reading code. It closes the look-and-fix loop that `design-taste-frontend` requires: look at screenshots, score them, fix, look again.

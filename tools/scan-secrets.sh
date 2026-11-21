@@ -9,11 +9,11 @@ GITLEAKS="$HOME/workspace/tools/gitleaks/gitleaks"
 [ -x "$GITLEAKS" ] || { echo "gitleaks not found at $GITLEAKS"; exit 2; }
 if [ "${1:-}" = "--history" ]; then
   [ -n "${2:-}" ] || { echo "Usage: $0 --history <repo>"; exit 2; }
-  "$GITLEAKS" git --no-banner "$2"
+  "$GITLEAKS" git --no-banner --redact "$2"
   code=$?
 else
   [ -n "${1:-}" ] || { echo "Usage: $0 <dir> | $0 --history <repo>"; exit 2; }
-  "$GITLEAKS" dir --no-banner "$1"
+  "$GITLEAKS" dir --no-banner --redact "$1"
   code=$?
 fi
 if [ "$code" -eq 0 ]; then echo "SECRET SCAN CLEAN: $*"

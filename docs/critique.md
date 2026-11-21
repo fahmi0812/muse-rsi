@@ -65,11 +65,11 @@ anthropics/skills, obra/superpowers, mattpocock/skills, addyosmani/agent-skills,
 
 ### Tiers 2–6 — Revised
 
-- **Tier 2, Video:** the 10 verified repositories from the 40 remain (guanmo-ai/guan stays excluded), plus OpenMontage, astryx, hyperframes, AI-Youtube-Shorts-Generator, and video-use.
+- **Tier 2, Video:** the 10 verified repositories from the 40 remain (guanmo-ai/guan stays excluded), plus OpenMontage and astryx. The critique's first draft also named hyperframes, AI-Youtube-Shorts-Generator, and video-use — re-checked 21 November 2026, none of the three was added to `skills/index.md` or the registry: `hyperframes` was named without an owner/repo, so it is not verifiable as written (the framework is `heygen-com/hyperframes`); `browser-use/video-use` is real with a `SKILL.md`, but its core step needs an ElevenLabs API key for transcription, which fails this repo's $0 / no-mandatory-key rule for basic functions; `SamurAIGPT/AI-Youtube-Shorts-Generator` is real (MIT, skill folder present) but is a clipper tool whose local mode needs paid LLM/API keys, which also fails the $0 rule.
 - **Tier 3, Defensive security:** the 6 repositories remain; `claude-code-security-review` (last updated 11 February 2026) is flagged as needing an active companion. No offensive additions.
 - **Tier 4, Research / documents / voice:** the 8 repositories remain, plus presenton (as a tool), genoffice, and the Indonesian humanizer.
 - **Tier 5, Design / 3D:** the 5 repositories remain, plus the anti-slop / taste additions (gap #1).
-- **Tier 6, Trading research:** the 3 repositories remain, plus day-trader-skill as a skill. Live trading remains forbidden.
+- **Tier 6, Trading research:** the 3 repositories remain. The draft also named day-trader-skill — re-checked 21 November 2026: `Jakeschincariol/day-trader-skill` is real (MIT, 11 skills with `SKILL.md`, paper trading by default), but its `trader-broker` skill can lead to a live order, which goes beyond this repo's research-and-backtesting-only trading rule, so it was not added.
 
 ## Still Not Recommended
 

@@ -1,3 +1,8 @@
+---
+name: academic-campus
+description: College workflow for Indonesian students — thesis lifecycle, citations, campus documents, study planning.
+---
+
 # academic-campus
 
 > College workflow for Indonesian students: thesis lifecycle, citations, campus documents, study planning.
