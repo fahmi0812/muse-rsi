@@ -44,10 +44,14 @@ python3 "$REPO/scripts/gen_facts.py" --check --repo "$REPO"
 echo "== 8/10 drift_check =="
 python3 "$REPO/scripts/drift_check.py" --repo "$REPO"
 
-echo "== 9/10 scorecard tests + gen_facts tests + cycle read-only audit =="
+echo "== 9/10 unit tests + cycle read-only audit + verifier self-test =="
 python3 "$REPO/tests/test_scorecard.py"
 python3 "$REPO/tests/test_gen_facts.py"
+python3 "$REPO/tests/test_autonomy_gate.py"
+python3 "$REPO/tests/test_trust.py"
 python3 "$REPO/scripts/rsi_cycle.py" check-readonly
+# v3.1: every guard must still reject known-bad input (anti-weakening).
+python3 "$REPO/scripts/verifier_selftest.py" --repo "$REPO"
 
 echo "== 10/10 secret scan =="
 if [ -x "$REPO/tools/scan-secrets.sh" ]; then

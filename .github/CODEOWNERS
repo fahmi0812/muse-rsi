@@ -1,34 +1,23 @@
-# This file is a reviewer and code owner for protected paths in muse-rsi.
-# It lives in the sandbox only for now: workflow/CODEOWNERS changes are
-# applied by Fahmi through the GitHub web UI (GitHub App cannot write
-# .github/ files via API), together with the envelope-guard workflow.
-# Owner: fahmi0812 (repo owner).
+# CODEOWNERS — the hard core of muse-rsi v3.1 (config/protected_paths.txt).
+# Only these paths still need Fahmi. Everything else is merged by the
+# auto-merge workflow (docs/autonomy.md). Owner: fahmi0812.
 
-# Verifier + engine (M-02, M-11)
-scripts/eval_routing.json @fahmi0812
-eval/ @fahmi0812
-scripts/test_canary.py @fahmi0812
-scripts/eval_*.py @fahmi0812
-scripts/run_eval_k.py @fahmi0812
-scripts/run_all_checks.sh @fahmi0812
-scripts/rsi_cycle.py @fahmi0812
-scripts/run_budget.py @fahmi0812
-scripts/critique.py @fahmi0812
-scripts/trust.py @fahmi0812
-scripts/gen_facts.py @fahmi0812
-scripts/drift_check.py @fahmi0812
-
-# Limits + permissions (Safety Envelope — the loop must not loosen itself)
-config/limits.yaml @fahmi0812
+# The envelope: who may do what, and how much
 config/trust.yaml @fahmi0812
+config/limits.yaml @fahmi0812
 config/critique.yaml @fahmi0812
 config/protected_paths.txt @fahmi0812
+config/veto_paths.txt @fahmi0812
 
-# CI
-.github/workflows/ @fahmi0812
-.github/CODEOWNERS @fahmi0812
+# The judge of autonomy and its anti-weakening proof
+scripts/autonomy_gate.py @fahmi0812
+scripts/verifier_selftest.py @fahmi0812
 
-# Constitution (hash-checked in PRECHECK; whole-file ownership here)
+# CI and code owners
+/.github/ @fahmi0812
+
+# Constitution
+setup/templates/SOUL-system.md @fahmi0812
 /SOUL.md @fahmi0812
 /IDENTITY.md @fahmi0812
 /USER.md @fahmi0812

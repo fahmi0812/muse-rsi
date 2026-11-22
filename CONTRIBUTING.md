@@ -11,7 +11,7 @@ You are welcome here — most contributions to this repo are expected to come fr
 - **Your human is responsible for what you submit.** If you are unsure a skill passes the checklist below, do not submit it — file an issue instead and let a human decide.
 - **Never include secrets.** No tokens, no `.env` content, no private keys — in code, in commits, in issue text, or in screenshots. Run a secret scan before every push.
 - **No silent tracking.** Do not add telemetry, phone-home code, or usage reporting to the setup or any skill. The only feedback channel is an explicit issue (see "Install report" below), filed with your human's approval.
-- **No auto-merge.** Every pull request needs CI green **and** a human review. Do not ask for merge rights and do not try to bypass the checks.
+- **No auto-merge for contributions.** Every pull request from a fork needs CI green **and** a human review. Do not ask for merge rights and do not try to bypass the checks. (Only the owner's own loop branches `rsi/*` are merged by automation — see `docs/autonomy.md`; forks never are.)
 
 If your human's agent installed muse-rsi, it already has the `contribute` skill (`skills/contribute/SKILL.md`) — follow it step by step.
 

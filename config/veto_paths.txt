@@ -1,0 +1,37 @@
+# veto_paths.txt — verifier and engine paths (v3.1, maximum autonomy).
+#
+# Changes here merge automatically after the veto window
+# (config/limits.yaml -> autonomy.veto_window_hours) unless Fahmi labels
+# the PR `veto`. No approval is requested; the digest lists them.
+#
+# What stays HARD even inside these paths (scripts/autonomy_gate.py):
+#   * removing or editing an existing case in scripts/eval_routing.json
+#   * removing a test_* function from scripts/test_canary.py
+#   * editing or deleting a known-bad sample in tests/bad/
+#   * deleting any verifier, engine, or test file
+# Adding cases, adding canaries, adding samples, and fixing engine code
+# are VETO. CI runs scripts/verifier_selftest.py on every change, so a
+# patch that makes a check stop catching known-bad input turns red and
+# never merges.
+#
+# Verifier
+scripts/eval_routing.json
+eval/
+scripts/test_canary.py
+scripts/eval_*.py
+scripts/run_eval_k.py
+scripts/run_all_checks.sh
+scripts/gen_facts.py
+scripts/drift_check.py
+scripts/critique.py
+scripts/scorecard.py
+tests/
+# Engine
+scripts/rsi_cycle.py
+scripts/run_budget.py
+scripts/trust.py
+scripts/stop_cycle.py
+# Delegation and installer (affect cost and every installed agent)
+config/MODELS.yaml
+setup/setup.py
+install.sh

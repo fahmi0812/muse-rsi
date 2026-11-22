@@ -69,11 +69,11 @@ plan in `.muse/journal.md` before starting.
 
 - Required status check: `validate` (the "Validate registry" workflow). A PR with red CI cannot merge.
 - Force pushes blocked, deletions blocked.
-- Pull-request requirement is OFF on purpose: the classic rules form has no bypass list for the Muse GitHub App, so requiring PRs would block the owner's own direct pushes (push_files). Direct pushes to main keep working; external contributors still go through fork + PR, and CI + human review gate every merge.
+- Pull-request requirement is OFF on purpose: the classic rules form has no bypass list for the Muse GitHub App, so requiring PRs would block the owner's own direct pushes (push_files). Direct pushes to main keep working; external contributors still go through fork + PR, and CI + human review gate every fork merge. Since v3.1 the loop never pushes to main: it pushes `rsi/<run_id>` branches and `.github/workflows/auto-merge.yml` merges them (docs/autonomy.md).
 - Consequence: commits made on the website use GitHub's "Bypass rules and commit changes" button (owner bypass), because the required `validate` check blocks ordinary direct commits. API pushes via push_files are unaffected as long as the App is not blocked by the rule — if a push ever fails with 403 after this, check the rule's bypass list first.
 
 ## Checks (one command)
 
 ```text
-~/workspace/tools/run_all_checks.sh   # 4/4 must pass before any public push
+~/workspace/tools/run_all_checks.sh   # all 10 steps must pass before any public push
 ```

@@ -59,56 +59,53 @@ Per siklus: **40 langkah / 45 menit / $0**. Nilai dari
   snapshot hijau terakhir, jangan pakai cara yang lebih sederhana sebagai
   "fallback deploy" — revert, lalu berhenti.
 - Error identik 2× = loop → hentikan jalur itu segera.
-- 3 siklus merah berturut-turut → HALT sampai Fahmi meninjau.
+- 3 siklus merah berturut-turut → loop jeda sendiri 24 jam (cool-down di
+  `config/limits.yaml`), lalu lanjut. Tidak perlu menunggu Fahmi.
 
-## Trust Ladder A0–A5 (config/trust.yaml — Bab 4.5)
+## Otonomi maksimal — Trust Ladder A0–A5 v3.1 (config/trust.yaml, docs/autonomy.md)
 
-Izin per kelas aksi, bukan satu level global. Yang berlaku saat ini:
+Default: **kerjakan, jangan tanya.** Fahmi meninjau sesudahnya (digest
+harian, sampling, label `veto`, STOP), bukan menyetujui sebelumnya. Kelas
+ditentukan dari diff oleh `scripts/autonomy_gate.py`, bukan dari klaim agen.
 
 - **A0 Baca dan ukur** — otomatis.
-- **A1 Workspace reversibel** (scenes, log, draf, worktree) — otomatis
-  dengan snapshot; snapshot yang gagal dipulihkan → wajib ajukan dulu.
-- **A2 Skill dan router di repo** (SKILL.md, keyword, registri) —
-  otomatis sampai PR; merge oleh Fahmi. Auto-merge hanya setelah 10 PR
-  berturut-turut diterima tanpa revert selama ≥14 hari, T1 hijau,
-  kalibrasi T2 ≥90%. Demosi: 1 revert setelah merge / 1 koreksi Fahmi /
-  canary tersandung → merge oleh Fahmi lagi selama 14 hari.
-- **A3 File root yang dibaca tiap percakapan** (AGENTS.md, TOOLS.md,
-  HEARTBEAT.md, MEMORY.md) — diff disiapkan lewat staging (exit 20) +
-  T2; diterapkan setelah Fahmi setuju di digest. TOOLS.md dan HEARTBEAT.md
-  otomatis setelah 10 perubahan diterima; AGENTS.md dan MEMORY.md tetap
-  lewat persetujuan.
-- **A4 Konstitusi dan Safety Envelope** (SOUL §1–4, IDENTITY, USER,
-  verifier dan eval, limits, trust, CI, pergantian model) — hanya
-  usulan; Fahmi memutuskan; tidak pernah otomatis.
-- **A5 Eksternal, tak bisa dibalik, atau berbiaya** (deploy, publish,
-  pesan ke orang lain, pembelian, vault, kunci API, hapus permanen) —
-  approval card; tidak pernah otomatis.
+- **A1 Workspace reversibel** — otomatis dengan snapshot.
+- **A2 Perubahan repo** (skill, router, registri, docs, tools, template) —
+  engine commit di branch `rsi/<run_id>`, agen push branch itu, workflow
+  auto-merge me-merge begitu CI hijau.
+- **A3 File root** (AGENTS.md, TOOLS.md, HEARTBEAT.md, MEMORY.md) —
+  otomatis dengan snapshot + T2, dicatat di digest supaya bisa dibatalkan.
+- **A4 Verifier dan engine yang menambah atau mengetatkan** (kasus eval
+  baru, canary baru, perbaikan engine; daftar di `config/veto_paths.txt`)
+  — auto-merge setelah veto window 24 jam kecuali Fahmi memberi label `veto`.
+- **A5 Hard core — satu-satunya yang menunggu Fahmi**, lewat digest harian:
+  melonggarkan Safety Envelope (`config/protected_paths.txt`; menghapus atau
+  mengubah kasus eval, canary, sampel known-bad), uang/API berbayar, pesan
+  ke orang lain, deploy produksi, publish di luar repo sendiri, vault dan
+  kunci API, hapus permanen.
 
-Sambil menunggu persetujuan, loop tetap mengerjakan A0–A1 lain
-(never-block-on-the-human). Semua permintaan persetujuan dikumpulkan
-dalam satu digest harian.
+Demosi tetap tanpa izin: revert setelah merge / veto / koreksi Fahmi /
+canary tersandung → kelas itu 7 hari di mode veto window (merge ditunda,
+tidak ditanyakan).
 
-## Yang TIDAK BOLEH diubah loop (A4 — dilindungi engine + CI)
+## Yang tidak bisa dilonggarkan loop (A5 — dijaga engine, gate, dan CI)
 
-- **Verifier dan eval:** `scripts/eval_routing.json`, `eval/`,
-  `scripts/test_canary.py`, `scripts/eval_*.py`, `scripts/run_eval_k.py`,
-  `scripts/run_all_checks.sh`, `scripts/gen_facts.py`,
-  `scripts/drift_check.py`. Loop **dilarang** menambah kasus eval atau
-  meregenerasi manifest sendiri (M-02) — manifest hanya dibuat /
-  diverifikasi oleh `scripts/eval_manifest.py --verify` di
-  `run_all_checks.sh`, di luar siklus.
-- **Loop Engine dan budget:** `scripts/rsi_cycle.py`,
-  `scripts/run_budget.py`, `scripts/critique.py`, `scripts/trust.py`,
-  `config/limits.yaml`, `config/trust.yaml`, `config/critique.yaml`,
-  `config/protected_paths.txt`.
+- **Envelope inti:** `config/trust.yaml`, `config/limits.yaml`,
+  `config/critique.yaml`, `config/protected_paths.txt`,
+  `config/veto_paths.txt`, `scripts/autonomy_gate.py`,
+  `scripts/verifier_selftest.py`, `.github/`.
+- **Melonggarkan verifier:** menghapus atau mengubah kasus yang sudah ada
+  di `scripts/eval_routing.json`, menghapus fungsi `test_*` di
+  `scripts/test_canary.py`, mengubah sampel di `tests/bad/`, menghapus file
+  verifier/engine/tes. Menambah kasus dan memperbaiki engine boleh (A4);
+  `verifier_selftest.py` di CI membuktikan setiap guard masih menolak
+  input yang pasti jelek.
 - **Konstitusi:** blok `<!-- muse-rsi:system -->` SOUL.md §1–4,
-  IDENTITY.md, USER.md — PRECHECK meng-hash blok itu; perubahan =
-  HALT (M-11).
-- **CI:** `.github/workflows/`.
+  IDENTITY.md, USER.md — PRECHECK meng-hash blok itu; perubahan = HALT (M-11).
 
-Daftar lengkap ada di `config/protected_paths.txt`. APPLY menolak diff
-apa pun yang menyentuh jalur itu — siklus HALT dan revert.
+Patch A5 tidak diterapkan: engine mencatatnya di
+`~/.muse-rsi/escalations.jsonl` untuk digest dan siklus selesai bersih
+(outcome `escalated`, bukan merah).
 
 ## Aktivasi (sekali, setelah install)
 
@@ -141,8 +138,8 @@ otonom.
 - Wujudkan sebagai patch (unified diff) untuk engine (`--patch PATH`).
   Jangan terapkan langsung ke repo — engine yang menerapkan di state
   APPLY, setelah snapshot.
-- Hipotesis yang menyentuh jalur A4 di atas bukan hipotesis — itu usulan
-  untuk Fahmi, dicatat di digest, bukan patch.
+- Hipotesis yang menyentuh hard core (A5) tetap boleh diajukan sebagai
+  patch: engine akan meng-escalate-nya ke digest, tidak menerapkannya.
 
 ### 3. Snapshot sebelum ubah (engine, tapi model memverifikasi)
 
@@ -223,7 +220,8 @@ model, bukan pengganti engine:
 - 1 baris log: tanggal, hipotesis, hasil tes, snapshot yang dipakai.
 - 1 entri usage log (langkah 5).
 - Kalau tidak ada hipotesis: tulis "tidak ada perubahan" dan berhenti. Jangan mengarang perbaikan.
-- Diam (silent) kalau tidak ada perbaikan nyata atau bottleneck. Lapor hanya kalau ada yang benar-benar perlu tindakan Fahmi — lewat digest harian, kecuali HALT/STOP yang langsung (lihat `PROACTIVE_PREFERENCES.md`).
+- Setelah COMMIT: push branch `rsi/<run_id>` sesuai rencana di `~/.muse-rsi/outbox/<run_id>.json` (connector push_files). Jangan minta Fahmi me-merge — workflow auto-merge yang mengurusnya.
+- Diam (silent) kalau tidak ada perbaikan nyata atau bottleneck. Lapor lewat satu digest harian (apa yang ter-merge, apa yang di veto window, item A5), kecuali HALT/STOP yang langsung (lihat `PROACTIVE_PREFERENCES.md`).
 
 ## Operasional repo (lihat `docs/ops.md`)
 

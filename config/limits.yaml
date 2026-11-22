@@ -2,7 +2,7 @@
 #
 # Enforced by scripts/run_budget.py, which the Loop Engine calls before and
 # after every step. The loop itself may NEVER loosen these values — changing
-# this file is class A4 (Fahmi decides). Initial values are the design's
+# this file is hard core (class A5, Fahmi decides). Initial values are the design's
 # Table 13 starting point, to be calibrated after 2 weeks of cycle data.
 #
 #   max_steps         model steps per cycle (spend #41 must exit non-zero)
@@ -13,6 +13,15 @@
 #   max_diff_lines    added+removed lines a cycle may produce
 #   max_retries       failed attempts on one approach before the cycle must
 #                     revert (design: fail 2x = change approach, 3x = revert)
+#
+# autonomy (v3.1, maximum autonomy — docs/autonomy.md):
+#   veto_window_hours       VETO-class PRs merge automatically after this
+#                           many hours unless labelled `veto`
+#   max_auto_merges_per_day automation stops merging after this many
+#                           merges in one UTC day (runaway brake)
+#   red_cycles_cooldown     after this many red cycles in a row the loop
+#                           pauses itself for cooldown_hours (no human needed)
+#   cooldown_hours          length of that self-imposed pause
 version: 1
 cycle:
   max_steps: 40
@@ -21,3 +30,8 @@ cycle:
   max_files_changed: 10
   max_diff_lines: 400
   max_retries: 3
+autonomy:
+  veto_window_hours: 24
+  max_auto_merges_per_day: 10
+  red_cycles_cooldown: 3
+  cooldown_hours: 24
