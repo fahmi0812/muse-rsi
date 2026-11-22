@@ -341,6 +341,17 @@ class StepRunner:
         self.state = {'version': self.version, 'steps': {}}
         faults = os.environ.get(FAULT_ENV, '')
         self.faults = {f.strip() for f in faults.split(',') if f.strip()}
+        if not resume and self.path.exists():
+            # Re-running the same command after a failure continues from the
+            # failed step on its own: no flag needed, never back to the start.
+            try:
+                old = json.loads(self.path.read_text(encoding='utf-8'))
+                if old.get('version') == self.version and any(
+                        v.get('status') == 'failed' for v in old.get('steps', {}).values()):
+                    resume = True
+                    log('RESUME (auto): the last run of this version failed part-way — continuing from the failed step')
+            except (ValueError, OSError):
+                pass
         if resume and self.path.exists():
             try:
                 old = json.loads(self.path.read_text(encoding='utf-8'))
