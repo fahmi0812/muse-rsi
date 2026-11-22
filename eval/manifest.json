@@ -1,15 +1,15 @@
 {
   "inputs": {
-    "skills/router/registry.json": "0a7294a9e3b908646369ebcd1d50d969e0a9118ea9095132e6e281fa292f85e9",
-    "scripts/route.py": "cbdad465ef24d8a43c23f651c9f11c314fa623c60c1f1d02c3412e1844505ebd",
-    "scripts/eval_routing.py": "0a749a0577c09ff920128afb5971ead707a14778ebe5475676d4749d788d32d7",
-    "scripts/eval_routing.json": "7350853d29129277921a2f7c865ab6282bc1ffee8da2c0546de2f80f4c18c955"
+    "skills/router/registry.json": "ee349645caad272149c273898e63d9a692b96173875bf189d9ff23a1460b5da8",
+    "scripts/route.py": "0a61b71b14a5cf7d2f21ba30cffc9a396aff870d3ded85291dc9a03f8568a855",
+    "scripts/eval_routing.py": "b8711eef8b431a57452b62ebd07599fde41f02cf10016453ecf7c16cefce049c",
+    "scripts/eval_routing.json": "38fa732a8e379c677e34efcda7750bbb6b542f3d191a3e39ee5878fd1b02fe9c"
   },
   "result": {
-    "cases": 125,
-    "passed": 125,
+    "cases": 130,
+    "passed": 130,
     "registry_version": 2,
-    "router_version": "2.1"
+    "router_version": "2.2"
   },
-  "generated_at": "2026-11-21T17:07:03Z"
+  "generated_at": "2026-11-22T06:42:36Z"
 }

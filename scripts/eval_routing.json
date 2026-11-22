@@ -470,9 +470,8 @@
     },
     {
       "query": "tulis ulang artikel bahasa Indonesia agar tidak terdeteksi AI",
-      "expected_domains": [
-        "Writing & Language (ID)"
-      ]
+      "expect_no_match": true,
+      "note": "M-05 policy refusal: request to evade AI detection. The router must refuse it (NO_MATCH) per anti-slop-checklist, never route it to humanizer-indonesia."
     },
     {
       "query": "edit artikel bahasa Indonesia agar natural",
@@ -746,7 +745,38 @@
       "expected_domains": [
         "Office & Corporate"
       ]
+    },
+    {
+      "query": "buatkan dialog modal yang bisa dark mode dan aksesibel",
+      "expect_top1_name": "googlechrome/modern-web-guidance",
+      "note": "New skill 22 Nov 2026: modern-web-guidance must win top-1 on its own topical terms (dialog, modal, dark mode), not a generic frontend skill."
+    },
+    {
+      "query": "buatkan tabel responsif dengan container queries",
+      "expected_domains": [
+        "Full-Stack Development"
+      ],
+      "note": "New skill 22 Nov 2026: container queries is modern-web-guidance territory."
+    },
+    {
+      "query": "review design doc ini tanpa melihat percakapan sebelumnya",
+      "expected_domains": [
+        "Agent & Orchestration"
+      ],
+      "note": "New skill 22 Nov 2026: blind (fresh-eyes) design-doc review is elephant-goldfish-model / egm-review territory."
+    },
+    {
+      "query": "tulis design doc dari brief ini lalu minta blind review",
+      "expect_top1_name": "google/elephant-goldfish-model",
+      "note": "New skill 22 Nov 2026: the repo-level EGM entry must win top-1 on 'blind review' + design doc, beating council (which also has 'blind') and the lumitome egm-review reference."
+    },
+    {
+      "query": "review my code for bugs",
+      "expected_domains": [
+        "Full-Stack Development"
+      ],
+      "note": "Negative for EGM: a code review must stay with code-review (Full-Stack Development), not route to elephant-goldfish-model (Agent & Orchestration). Top-1 is code-audit (Security) on an exact-score tie; code-review is #2."
     }
   ],
-  "description": "Routing eval: 125 cases — every domain in the registry, multi-word phrases, Indonesian queries, ambiguous queries, stemming/hyphen cases (router v2.1), and NO_MATCH negatives (expect_no_match). Each query must land in one of its expected domains in the top 3 matches, or return no match at all for the negatives. Run with eval_routing.py after any registry change."
+  "description": "Routing eval: 130 cases — every domain in the registry, multi-word phrases, Indonesian queries, ambiguous queries, stemming/hyphen cases (router v2.2), and NO_MATCH negatives (expect_no_match). Each query must land in one of its expected domains in the top 3 matches, or return no match at all for the negatives. Cases with expect_top1_name must land on exactly that skill at top-1. Case #77 is a policy refusal (AI-detection evasion): it must return NO_MATCH. Run with eval_routing.py after any registry change; eval_routing.py --strict measures top-1 (C1 metric)."
 }

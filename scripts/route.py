@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""route.py — the muse-rsi router as a program, not just a document. (v2.1)
+"""route.py — the muse-rsi router as a program, not just a document. (v2.2)
 
 Scores a task description against the registry with a small BM25-style
 ranker over three weighted fields (keywords 3.0, domain 2.0, notes 1.0),
@@ -12,10 +12,27 @@ word forms are stemmed (agents -> agent, vulnerabilities -> vulnerability,
 transcription -> transcribe, tulisan -> tulis) so a query need not use the
 exact dictionary form. Short junk tokens are filtered out, and six generic
 nouns (model, doc, web, system, build, new) never route on their own.
+'tulis' (Indonesian "write") is a stopword too, symmetric with English
+'write': a bare writing verb must not outvote topical nouns — it once
+routed "tulis abstrak skripsi" to a humanizer skill instead of College &
+Academic.
 
 Tie-break is deterministic and relevance-first: higher score, then tier
 (original > core > reference > lumitome-reference), then name ascending.
 Queries with no keyword-field hit return NO_MATCH instead of a junk guess.
+
+Policy filter (v2.2, before scoring): requests to evade AI detection or
+plagiarism — "tidak terdeteksi AI", "humanizer", "bypass deteksi AI" and
+similar — are refused with NO_MATCH and a policy reason, per
+anti-slop-checklist (never help evade AI detection). The filter matches
+evasion phrasing, not the topic: "tulis abstrak skripsi" (normal academic
+writing) still routes normally.
+
+Bands (v2.2, thresholds from skills/router/SKILL.md, measured on the
+125-case eval): EASY = top-1 >= 10 and (top-2 in the same domain as top-1,
+or gap >= 5); AMBIGUOUS = top-1 >= 10, top-2 in a different domain, gap
+< 5; HARD = NO_MATCH or top-1 < 10. gap = top-1 score minus top-2 score
+(the top-1 score itself when there is only one result; 0.0 on NO_MATCH).
 
 Usage:
   python3 scripts/route.py "deploy a Next.js app to Kubernetes" [--registry PATH] [--top N]
@@ -23,7 +40,9 @@ Usage:
   python3 scripts/route.py --self-test   # routing checks incl. phrases + NO_MATCH, exit 1 on failure
 
 --json output (Poka-Yoke: strict JSON, exit 0 on a match, 2 on NO_MATCH):
-  {"query": str, "no_match": bool, "results": [{"name", "domain", "type", "score", "url"}]}
+  {"query": str, "no_match": bool, "policy_refusal": bool, "policy_reason": str|null,
+   "band": "EASY"|"AMBIGUOUS"|"HARD", "gap": float,
+   "results": [{"name", "domain", "type", "score", "url"}]}
 """
 import argparse
 import json
@@ -60,12 +79,61 @@ STOPWORDS = {
     'setelah', 'sebelum', 'karena', 'sehingga', 'namun', 'tetapi', 'tapi',
     'pun', 'lah', 'kah', 'nya', 'ku', 'mu', 'per', 'hal', 'cara', 'buat',
     'bikin', 'tolong', 'mohon', 'silakan', 'please',
+    # 'tulis' is Indonesian "write": symmetric with English 'write'
+    # above. A bare writing verb must not outvote topical nouns — with
+    # 'tulis' matchable, "tulis abstrak skripsi" routed to a humanizer
+    # skill on the rare verb alone instead of College & Academic.
+    'tulis',
 }
 # Short tokens that ARE technical terms and stay as keywords.
 SHORT_WHITELIST = {
     'ui', 'ux', 'qa', 'ci', 'cd', '3d', 'ai', 'ml', 'db', 'id', 'go',
     'js', 'ts', 'sql', 'api', 'r', 'c',
 }
+
+# Policy filter (anti-evasion, v2.2): literal substrings of the lowercased
+# query that mark a request to evade AI detection or plagiarism. Checked
+# BEFORE scoring, so a refused query returns NO_MATCH and is never routed
+# to a humanizer / paraphrasing skill. The match is on evasion phrasing,
+# not on the topic: "cek plagiarisme" (check plagiarism) and "tulis
+# abstrak skripsi" (write a thesis abstract) contain none of these and
+# route normally. Keep this list tight: every entry must name an evasion
+# act, not a legitimate writing task.
+POLICY_REFUSALS = [
+    ('tidak terdeteksi', 'request to evade AI detection'),
+    ('tak terdeteksi', 'request to evade AI detection'),
+    ('undetectable', 'request to evade AI detection'),
+    ('humanizer', 'request to evade AI detection (humanizer)'),
+    ('humanize', 'request to evade AI detection (humanizer)'),
+    ('bypass deteksi', 'request to evade AI detection'),
+    ('lewati deteksi', 'request to evade AI detection'),
+    ('hindari deteksi', 'request to evade AI detection'),
+    ('kelabui deteksi', 'request to evade AI detection'),
+    ('mengelabui deteksi', 'request to evade AI detection'),
+    ('lolos deteksi', 'request to evade AI detection'),
+    ('bebas deteksi', 'request to evade AI detection'),
+    ('anti deteksi', 'request to evade AI detection'),
+    ('anti-deteksi', 'request to evade AI detection'),
+    ('bypass plagiarisme', 'request to evade plagiarism detection'),
+    ('lewati plagiarisme', 'request to evade plagiarism detection'),
+    ('hindari plagiarisme', 'request to evade plagiarism detection'),
+    ('lolos turnitin', 'request to evade plagiarism detection'),
+    ('bypass turnitin', 'request to evade plagiarism detection'),
+    ('lolos ai detector', 'request to evade AI detection'),
+    ('bypass ai detector', 'request to evade AI detection'),
+    ('hindari ai detector', 'request to evade AI detection'),
+    ('lewati ai detector', 'request to evade AI detection'),
+]
+
+
+def policy_refusal(query):
+    """Return the refusal reason when the query asks to evade AI
+    detection / plagiarism, else None. Runs before scoring."""
+    q = (query or '').lower()
+    for phrase, reason in POLICY_REFUSALS:
+        if phrase in q:
+            return reason
+    return None
 
 _TOKEN_RE = re.compile(r'[a-z0-9]+(?:[.\-][a-z0-9]+)*')
 
@@ -232,8 +300,11 @@ def tier_rank(skill):
 def score(query, skills):
     """Return [(score, name, domain, type, url), ...] sorted best-first.
 
-    Empty list means NO_MATCH: no query term hit any keyword field.
+    Empty list means NO_MATCH: no query term hit any keyword field, or
+    the query was refused by the policy filter (see policy_refusal).
     """
+    if policy_refusal(query) is not None:
+        return []
     qterms = normalize_terms(query)
     if not qterms:
         return []
@@ -262,6 +333,29 @@ def score(query, skills):
 
 def route(query, registry, top_n=3):
     return score(query, registry['skills'])[:top_n]
+
+
+def band_and_gap(results):
+    """Band (EASY/AMBIGUOUS/HARD) and gap (top-1 minus top-2 score) for a
+    full sorted result list. Thresholds from skills/router/SKILL.md:
+    EASY = top-1 >= 10 and (top-2 in the same domain as top-1, or gap
+    >= 5); AMBIGUOUS = top-1 >= 10, top-2 in a different domain, gap < 5;
+    HARD = NO_MATCH or top-1 < 10. With a single result the gap is the
+    top-1 score itself (distance to "no match"); with none it is 0.0."""
+    if not results:
+        return 'HARD', 0.0
+    top1_score, _, top1_domain, _, _ = results[0]
+    if len(results) >= 2:
+        top2_score, _, top2_domain, _, _ = results[1]
+        gap = round(top1_score - top2_score, 2)
+    else:
+        top2_domain = None
+        gap = round(top1_score, 2)
+    if top1_score < 10:
+        return 'HARD', gap
+    if top2_domain is None or top2_domain == top1_domain or gap >= 5:
+        return 'EASY', gap
+    return 'AMBIGUOUS', gap
 
 
 def main():
@@ -302,11 +396,18 @@ def main():
 
     if not args.query:
         ap.error('give a task description or --self-test')
-    top = route(args.query, registry, args.top)
+    refusal = policy_refusal(args.query)
+    full = [] if refusal is not None else score(args.query, registry['skills'])
+    top = full[:args.top]
+    band, gap = band_and_gap(full)
     if args.json:
         payload = {
             'query': args.query,
             'no_match': not top,
+            'policy_refusal': refusal is not None,
+            'policy_reason': refusal,
+            'band': band,
+            'gap': gap,
             'results': [
                 {'name': name, 'domain': domain, 'type': typ, 'score': sc, 'url': url}
                 for sc, name, domain, typ, url in top
@@ -315,6 +416,8 @@ def main():
         print(json.dumps(payload, ensure_ascii=False))
         return 2 if not top else 0
     if not top:
+        if refusal is not None:
+            print(f'POLICY_REFUSAL: {refusal} — no skill is offered for this request')
         print('NO_MATCH: no skill covers this task')
         return 2
     for sc, name, domain, typ, url in top:
