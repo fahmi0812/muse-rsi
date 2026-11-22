@@ -8,6 +8,13 @@ workflow-only commit f2ca3c9 itself) made the check fail with
 passes when it is an ancestor of HEAD; every other field (registry,
 eval, canary, manifest) is still compared exactly, so a real content
 change still fails.
+
+PR #11 follow-up (22 Nov 2026): the ancestry check itself failed in
+CI because actions/checkout@v5 defaults to a depth-1 shallow clone,
+which does not contain the stored head at all — merge-base then
+reports a true ancestor as "not an ancestor" ("stored 'f2ca3c9' is
+not an ancestor of HEAD '1e0e538'"). The fix unshallows the repo
+once before concluding. Tests below cover the shallow-clone case.
 Run: python3 tests/test_gen_facts.py  (or python3 -m unittest discover -s tests)
 """
 import pathlib
@@ -102,6 +109,35 @@ class TestHeadAncestry(unittest.TestCase):
         stored = _facts(shas[0])
         del stored['head']
         problems = gen_facts.compare_facts(stored, _facts(shas[0]), repo)
+        self.assertEqual(len(problems), 1)
+        self.assertIn('head', problems[0])
+
+    def test_shallow_clone_ancestor_passes(self):
+        # The PR #11 CI case: a depth-1 checkout contains only HEAD,
+        # so the stored parent head is missing locally — the check
+        # must unshallow once and then see it IS an ancestor.
+        src, shas = _make_repo(2)
+        dst = pathlib.Path(tempfile.mkdtemp(prefix='genfacts-shallow-'))
+        subprocess.run(['git', 'clone', '-q', '--depth', '1',
+                        f'file://{src}', str(dst)], check=True)
+        self.assertEqual(
+            subprocess.run(['git', 'rev-parse',
+                            '--is-shallow-repository'], cwd=dst,
+                           capture_output=True, text=True,
+                           check=True).stdout.strip(), 'true')
+        problems = gen_facts.compare_facts(_facts(shas[0]),
+                                           _facts(shas[1]), dst)
+        self.assertEqual(problems, [])
+
+    def test_shallow_clone_unknown_head_still_fails(self):
+        # Unshallowing must not turn an unknown sha into a pass.
+        src, shas = _make_repo(2)
+        dst = pathlib.Path(tempfile.mkdtemp(prefix='genfacts-shallow-'))
+        subprocess.run(['git', 'clone', '-q', '--depth', '1',
+                        f'file://{src}', str(dst)], check=True)
+        self.assertFalse(gen_facts.is_ancestor(dst, '088fd7d'))
+        problems = gen_facts.compare_facts(_facts('088fd7d'),
+                                           _facts(shas[1]), dst)
         self.assertEqual(len(problems), 1)
         self.assertIn('head', problems[0])
 

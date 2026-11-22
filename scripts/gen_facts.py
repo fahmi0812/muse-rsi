@@ -28,6 +28,9 @@ Usage:
     make --check fail on every commit after the facts were written.
     All other fields (registry, eval, canary, manifest) are still
     compared exactly — a real content change still fails the check.
+    Ancestry is checked shallow-clone-safe: a depth-1 checkout (CI
+    default) does not contain the stored head, so the check unshallows
+    the repo once before concluding "not an ancestor".
 """
 import argparse
 import datetime
@@ -185,11 +188,29 @@ def is_ancestor(repo, sha, ref='HEAD'):
     non-ancestor, and 128 for an unknown revision — all three are
     handled here, so an unknown stored head is a plain False, never
     an exception.
+
+    Shallow clones (CI: actions/checkout@v5 defaults to fetch-depth 1)
+    do NOT contain the stored head at all, so merge-base fails even
+    for a true ancestor — exactly the PR #11 CI failure ("stored
+    'f2ca3c9' is not an ancestor of HEAD '1e0e538'" in a depth-1
+    checkout, while a full clone shows f2ca3c9 IS the parent of
+    1e0e538). When the repo is shallow, unshallow it once
+    (git fetch --unshallow) and retry; a sha that is still not an
+    ancestor afterwards — or cannot be fetched at all — is False.
     """
     if not sha or not isinstance(sha, str):
         return False
     proc = _run(['git', 'merge-base', '--is-ancestor', sha, ref], cwd=repo)
-    return proc.returncode == 0
+    if proc.returncode == 0:
+        return True
+    shallow = _run(['git', 'rev-parse', '--is-shallow-repository'],
+                   cwd=repo)
+    if shallow.stdout.strip() == 'true':
+        _run(['git', 'fetch', '--quiet', '--unshallow'], cwd=repo)
+        proc = _run(['git', 'merge-base', '--is-ancestor', sha, ref],
+                    cwd=repo)
+        return proc.returncode == 0
+    return False
 
 
 def compare_facts(stored, fresh, repo):
