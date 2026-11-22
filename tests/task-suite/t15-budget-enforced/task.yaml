@@ -1,0 +1,12 @@
+id: t15-budget-enforced
+title: "run_budget: spend ke-4 di atas budget 3 langkah ditolak (exit 1)"
+skill: rsi-loop
+model_involved: false
+prompt: "Mulai budget 3 langkah, habiskan 2, lalu coba habiskan 2 lagi — harus ditolak"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/scripts/run_budget.py" start --task t15-budget --budget 3 --file budget.json > budget-start.txt 2>&1
+  python3 "$REPO/scripts/run_budget.py" spend --steps 2 --file budget.json > budget-spend2.txt 2>&1
+  python3 "$REPO/scripts/run_budget.py" spend --steps 2 --file budget.json > budget-spend4.txt 2>&1; echo $? > spend4.exit
+  python3 "$REPO/scripts/run_budget.py" check --file budget.json > budget-check.txt 2>&1; echo $? > check.exit

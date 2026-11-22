@@ -153,6 +153,37 @@ def gate(before, after):
     return accept, reasons, d
 
 
+def read_suite_metrics(repo):
+    """C3/K1 from the task suite (G3). Returns {} when not measured.
+
+    C3 = task-suite pass rate (tests/task-suite/results/latest.json);
+    K1 = pass^3 rate (tests/task-suite/results/pass3-latest.json).
+    Both are PROCEDURAL baselines (reference solver) until a model
+    solver runs them — see tests/task-suite/README.md. Never invent
+    a value when the files are absent.
+    """
+    import pathlib
+    out = {}
+    repo = pathlib.Path(repo)
+    latest = repo / 'tests' / 'task-suite' / 'results' / 'latest.json'
+    if latest.exists():
+        try:
+            d = json.loads(latest.read_text(encoding='utf-8'))
+            if d.get('total'):
+                out['C3'] = 100.0 * d['passed'] / d['total']
+        except Exception:
+            pass
+    p3 = repo / 'tests' / 'task-suite' / 'results' / 'pass3-latest.json'
+    if p3.exists():
+        try:
+            d = json.loads(p3.read_text(encoding='utf-8'))
+            if d.get('total'):
+                out['K1'] = 100.0 * d['passed'] / d['total']
+        except Exception:
+            pass
+    return out
+
+
 def _load(path):
     with open(path, encoding='utf-8') as f:
         data = json.load(f)

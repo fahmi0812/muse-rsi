@@ -1,0 +1,14 @@
+id: t12-report-traceable-numbers
+title: "Laporan: semua angka harus terlacak ke source.csv"
+skill: office-corporate
+model_involved: true
+prompt: "Tulis laporan status hanya dengan angka dari source.csv (jangan karang angka)"
+timeout_s: 60
+check: check.py
+solve: |
+  cat > laporan.md <<'EOF'
+  # Laporan status
+  - Registry: 248 entri.
+  - Eval routing: 130/130 lolos.
+  - Canary: 8/8 lolos.
+  EOF

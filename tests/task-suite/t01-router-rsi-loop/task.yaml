@@ -1,0 +1,12 @@
+id: t01-router-rsi-loop
+title: "Router: prompt loop RSI harian -> rsi-loop"
+skill: router
+model_involved: false
+prompt: "jalankan loop RSI harian audit perbaiki tes snapshot"
+expected_skill: rsi-loop
+expected_domain: "Core RSI"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/scripts/route.py" --json "$TASK_PROMPT" > route.json
+notes: "Deterministik (route.py). BUKAN tugas bermodel: dilarang masuk pass^3."

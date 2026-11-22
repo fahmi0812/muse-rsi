@@ -1,0 +1,11 @@
+id: t07-visual-clean
+title: "Visual-check: halaman bersih -> 0 error, 0 overflow, 0 a11y"
+skill: visual-check
+model_involved: false
+prompt: "Jalankan visual-check pada halaman bersih dan laporkan error konsol/overflow/a11y"
+timeout_s: 180
+check: check.py
+solve: |
+  if [ ! -f "$VISUAL_CHECK_DIR/check.mjs" ]; then echo "visual-check tool tidak ada di $VISUAL_CHECK_DIR" > visual-tool-missing.txt; exit 3; fi
+  node "$VISUAL_CHECK_DIR/check.mjs" page.html out clean
+notes: "Bagian deterministik visual-check (tool + report). Penilaian screenshot oleh model di luar checker ini."

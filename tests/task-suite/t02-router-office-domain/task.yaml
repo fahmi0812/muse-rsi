@@ -1,0 +1,12 @@
+id: t02-router-office-domain
+title: "Router: prompt surat+spreadsheet -> domain Office & Corporate"
+skill: router
+model_involved: false
+prompt: "buatkan surat resmi perusahaan dan spreadsheet excel untuk rapat"
+expected_skill: office-corporate
+expected_domain: "Office & Corporate"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/scripts/route.py" --json "$TASK_PROMPT" > route.json
+notes: "Semantik --strict eval_routing.py: top-1 dinilai dari domain, bukan nama."

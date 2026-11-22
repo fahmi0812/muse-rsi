@@ -1,0 +1,21 @@
+id: t03-tdd-heldout
+title: "TDD: implementasi tambah() lolos hidden test"
+skill: fullstack-delivery
+model_involved: true
+prompt: "Tulis fungsi tambah(a, b) sesuai spec.md; tes publik harus merah dulu lalu hijau"
+timeout_s: 60
+check: check.py
+solve: |
+  # TDD merah: tes publik harus GAGAL sebelum implementasi ada.
+  python3 -m unittest test_calc_public -v > tdd-red.txt 2>&1 || true
+  mkdir -p src
+  cat > src/calc.py <<'PYEOF'
+  def tambah(a, b):
+      """Jumlahkan dua bilangan; tolak non-bilangan dengan TypeError."""
+      if isinstance(a, bool) or isinstance(b, bool) or not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+          raise TypeError("tambah hanya menerima bilangan")
+      return a + b
+  PYEOF
+  # TDD hijau: tes publik harus lolos setelah implementasi.
+  python3 -m unittest test_calc_public -v > tdd-green.txt 2>&1
+notes: "Checker memakai hidden test yang TIDAK disalin ke workdir (anti self-grading, M-02)."

@@ -1,0 +1,22 @@
+id: t06-deploy-rollback-plan
+title: "Deploy plan: staging -> produksi + rollback + tes lolos + monitor"
+skill: fullstack-delivery
+model_involved: true
+prompt: "Tulis rencana deploy rilis v0.3.82: staging, produksi, rollback, dan observasi"
+timeout_s: 60
+check: check.py
+solve: |
+  cat > deploy-plan.md <<'EOF'
+  # Rencana deploy v0.3.82
+  ## Precondition
+  - Semua tes lolos di CI (suite hijau) sebelum deploy apa pun.
+  ## Staging
+  - Deploy ke staging, jalankan smoke test, tunggu 30 menit.
+  ## Produksi
+  - Deploy ke produksi bila staging hijau; umumkan di kanal rilis.
+  ## Rollback
+  - Bila error naik setelah deploy: rollback ke rilis sebelumnya (satu perintah),
+    lalu periksa log dan buat isu tindak lanjut. Jangan hotfix langsung di produksi.
+  ## Observasi
+  - Monitor error rate dan latensi 1 jam pertama setelah deploy.
+  EOF

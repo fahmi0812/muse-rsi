@@ -11,9 +11,9 @@ menyimpan angka.
 |---|---|---|---|---|
 | C1 | C | ≥97% (G2), ≥98% (G3) | naik | `eval_routing.py --strict` (top-1 ketat) |
 | C2 | C | ≥75% (G2), ≥85% (G3) | naik | set parafrase tersembunyi, CI (agregat saja) |
-| C3 | C | suite jadi + baseline (G2), ≥80% (G3) | naik | task suite 20 tugas |
+| C3 | C | suite jadi + baseline (G2), ≥80% (G3) | naik | task suite 20 tugas (`tests/task-suite/results/latest.json`, dibaca `scorecard.read_suite_metrics`) |
 | C4 | C | ≥40% (G2), ≥50% (G3) | naik | decision.tsv v2 (siklus diterima) |
-| K1 | K | ≥90% (G2), ≥95% (G3) | naik | runner pass^3 tugas bermodel |
+| K1 | K | ≥90% (G2), ≥95% (G3) | naik | runner pass^3 tugas bermodel (`tests/task-suite/results/pass3-latest.json`) |
 | K2 | K | ≥0,85 rata-rata 7 hari | naik | correction_free_rate (runtime, read-only) |
 | K3 | K | 0 | turun | `drift_check.py` (selisih angka) |
 | K4 | K | ≥90% (G2), ≥95% (G3) | naik | Claim Ledger |

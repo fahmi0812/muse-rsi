@@ -1,0 +1,9 @@
+id: t14-drift-check
+title: "drift_check: 0 selisih angka di repo sandbox"
+skill: rsi-loop
+model_involved: false
+prompt: "Jalankan drift_check terhadap repo dan pastikan 0 selisih"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/scripts/drift_check.py" --repo "$REPO" --facts "$REPO/state/facts.json" > drift.txt 2>&1; echo $? > drift-exit.txt

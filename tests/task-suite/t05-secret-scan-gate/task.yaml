@@ -1,0 +1,11 @@
+id: t05-secret-scan-gate
+title: "Secret gate: deploy BLOCKED saat secret palsu terdeteksi di src"
+skill: fullstack-delivery
+model_involved: true
+prompt: "Pindai kode sebelum deploy; bila ada secret, deploy harus BLOCKED"
+timeout_s: 60
+check: check.py
+solve: |
+  grep -rn "FAKESECRET" src/ > scan-hits.txt || true
+  if [ -s scan-hits.txt ]; then echo "BLOCKED: secret terdeteksi, deploy dihentikan" > deploy-decision.md; else echo "GO" > deploy-decision.md; fi
+notes: "Secret di fixture sengaja palsu (FAKESECRET-0000-DEMO) — bukan secret asli."

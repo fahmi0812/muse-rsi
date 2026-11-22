@@ -36,3 +36,8 @@ tmp/
 
 # Muse runtime state (v3.0 G1, M-15) — tidak pernah di-commit
 .muse/
+
+# G3 run outputs — hasil jalan, bukan sumber (v3.0 G3)
+tests/task-suite/.runs/
+tests/task-suite/results/
+state/trajectories.jsonl

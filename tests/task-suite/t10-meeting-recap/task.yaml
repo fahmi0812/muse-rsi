@@ -1,0 +1,16 @@
+id: t10-meeting-recap
+title: "Rekap rapat: 3 keputusan + pemilik + tenggat, tanpa tambahan"
+skill: office-corporate
+model_involved: true
+prompt: "Ubah catatan rapat menjadi rekap 5 baris: keputusan, pemilik, tenggat"
+timeout_s: 60
+check: check.py
+solve: |
+  cat > recap.md <<'EOF'
+  # Rekap rapat 22 Nov 2026
+  1. Pakai branch v3-base untuk kerja v3. Pemilik: Fahmi. Tenggat: 23 Nov 2026.
+  2. Update INSTALL-PROMPT jadi satu file install/update. Pemilik: KimiCharmi. Tenggat: 24 Nov 2026.
+  3. Jadwalkan sensus model bulanan. Pemilik: KimiCharmi. Tenggat: 1 Des 2026.
+  Pertanyaan terbuka: tidak ada.
+  EOF
+notes: "Skill dokumen di repo ini = office-corporate (tidak ada skill bernama 'dokumen')."

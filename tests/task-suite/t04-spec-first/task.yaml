@@ -1,0 +1,22 @@
+id: t04-spec-first
+title: "Spec-first: SPEC.md reset password berisi kontrak API + model data + verifikasi"
+skill: fullstack-delivery
+model_involved: true
+prompt: "Tulis spec fitur reset password lewat email sebelum menulis kode"
+timeout_s: 60
+check: check.py
+solve: |
+  cat > SPEC.md <<'EOF'
+  # Spesifikasi: reset password lewat email
+  ## Kontrak API
+  - POST /auth/reset-request {email} -> 200 + email terkirim (tautan reset, kedaluwarsa 1 jam)
+  - POST /auth/reset-confirm {token, password_baru, password_baru_2} -> 200 password berubah; token sekali pakai
+  - Error: 400 email tidak terdaftar (tanpa membocorkan), 410 token kedaluwarsa, 422 password tidak cocok
+  ## Model data
+  - users.reset_token (string, nullable), users.reset_token_expires_at (datetime)
+  - Migrasi: tambah dua kolom di atas; token lama tidak dipakai ulang
+  ## Verifikasi
+  - Uji: minta reset untuk email terdaftar -> email terkirim, tautan valid 1 jam
+  - Uji: token dipakai 2x -> gagal; token kedaluwarsa -> 410
+  - Uji: password baru bisa login; password lama ditolak
+  EOF

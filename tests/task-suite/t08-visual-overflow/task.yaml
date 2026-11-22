@@ -1,0 +1,17 @@
+id: t08-visual-overflow
+title: "Visual-check: halaman overflow 900px terdeteksi di 360px"
+skill: visual-check
+model_involved: false
+prompt: "Jalankan visual-check pada halaman yang meluber dan pastikan overflow 360px terdeteksi"
+timeout_s: 180
+check: check.py
+solve: |
+  if [ ! -f "$VISUAL_CHECK_DIR/check.mjs" ]; then echo "visual-check tool tidak ada di $VISUAL_CHECK_DIR" > visual-tool-missing.txt; exit 3; fi
+  node "$VISUAL_CHECK_DIR/check.mjs" page.html out overflow
+  python3 - "$PWD" <<'PYEOF'
+  import json, sys
+  r = json.load(open(f"{sys.argv[1]}/out/overflow-report.json", encoding="utf-8"))
+  flag = r.get("overflow", {}).get("360", {}).get("hOverflow", False)
+  open(f"{sys.argv[1]}/verdict.txt", "w", encoding="utf-8").write(
+      "FAIL: horizontal overflow di 360px\n" if flag else "PASS: tidak ada overflow\n")
+  PYEOF

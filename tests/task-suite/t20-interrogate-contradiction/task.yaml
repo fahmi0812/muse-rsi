@@ -1,0 +1,9 @@
+id: t20-interrogate-contradiction
+title: "Interogasi: bukti 118/125 melawan klaim 125/125 -> contradicted"
+skill: interrogate-claim
+model_involved: true
+prompt: "Interogasi klaim 'Eval routing lolos 125/125' terhadap log yang berisi 118/125"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/tests/task-suite/_helpers/interrogate.py" claim.txt evidence verdict.json

@@ -1,0 +1,16 @@
+id: t17-council-no-key-escalates
+title: "Council: tanpa kunci provider -> eskalasi ke Fahmi (T4), nol panggilan"
+skill: council
+model_involved: true
+prompt: "Council diminta menilai, tapi tidak ada kunci provider — apa yang terjadi?"
+timeout_s: 60
+check: check.py
+solve: |
+  KEYS=$(find keys -type f ! -name ".keep" | wc -l)
+  if [ "$KEYS" -eq 0 ]; then
+    printf '%s\n' "ESCALATE to Fahmi (T4): council butuh kunci provider; tidak ada kunci di vault fixture; tidak ada panggilan berbayar yang dilakukan; jalur \$0." > escalation.md
+    : > calls.log
+  else
+    echo "keys found: $KEYS" > escalation.md
+  fi
+notes: "Fixture keys/ kosong MENGGANTIKAN vault — vault asli tidak pernah dibaca/diubah."

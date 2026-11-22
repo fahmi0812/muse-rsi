@@ -1,0 +1,9 @@
+id: t18-interrogate-supported
+title: "Interogasi: klaim 125/125 dengan bukti cocok -> supported"
+skill: interrogate-claim
+model_involved: true
+prompt: "Interogasi klaim 'Eval routing lolos 125/125 setelah registry berubah' terhadap bukti"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/tests/task-suite/_helpers/interrogate.py" claim.txt evidence verdict.json
