@@ -93,7 +93,7 @@ def p_critique(repo):
 
 def p_gate(repo):
     rc, out = run([PY, str(repo / 'tests/test_autonomy_gate.py')])
-    probe('autonomy_gate: loosening = HARD, additions = VETO, docs = AUTO', rc == 0,
+    probe('autonomy_gate: loosening = HARD, additions = VETO, engine fix = AUTO, docs = AUTO', rc == 0,
           out.strip().splitlines()[-1] if out.strip() else f'rc={rc}')
 
 

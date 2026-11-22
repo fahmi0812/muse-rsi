@@ -16,8 +16,9 @@
 # A3 File root yang dibaca tiap percakapan (AGENTS.md, TOOLS.md,
 #   HEARTBEAT.md, MEMORY.md) — otomatis dengan snapshot + T2; dicatat di
 #   digest. Demosi: koreksi Fahmi -> 7 hari veto_window.
-# A4 Verifier dan engine (config/veto_paths.txt) — perubahan yang
-#   menambah atau mengetatkan: auto-merge setelah veto window 24 jam.
+# A4 Verifier dan engine (config/veto_paths.txt) — kasus eval baru dan
+#   canary baru: auto-merge setelah veto window 2 jam. Perbaikan engine
+#   dan verifier kini AUTO (merge begitu CI hijau).
 #   Perubahan yang MELONGGARKAN (hapus/ubah kasus eval, hapus canary,
 #   ubah sampel known-bad, hapus file verifier) masuk hard core.
 # A5 Hard core — hanya Fahmi:
