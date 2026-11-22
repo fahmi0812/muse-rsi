@@ -33,3 +33,6 @@ Thumbs.db
 *.mov
 output/
 tmp/
+
+# Muse runtime state (v3.0 G1, M-15) — tidak pernah di-commit
+.muse/
