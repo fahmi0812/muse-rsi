@@ -51,6 +51,12 @@ import subprocess
 import sys
 import urllib.request
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import selfheal  # noqa: E402  (fix-and-resume layer, v3.2)
+
+HEALER = None  # set in main(); every subprocess runs with its PATH/TMPDIR repairs
+
+
 def load_originals(repo_root):
     """The 11 original skills, from the single source of truth
     config/originals.json (v3.0 G1, M-13). Returns
@@ -77,6 +83,8 @@ def log(msg):
 
 
 def run(cmd, cwd=None, check=False):
+    if HEALER is not None:
+        return HEALER.run(cmd, cwd=cwd, check=check)
     r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=600, stdin=subprocess.DEVNULL)
     if check and r.returncode != 0:
         raise RuntimeError(f'command failed: {" ".join(cmd)}\n{r.stdout}\n{r.stderr}')
@@ -253,13 +261,13 @@ def install_gitleaks(home, dry):
     ver = tag.lstrip('v')
     asset = f'gitleaks_{ver}_{arch}.tar.gz'
     base = f'https://github.com/gitleaks/gitleaks/releases/download/{tag}'
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    HEALER.ensure_dir(dest_dir)
     tarball = dest_dir / asset
-    run(['curl', '-sL', '--max-time', '300', '-o', str(tarball), f'{base}/{asset}'], check=True)
+    HEALER.download(f'{base}/{asset}', tarball)
     # SHA-256 verification against the release's own checksums file.
     # A mismatch aborts the install — never extract an unverified binary.
     sums = dest_dir / f'gitleaks_{ver}_checksums.txt'
-    run(['curl', '-sL', '--max-time', '120', '-o', str(sums), f'{base}/gitleaks_{ver}_checksums.txt'], check=True)
+    HEALER.download(f'{base}/gitleaks_{ver}_checksums.txt', sums)
     expected = None
     for line in sums.read_text(encoding='utf-8').splitlines():
         parts = line.split()
@@ -271,8 +279,7 @@ def install_gitleaks(home, dry):
     if actual != expected:
         tarball.unlink(missing_ok=True)
         raise RuntimeError(f'gitleaks checksum mismatch for {asset} (expected {expected[:16]}…, got {actual[:16]}…) — refusing to install')
-    run(['tar', '-xzf', str(tarball), '--no-same-owner', 'gitleaks'],
-        cwd=str(dest_dir), check=True)
+    HEALER.extract_tar(tarball, dest_dir, ['gitleaks'])
     tarball.unlink(missing_ok=True)
     sums.unlink(missing_ok=True)
     os.chmod(exe, 0o755)
@@ -294,12 +301,17 @@ def install_visual_check(repo, home, dry):
     dest_dir = home / 'workspace' / 'tools' / 'visual-check'
     if dry:
         return '[dry-run] would install Playwright + Chrome headless shell + axe'
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    HEALER.ensure_dir(dest_dir)
+    HEALER.ensure_node()
     for f in ('check.mjs', 'package.json', 'package-lock.json'):
         if (src_dir / f).exists():
             shutil.copyfile(src_dir / f, dest_dir / f)
     if (dest_dir / 'package-lock.json').exists():
-        run(['npm', 'ci'], cwd=str(dest_dir), check=True)
+        r = run(['npm', 'ci', '--no-audit', '--no-fund'], cwd=str(dest_dir))
+        if r.returncode != 0:
+            HEALER.heal(RuntimeError(r.stdout + r.stderr))
+            HEALER.fix('npm ci failed -> retried with npm install from the lockfile')
+            run(['npm', 'install', '--no-audit', '--no-fund'], cwd=str(dest_dir), check=True)
     else:
         run(['npm', 'install', '--save-exact', 'playwright@1.65.1', '@axe-core/playwright@4.11.0'],
             cwd=str(dest_dir), check=True)
@@ -315,11 +327,12 @@ def install_visual_check(repo, home, dry):
             dl = next(d for d in stable['downloads']['chrome-headless-shell']
                       if d['platform'] == plat)
             url, expected_sha = dl['url'], dl['sha256']
-            run(['curl', '-sL', '--max-time', '600', '-o', str(zip_path), url], check=True)
-            actual = _sha256(zip_path)
-            if actual != expected_sha:
-                zip_path.unlink(missing_ok=True)
-                raise RuntimeError(f'Chrome headless shell checksum mismatch (expected {expected_sha[:16]}…, got {actual[:16]}…) — refusing to install')
+            try:
+                HEALER.download(url, zip_path, sha256=expected_sha)
+            except RuntimeError as e:
+                if 'checksum mismatch' in str(e):
+                    raise RuntimeError(f'Chrome headless shell checksum mismatch — refusing to install ({e})')
+                raise
             verified = True
             log(f'    Chrome headless shell {stable["version"]} ({plat}), SHA-256 verified')
         except Exception as e:  # noqa: BLE001 - JSON endpoint unreachable: pinned fallback
@@ -327,17 +340,19 @@ def install_visual_check(repo, home, dry):
                 raise
             url = ('https://storage.googleapis.com/chrome-for-testing-public/'
                    '159.0.8154.6/linux64/chrome-headless-shell-linux64.zip')
-            run(['curl', '-sL', '--max-time', '600', '-o', str(zip_path), url], check=True)
-            run(['unzip', '-t', '-q', str(zip_path)], check=True)
+            HEALER.download(url, zip_path)
+            HEALER.test_zip(zip_path)
             log('    WARNING: chrome-for-testing JSON unreachable — installed pinned 159.0.8154.6 '
                 'with zip-integrity test only (no upstream SHA-256 available for the pinned build)')
-        run(['unzip', '-q', '-o', str(zip_path)], cwd=str(dest_dir), check=True)
+        HEALER.extract_zip(zip_path, dest_dir)
         zip_path.unlink(missing_ok=True)
     r = run([str(chrome_dir / 'chrome-headless-shell'), '--version'], check=True)
     return f'installed (Playwright 1.65.1 + axe 4.11.0 + {r.stdout.strip()})'
 
 
+
 def main():
+    global HEALER
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--home', default=None)
     ap.add_argument('--repo', default=None)
@@ -349,6 +364,8 @@ def main():
     ap.add_argument('--no-gitleaks', action='store_true')
     ap.add_argument('--skills-only', action='store_true',
                     help='install skills + tools only; do not touch SOUL.md, IDENTITY.md, USER.md, MEMORY.md, AGENTS.md, or the vault')
+    ap.add_argument('--resume', action='store_true',
+                    help='continue a failed install/update: steps that already succeeded for this repo version are skipped')
     args = ap.parse_args()
 
     home = pathlib.Path(args.home) if args.home else pathlib.Path.home()
@@ -356,11 +373,14 @@ def main():
     repo = pathlib.Path(args.repo) if args.repo else here.parent.parent
     tpl = here.parent / 'templates'
     for f in ('SOUL-system.md', 'IDENTITY.md', 'MEMORY.md', 'AGENTS-additions.md',
-            'TOOLS.md', 'HEARTBEAT.md', 'PROACTIVE_PREFERENCES.md'):
+              'TOOLS.md', 'HEARTBEAT.md', 'PROACTIVE_PREFERENCES.md'):
         if not (tpl / f).exists():
             sys.exit(f'template missing: {tpl / f}')
     if not (repo / 'skills' / 'router' / 'registry.json').exists():
         sys.exit(f'not a muse-rsi repo (no skills/router/registry.json): {repo}')
+
+    HEALER = selfheal.Healer(home, log)
+    runner = selfheal.StepRunner(home, repo, log, HEALER, resume=args.resume, dry_run=args.dry_run)
 
     # --- detect existing character (read-only) ---
     def read_home(name):
@@ -376,7 +396,7 @@ def main():
     agent_name = found_name or args.name or 'Muse'
     user_name = find_name(user_md) or args.user_name
 
-    log(f'muse-rsi setup — home: {home}  repo: {repo}')
+    log(f'muse-rsi setup — home: {home}  repo: {repo}  version: {runner.version}')
     if identity:
         if found_name:
             log(f'agent detected: {agent_name!r} (from IDENTITY.md)')
@@ -397,21 +417,6 @@ def main():
             print('Aborted. Nothing changed.')
             return 0
 
-    # --- 1. snapshot ---
-    stamp = datetime.datetime.now().strftime('%Y-%m-%d-%H%M%S')
-    backup = None
-    if args.skills_only:
-        log('[1] Snapshot skipped (--skills-only: no system files touched)')
-    elif not args.dry_run:
-        backup = home / '.muse-backup' / stamp
-        backup.mkdir(parents=True, exist_ok=False)
-        for name in RUNTIME_FILES:
-            p = home / name
-            if p.exists():
-                shutil.copyfile(p, backup / name)
-        log(f'[1] Snapshot -> {backup} ({len(list(backup.iterdir()))} files)')
-
-    # Files the shell could not write (staged for the agent's file tool).
     staged = []
     bottlenecks = []
 
@@ -426,187 +431,252 @@ def main():
             (home / name).write_text(text, encoding='utf-8')
         except OSError as e:
             # Muse VMs block shell writes to SOUL.md / IDENTITY.md / MEMORY.md
-            # (PermissionError: Operation not permitted). Don't abort: stage
-            # the content where the agent's own file tool can reach it, and
-            # let the agent apply it. See issue #1.
-            staging = home / 'workspace' / '.muse-rsi-staging'
-            try:
-                staging.mkdir(parents=True, exist_ok=True)
-                sp = staging / name
-                sp.write_text(text, encoding='utf-8')
-                staged.append((name, sp))
-                log(f'  STAGED {name}: shell write blocked ({e}); content saved to {sp} — apply it with your own file tool, then delete the staging copy.')
-            except OSError as e2:
-                log(f'  FAILED {name}: shell write blocked ({e}) and staging also failed ({e2}) — re-run setup after fixing the block, or apply the merge manually from the templates.')
-                bottlenecks.append(f'{name} could not be written or staged: {e2}')
+            # (PermissionError: Operation not permitted). That is the runtime's
+            # rule, not a broken environment: never chmod around it. Stage the
+            # content where the agent's own file tool can reach it (issue #1).
+            staging = HEALER.ensure_dir(home / 'workspace' / '.muse-rsi-staging')
+            sp = staging / name
+            sp.write_text(text, encoding='utf-8')
+            staged.append((name, sp))
+            log(f'  STAGED {name}: shell write blocked ({e}); content saved to {sp} — apply it with your own file tool, then delete the staging copy.')
+
+    # --- 0. dependencies the loop scripts need (PyYAML) ---
+    if not args.dry_run:
+        runner.step('0-deps', lambda: log('[0] deps: ' + HEALER.ensure_python_module('yaml', 'pyyaml')) or 'ok')
+
+    # --- 1. snapshot ---
+    def do_snapshot():
+        if args.skills_only:
+            log('[1] Snapshot skipped (--skills-only: no system files touched)')
+            return None
+        if args.dry_run:
+            return None
+        stamp = datetime.datetime.now().strftime('%Y-%m-%d-%H%M%S')
+        b = home / '.muse-backup' / stamp
+        HEALER.ensure_dir(b.parent)
+        b.mkdir(exist_ok=False)
+        for name in RUNTIME_FILES:
+            p = home / name
+            if p.exists():
+                shutil.copyfile(p, b / name)
+        log(f'[1] Snapshot -> {b} ({len(list(b.iterdir()))} files)')
+        return str(b)
+    backup = runner.step('1-snapshot', do_snapshot)
 
     # --- 2. SOUL.md merge (character kept, system replaced) ---
     soul_tpl = (tpl / 'SOUL-system.md').read_text(encoding='utf-8')
     new_soul = merge_soul(soul, soul_tpl, agent_name)
-    if soul is None:
-        log('[2] SOUL.md: fresh install — wrote template sections')
-    else:
-        _t_secs = split_sections(soul_tpl)[1]
-        sys_heads = {h.strip() for h, _ in _t_secs}
-        kept = [h for h, _ in split_sections(soul)[1] if h.strip() not in sys_heads]
-        log(f'[2] SOUL.md: kept {len(kept)} character section(s) ({", ".join(h[3:][:28] for h in kept) or "none"}), replaced system block (marker-delimited)')
-    write_home('SOUL.md', new_soul)
+
+    def do_soul():
+        if soul is None:
+            log('[2] SOUL.md: fresh install — wrote template sections')
+        else:
+            sys_heads = {h.strip() for h, _ in split_sections(soul_tpl)[1]}
+            kept = [h for h, _ in split_sections(soul)[1] if h.strip() not in sys_heads]
+            log(f'[2] SOUL.md: kept {len(kept)} character section(s) ({", ".join(h[3:][:28] for h in kept) or "none"}), replaced system block (marker-delimited)')
+        write_home('SOUL.md', new_soul)
+        return 'ok'
+    runner.step('2-soul', do_soul)
+
+    # --- 2b. Loop Engine baseline for SOUL §1-4 ---
+    # The engine HALTs when the live §1-4 block differs from its baseline.
+    # An update legitimately changes that block (the template came from the
+    # repo, reviewed as hard core), so setup records the new baseline itself:
+    # the live SOUL.md matches it as soon as the (possibly staged) file is applied.
+    def do_soul_baseline():
+        if args.skills_only or args.dry_run:
+            return 'skipped'
+        i, j = new_soul.find(SYS_START), new_soul.find(SYS_END)
+        if i < 0 or j < 0:
+            raise RuntimeError('merged SOUL.md has no system block markers')
+        digest = hashlib.sha256(new_soul[i:j + len(SYS_END)].encode('utf-8')).hexdigest()
+        state = HEALER.ensure_dir(home / '.muse-rsi')
+        (state / 'soul_hash.txt').write_text(digest + '\n', encoding='utf-8')
+        log(f'[2b] Loop Engine SOUL §1-4 baseline -> {digest[:12]}… (matches the SOUL.md written above)')
+        return digest
+    runner.step('2b-soul-baseline', do_soul_baseline)
 
     # --- 3. IDENTITY.md: rewrite from template, keep name + character (Role) ---
-    identity_tpl = (tpl / 'IDENTITY.md').read_text(encoding='utf-8')
-    agent_role = find_name(identity, 'Role') or 'Personal AI agent, upgraded with the muse-rsi operating system.'
-    new_identity = merge_identity(identity, identity_tpl, agent_name, agent_role)
-    if identity is None:
-        log(f'[3] IDENTITY.md: fresh install — wrote template (name {agent_name!r})')
-    else:
-        log(f'[3] IDENTITY.md: rewrote from template (name {agent_name!r} + character kept)')
-    write_home('IDENTITY.md', new_identity)
+    def do_identity():
+        identity_tpl = (tpl / 'IDENTITY.md').read_text(encoding='utf-8')
+        agent_role = find_name(identity, 'Role') or 'Personal AI agent, upgraded with the muse-rsi operating system.'
+        new_identity = merge_identity(identity, identity_tpl, agent_name, agent_role)
+        if identity is None:
+            log(f'[3] IDENTITY.md: fresh install — wrote template (name {agent_name!r})')
+        else:
+            log(f'[3] IDENTITY.md: rewrote from template (name {agent_name!r} + character kept)')
+        write_home('IDENTITY.md', new_identity)
+        return 'ok'
+    runner.step('3-identity', do_identity)
 
     # --- 4. USER.md: keep, or minimal template ---
-    if user_md is None:
-        name_line = user_name or 'User'
-        log('[4] USER.md: fresh install — wrote minimal template')
-        write_home('USER.md', f'# USER.md\n\n- **Name:** {name_line}\n- **Timezone:** (fill in, e.g. Asia/Jakarta)\n\n> Fill in what the agent should remember about you. The setup never overwrites this file.\n')
+    def do_user():
+        if user_md is None:
+            name_line = user_name or 'User'
+            log('[4] USER.md: fresh install — wrote minimal template')
+            write_home('USER.md', f'# USER.md\n\n- **Name:** {name_line}\n- **Timezone:** (fill in, e.g. Asia/Jakarta)\n\n> Fill in what the agent should remember about you. The setup never overwrites this file.\n')
+        else:
+            log('[4] USER.md: kept as-is')
+        return 'ok'
+    runner.step('4-user', do_user)
 
     # --- 5. MEMORY.md: repair structure, keep facts ---
-    mem_tpl = (tpl / 'MEMORY.md').read_text(encoding='utf-8')
-    if memory is None:
-        log('[5] MEMORY.md: fresh install — wrote template')
-        write_home('MEMORY.md', mem_tpl)
-    elif memory.count('\n') < 3:
-        log('[5] MEMORY.md: broken single-line file — replaced from template (old copy is in the snapshot)')
-        if user_name:
-            mem_tpl = mem_tpl.replace('(fill in the user\'s name)', user_name)
-        write_home('MEMORY.md', mem_tpl)
-    else:
-        log('[5] MEMORY.md: parseable — kept, ensured scene index + system state')
-        new_mem = memory
-        if 'memory/scenes/' not in new_mem:
-            new_mem = new_mem.rstrip() + '\n\nSee `memory/scenes/` for details (env-stack, projects, auth-map, skills, bottlenecks, changelog).\n'
-        if 'muse-rsi' not in new_mem:
-            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo numbers:** read `state/facts.json` in the muse-rsi repo (single source of truth — never hand-copy numbers into MEMORY.md).\n'
-        write_home('MEMORY.md', new_mem)
-    if not args.dry_run and not args.skills_only:
-        (home / 'memory' / 'scenes').mkdir(parents=True, exist_ok=True)
-        (home / 'memory' / 'scenes' / 'daily').mkdir(parents=True, exist_ok=True)
-        for scene, body in {
-            'env-stack.md': '# env-stack — Work environment\n\n(Fill in: OS, Node/Python versions, tools in ~/workspace/tools/.)\n',
-            'projects.md': '# projects — Active projects & repo rules\n\n(Fill in: the user\'s active projects and their rules.)\n',
-            'auth-map.md': '# auth-map — Accounts & vault map\n\nMap only — NEVER write passwords/tokens/.env contents here.\n',
-            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (248 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`. Repo numbers: `state/facts.json`.\n',
-            'bottlenecks.md': '# bottlenecks — Bottleneck queue\n\nDelete an entry as soon as it is resolved.\n',
-            'changelog.md': '# changelog — System changes\n\n- Setup: muse-rsi system installed.\n',
-        }.items():
-            sp = home / 'memory' / 'scenes' / scene
-            if not sp.exists():
-                sp.write_text(body, encoding='utf-8')
+    def do_memory():
+        mem_tpl = (tpl / 'MEMORY.md').read_text(encoding='utf-8')
+        if memory is None:
+            log('[5] MEMORY.md: fresh install — wrote template')
+            write_home('MEMORY.md', mem_tpl)
+        elif memory.count('\n') < 3:
+            log('[5] MEMORY.md: broken single-line file — replaced from template (old copy is in the snapshot)')
+            if user_name:
+                mem_tpl = mem_tpl.replace('(fill in the user\'s name)', user_name)
+            write_home('MEMORY.md', mem_tpl)
+        else:
+            log('[5] MEMORY.md: parseable — kept, ensured scene index + system state')
+            new_mem = memory
+            if 'memory/scenes/' not in new_mem:
+                new_mem = new_mem.rstrip() + '\n\nSee `memory/scenes/` for details (env-stack, projects, auth-map, skills, bottlenecks, changelog).\n'
+            if 'muse-rsi' not in new_mem:
+                new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo numbers:** read `state/facts.json` in the muse-rsi repo (single source of truth — never hand-copy numbers into MEMORY.md).\n'
+            write_home('MEMORY.md', new_mem)
+        if not args.dry_run and not args.skills_only:
+            HEALER.ensure_dir(home / 'memory' / 'scenes' / 'daily')
+            for scene, body in {
+                'env-stack.md': '# env-stack — Work environment\n\n(Fill in: OS, Node/Python versions, tools in ~/workspace/tools/.)\n',
+                'projects.md': '# projects — Active projects & repo rules\n\n(Fill in: the user\'s active projects and their rules.)\n',
+                'auth-map.md': '# auth-map — Accounts & vault map\n\nMap only — NEVER write passwords/tokens/.env contents here.\n',
+                'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (248 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`. Repo numbers: `state/facts.json`.\n',
+                'bottlenecks.md': '# bottlenecks — Bottleneck queue\n\nDelete an entry as soon as it is resolved.\n',
+                'changelog.md': '# changelog — System changes\n\n- Setup: muse-rsi system installed.\n',
+            }.items():
+                sp = home / 'memory' / 'scenes' / scene
+                if not sp.exists():
+                    sp.write_text(body, encoding='utf-8')
+        return 'ok'
+    runner.step('5-memory', do_memory)
 
     # --- 6. AGENTS.md: append additions once ---
-    additions = (tpl / 'AGENTS-additions.md').read_text(encoding='utf-8')
-    if agents is None:
-        log('[6] AGENTS.md: fresh install — wrote operating rules')
-        write_home('AGENTS.md', '# AGENTS.md\n\n' + additions.lstrip('\n'))
-    elif 'muse-rsi operating rules' in agents:
-        log('[6] AGENTS.md: operating rules already present — kept as-is')
-    else:
-        log('[6] AGENTS.md: appended operating rules (existing conventions kept)')
-        write_home('AGENTS.md', agents.rstrip() + '\n' + additions)
+    def do_agents():
+        additions = (tpl / 'AGENTS-additions.md').read_text(encoding='utf-8')
+        if agents is None:
+            log('[6] AGENTS.md: fresh install — wrote operating rules')
+            write_home('AGENTS.md', '# AGENTS.md\n\n' + additions.lstrip('\n'))
+        elif 'muse-rsi operating rules' in agents:
+            log('[6] AGENTS.md: operating rules already present — kept as-is')
+        else:
+            log('[6] AGENTS.md: appended operating rules (existing conventions kept)')
+            write_home('AGENTS.md', agents.rstrip() + '\n' + additions)
+        return 'ok'
+    runner.step('6-agents', do_agents)
 
     # --- 6b. Control files: TOOLS.md / HEARTBEAT.md / PROACTIVE_PREFERENCES.md ---
-    # v3.0 G1 (M-10): these were empty templates before; setup now installs
-    # the filled-in versions. Existing files are kept as-is (the user may
-    # have customized them) — only a missing file is written from template.
-    # Skipped entirely under --skills-only (no system files touched).
-    if not args.skills_only:
+    def do_control_files():
+        if args.skills_only:
+            return 'skipped (--skills-only)'
         for _name in ('TOOLS.md', 'HEARTBEAT.md', 'PROACTIVE_PREFERENCES.md'):
-            _existing = read_home(_name)
-            if _existing is None:
+            if read_home(_name) is None:
                 log(f'[6b] {_name}: fresh install — wrote template')
                 write_home(_name, (tpl / _name).read_text(encoding='utf-8'))
             else:
                 log(f'[6b] {_name}: already present — kept as-is')
+        return 'ok'
+    runner.step('6b-control-files', do_control_files)
 
     # --- 7. vault ---
-    vault = home / '.config' / 'muse' / 'vault'
-    if args.skills_only:
-        log('[7] Vault: skipped (--skills-only)')
-    elif not args.dry_run:
-        vault.mkdir(parents=True, exist_ok=True)
-        os.chmod(vault, 0o700)
+    def do_vault():
+        if args.skills_only:
+            log('[7] Vault: skipped (--skills-only)')
+            return 'skipped'
+        if not args.dry_run:
+            vault = home / '.config' / 'muse' / 'vault'
+            vault.mkdir(parents=True, exist_ok=True)
+            os.chmod(vault, 0o700)
         log('[7] Vault dir ready (chmod 700)')
-    else:
-        log('[7] Vault dir ready (chmod 700)')
+        return 'ok'
+    runner.step('7-vault', do_vault)
 
     # --- 8. skills ---
-    installed = install_skills(repo, home, args.dry_run)
-    log(f'[8] Skills installed: {len(installed)} ({", ".join(installed)})')
+    def do_skills():
+        installed = install_skills(repo, home, args.dry_run)
+        log(f'[8] Skills installed: {len(installed)} ({", ".join(installed)})')
+        return installed
+    runner.step('8-skills', do_skills)
 
     # --- 9. tools ---
-    if not args.no_gitleaks:
-        try:
-            log('[9] gitleaks: ' + install_gitleaks(home, args.dry_run))
-        except Exception as e:  # noqa: BLE001 - report, don't abort the setup
-            bottlenecks.append(f'gitleaks install failed: {e}')
-            log('[9] gitleaks FAILED: ' + str(e))
+    if args.no_gitleaks:
+        log('[9] gitleaks: NOT installed (--no-gitleaks given) — the secret scan cannot run until it is; '
+            'never push publicly before it does')
     else:
-        log('[9] gitleaks: skipped (--no-gitleaks)')
-    if not args.no_visual_check:
-        try:
-            log('[9] visual-check: ' + install_visual_check(repo, home, args.dry_run))
-        except Exception as e:  # noqa: BLE001
-            bottlenecks.append(f'visual-check install failed: {e}')
-            log('[9] visual-check FAILED: ' + str(e))
+        runner.step('9-gitleaks', lambda: log('[9] gitleaks: ' + install_gitleaks(home, args.dry_run)) or 'ok')
+    if args.no_visual_check:
+        log('[9] visual-check: NOT installed (--no-visual-check given)')
     else:
-        log('[9] visual-check: skipped (--no-visual-check)')
-    scan_src = repo / 'tools' / 'scan-secrets.sh'
-    if scan_src.exists() and not args.dry_run:
-        dest = home / 'workspace' / 'tools' / 'scan-secrets.sh'
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(scan_src, dest)
-        os.chmod(dest, 0o755)
-        log('[9] scan-secrets.sh installed')
-    checks_src = repo / 'scripts' / 'run_all_checks.sh'
-    if checks_src.exists() and not args.dry_run:
-        dest = home / 'workspace' / 'tools' / 'run_all_checks.sh'
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(checks_src, dest)
-        os.chmod(dest, 0o755)
-        log('[9] run_all_checks.sh installed (verify with it after setup)')
+        runner.step('9-visual-check',
+                    lambda: log('[9] visual-check: ' + install_visual_check(repo, home, args.dry_run)) or 'ok')
+
+    def do_tool_scripts():
+        if args.dry_run:
+            return 'skipped'
+        tools = HEALER.ensure_dir(home / 'workspace' / 'tools')
+        for src, label in ((repo / 'tools' / 'scan-secrets.sh', 'scan-secrets.sh'),
+                           (repo / 'scripts' / 'run_all_checks.sh', 'run_all_checks.sh')):
+            if src.exists():
+                dest = tools / src.name
+                shutil.copyfile(src, dest)
+                os.chmod(dest, 0o755)
+                log(f'[9] {label} installed')
+        return 'ok'
+    runner.step('9-tool-scripts', do_tool_scripts)
 
     # --- 10. verify ---
     if not args.dry_run:
-        try:
+        def do_scan():
             scan = repo / 'tools' / 'scan-secrets.sh'
             gitleaks = home / 'workspace' / 'tools' / 'gitleaks' / 'gitleaks'
-            if scan.exists() and gitleaks.exists():
-                r = run(['bash', str(scan), str(repo)], cwd=str(repo))
-                log('[10] secret scan: ' + ('CLEAN' if r.returncode == 0 else 'LEAKS FOUND — halt, do not push\n' + r.stdout + r.stderr))
-                if r.returncode != 0:
-                    bottlenecks.append('secret scan found leaks (or gitleaks failed)')
-            else:
-                log('[10] secret scan: skipped (gitleaks not installed)')
-        except Exception as e:  # noqa: BLE001
-            bottlenecks.append(f'secret scan error: {e}')
-        try:
-            r = run([sys.executable, str(repo / 'scripts' / 'generate_registry.py'), '--check'],
-                    cwd=str(repo))
-            log('[10] registry --check: ' + ('OK' if r.returncode == 0 else 'FAILED\n' + r.stdout + r.stderr))
+            if not gitleaks.exists():
+                if args.no_gitleaks:
+                    log('[10] secret scan: NOT run (gitleaks not installed by request) — reported, not skipped silently')
+                    return 'not run'
+                log('[10] secret scan: gitleaks missing -> installing it now')
+                HEALER.fix('gitleaks missing at verify -> installed it')
+                install_gitleaks(home, False)
+            r = run(['bash', str(scan), str(repo)], cwd=str(repo))
             if r.returncode != 0:
-                bottlenecks.append('registry --check failed')
-        except Exception as e:  # noqa: BLE001
-            bottlenecks.append(f'registry --check error: {e}')
-        try:
+                # Leaks are never "healed" — that would weaken the gate.
+                bottlenecks.append('secret scan found leaks (or gitleaks failed) — do not push')
+                log('[10] secret scan: LEAKS FOUND — halt any public push\n' + r.stdout + r.stderr)
+                return 'leaks'
+            log('[10] secret scan: CLEAN')
+            return 'clean'
+        runner.step('10-secret-scan', do_scan, tries=2)
+
+        def do_registry_check():
+            r = run([sys.executable, str(repo / 'scripts' / 'generate_registry.py'), '--check'], cwd=str(repo))
+            if r.returncode != 0:
+                raise RuntimeError('registry --check failed\n' + r.stdout + r.stderr)
+            log('[10] registry --check: OK')
+            return 'ok'
+        runner.step('10-registry-check', do_registry_check, tries=2)
+
+        def do_eval():
             r = run([sys.executable, str(repo / 'scripts' / 'eval_routing.py'),
                      '--registry', str(home / 'workspace' / 'custom-skills' / 'muse-rsi' / 'registry.json')],
                     cwd=str(repo))
             tail = r.stdout.strip().splitlines()[-1] if r.stdout.strip() else ''
-            log('[10] routing eval: ' + tail)
             if r.returncode != 0:
-                bottlenecks.append('routing eval failed')
-        except Exception as e:  # noqa: BLE001
-            bottlenecks.append(f'routing eval error: {e}')
+                raise RuntimeError('routing eval failed: ' + tail)
+            log('[10] routing eval: ' + tail)
+            return tail
+        runner.step('10-routing-eval', do_eval, tries=2)
+
+    for name, err in runner.failed:
+        bottlenecks.append(f'step {name} failed after repair attempts: {err}')
 
     log('')
+    if HEALER.fixes:
+        log(f'Self-heal: {len(HEALER.fixes)} repair(s) made so the install could continue:')
+        for f in HEALER.fixes:
+            log(f'  - {f}')
     if args.dry_run:
         log('DRY RUN done — nothing was written. Re-run without --dry-run to apply.')
     elif args.skills_only:
@@ -630,7 +700,7 @@ def main():
         log('then delete the staging copy. The setup is NOT complete until this is done.')
         log('After applying, verify with: ~/workspace/tools/run_all_checks.sh')
     if bottlenecks:
-        log('Bottleneck:')
+        log('Bottleneck (everything else finished; fix these, then re-run with --resume):')
         for b in bottlenecks:
             log(' - ' + b)
     if staged and not bottlenecks:
