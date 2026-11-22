@@ -156,6 +156,18 @@ def router_version(repo):
 
 
 def head_sha(repo):
+    """HEAD of the content facts.json describes.
+
+    Committing facts.json itself must not invalidate it: the stored
+    head is the last commit that touched anything EXCEPT
+    state/facts.json. (A plain rev-parse HEAD can never match after
+    the facts commit lands, because that commit moves HEAD.)
+    Falls back to rev-parse HEAD when the pathspec form is unavailable.
+    """
+    proc = _run(['git', 'log', '-1', '--format=%h', '--', '.',
+                 ':!state/facts.json'], cwd=repo)
+    if proc.returncode == 0 and proc.stdout.strip():
+        return proc.stdout.strip()
     proc = _run(['git', 'rev-parse', '--short', 'HEAD'], cwd=repo)
     return proc.stdout.strip() if proc.returncode == 0 else 'unknown'
 
