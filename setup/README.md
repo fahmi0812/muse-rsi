@@ -19,7 +19,7 @@ Muse agent, whether it is brand new or has been running for months.
    install — the agent creates the daily scheduled job (see [Activate the
    24-hour loop](#activate-the-24-hour-loop)) — because a setup script cannot
    schedule it.
-2. **Skills:** the 11 original skills + the `muse-rsi` router (246-entry registry).
+2. **Skills:** the 11 original skills + the `muse-rsi` router (248-entry registry).
 3. **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome headless
    shell + axe a11y), `scan-secrets.sh`.
 4. **Memory:** a clean `MEMORY.md` (<60 lines) + `memory/scenes/` structure.
