@@ -49,6 +49,7 @@ python3 "$REPO/tests/test_scorecard.py"
 python3 "$REPO/tests/test_gen_facts.py"
 python3 "$REPO/tests/test_autonomy_gate.py"
 python3 "$REPO/tests/test_trust.py"
+python3 "$REPO/tests/test_setup_find_name.py"
 python3 "$REPO/scripts/rsi_cycle.py" check-readonly
 # v3.1: every guard must still reject known-bad input (anti-weakening).
 python3 "$REPO/scripts/verifier_selftest.py" --repo "$REPO"

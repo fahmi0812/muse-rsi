@@ -145,6 +145,11 @@ def find_name(text, key='Name'):
     row, or heading. Returns None (with no crash) when nothing matches."""
     if not text:
         return None
+    # Markdown-escaped asterisks (\*\*) mean literal asterisks; unescape
+    # them first so `- \*\*Role:\*\* ...` matches like `- **Role:** ...`
+    # (issue #8: an IDENTITY.md written with escaped asterisks made the
+    # Role fall back to the generic template line).
+    text = text.replace('\\*', '*')
     patterns = [
         # - **Name**: X | - **Name:** X | Name: X | - name: x
         r'(?m)^\s*[-*]?\s*\*?\*?' + key + r'\*?\*?\s*:?\s*(.+?)\s*$',
