@@ -153,7 +153,9 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           git fetch --quiet origin main
-          git show origin/main:scripts/autonomy_gate.py > /tmp/gate.py
+          # Gate from main; before v3.1 is merged main has none yet (bootstrap),
+          # so fall back to this checkout's copy. Either way it must match the pin.
+          git show origin/main:scripts/autonomy_gate.py > /tmp/gate.py 2>/dev/null || cp scripts/autonomy_gate.py /tmp/gate.py
           echo "$GATE_SHA256  /tmp/gate.py" | sha256sum -c - || { echo "autonomy_gate.py on main is not the pinned version - Fahmi must re-pin GATE_SHA256"; exit 1; }
           python3 - <<'PY'
           import json, os, subprocess, sys
