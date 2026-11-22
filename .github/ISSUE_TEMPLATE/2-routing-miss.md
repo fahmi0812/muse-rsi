@@ -20,4 +20,4 @@ assignees: []
 
 ## Your setup
 
-<!-- muse-rsi version: registry entry count (e.g. 261), install date. -->
+<!-- muse-rsi version: registry entry count (e.g. 246), install date. -->

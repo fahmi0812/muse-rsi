@@ -51,20 +51,15 @@ import subprocess
 import sys
 import urllib.request
 
-ORIGINALS = {
-    'rsi-loop': ('Daily RSI loop', 'Work and knowledge', None),
-    'self-audit': ('New-skill audit checklist', 'Work and knowledge', None),
-    'anti-slop-checklist': ('Anti-slop checklist', 'Work and knowledge', None),
-    'health-research-literacy': ('Health research literacy', 'Health and fitness', None),
-    'academic-campus': ('College and campus workflow', 'Work and knowledge', None),
-    'office-corporate': ('Office and corporate workflow', 'Work and knowledge', None),
-    'fullstack-delivery': ('Full-stack delivery workflow', 'Work and knowledge', None),
-    'visual-check': ('Visual Check', 'Work and knowledge',
-                     'Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow — so design work is judged by looking at it, not by reading code.'),
-    'contribute': ('Contribute back to muse-rsi', 'Work and knowledge', None),
-    'council': ('Blind multi-model council', 'Work and knowledge', None),
-    'interrogate-claim': ('Interrogate a claim', 'Work and knowledge', None),
-}
+def load_originals(repo_root):
+    """The 11 original skills, from the single source of truth
+    config/originals.json (v3.0 G1, M-13). Returns
+    {name: (title, category, description_override)} — the same shape the
+    old inline ORIGINALS dict had. Do not duplicate the list here."""
+    data = json.loads((pathlib.Path(repo_root) / 'config' / 'originals.json')
+                      .read_text(encoding='utf-8'))
+    return {e['name']: (e['title'], e['category'], e['description_override'])
+            for e in data['originals']}
 # Marker pair that delimits the muse-rsi system block inside SOUL.md.
 # Everything between the markers is owned by the template; everything
 # outside them belongs to the agent and is never touched by a merge.
@@ -180,7 +175,7 @@ def strip_frontmatter(text):
 def install_skills(repo, home, dry):
     custom = home / 'workspace' / 'custom-skills'
     installed = []
-    for name, (title, category, desc_override) in ORIGINALS.items():
+    for name, (title, category, desc_override) in load_originals(repo).items():
         src = repo / 'skills' / name / 'SKILL.md'
         text, desc = strip_frontmatter(src.read_text(encoding='utf-8'))
         if not desc:
