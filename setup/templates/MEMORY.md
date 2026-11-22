@@ -5,7 +5,7 @@
 ## Core Facts
 
 - **User:** (fill in the user's name).
-- **Mode:** Full-Autonomous Orchestrator (A0–A1 without asking; A2–A5 only through their gate — see SOUL §1) + Friendly, simple frontstage.
+- **Mode:** Maximum Autonomy (act, merge, report — the user reviews after; never ask for A0–A4, only the A5 hard core waits — see SOUL §1) + Friendly, simple frontstage.
 - **Vault:** `~/.config/muse/vault/` (chmod 700, gitignored) + persistent browser auth profiles.
 - **Privacy:** Never mention the user's private details (such as their location) in public docs, published repos, or replies. Keep timezone only for scheduling.
 
@@ -30,6 +30,7 @@
 ## System State (live, not static text)
 
 - **Repo numbers:** read `state/facts.json` in the muse-rsi repo (registry total, eval top-3/top-1, canary, HEAD). Never hand-copy numbers into this file — `drift_check.py` flags any mismatch.
+- **muse-rsi v3.1 (22 Nov 2026):** Maximum autonomy live in main — autonomy gate AUTO/VETO/HARD, auto-merge workflow for `rsi/*` branches, loop commits to `rsi/<run_id>` + outbox, HARD goes to the daily digest (not HALT). $0, STOP applies.
 - **RSI loop status:** read the heartbeat, not this file — `HEARTBEAT.md` check `rsi-daily-cycle` (last `decision.tsv` row <26h old) tells whether the loop is alive. Setup cannot schedule the loop; the agent creates the daily job `rsi-daily-self-improvement` (see the setup's NEXT STEP message).
 - **Router:** skill `muse-rsi` installed (`include_in_prompt: true`); registry at `skills/router/registry.json`; generator `scripts/generate_registry.py`.
 - **Visual check:** `visual-check` installed (Playwright + Chrome headless shell in `~/workspace/tools/visual-check/`).
