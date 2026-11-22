@@ -41,13 +41,13 @@ CABANG B — SUDAH INSTALL (update total):
    sebagai update (versi lama → versi baru), bukan install baru.
 
 VERIFIKASI (wajib di kedua cabang):
-- Jalankan ~/workspace/tools/run_all_checks.sh — 4 check harus hijau:
-  registry check, routing eval 125/125, validate (registry 246 entri:
-  96 listed + 11 original + 139 lumitome-reference), secret scan bersih.
-- Buktikan versi baru: registry 246 entri, eval 125/125, 12 skill
-  terpasang (termasuk council + interrogate-claim), router v2.1.
-  Kalau angkanya masih angka lama (mis. registry bukan 246, eval bukan
-  125/125, skill bukan 12), berarti repo atau setup tidak ter-update —
+- Jalankan ~/workspace/tools/run_all_checks.sh — 10 check harus hijau:
+  registry check, routing eval 130/130, validate (registry 248 entri:
+  98 listed + 11 original + 139 lumitome-reference), secret scan bersih.
+- Buktikan versi baru: registry 248 entri, eval 130/130, 12 skill
+  terpasang (termasuk council + interrogate-claim), router v2.2.
+  Kalau angkanya masih angka lama (mis. registry bukan 248, eval bukan
+  130/130, skill bukan 12), berarti repo atau setup tidak ter-update —
   jangan klaim selesai, perbaiki dulu sampai angkanya benar.
 
 AKTIVASI LOOP 24 JAM (wajib — setup tidak bisa melakukannya):

@@ -74,7 +74,7 @@ never requires editing validator constants or count numbers in docs.
 
 ## Bug → regression test
 
-Every bug fix must leave a test behind: reproduce it first, add a failing case to `scripts/eval_routing.json` (routing bug) or `scripts/test_canary.py` (CLI/format bug), then fix the code. The new case must go green without breaking the other 125, then regenerate the manifest (`scripts/eval_manifest.py` + `--verify`) and log the decision in `decision.tsv`. A fix with no test will regress — the full workflow is in `skills/rsi-loop/SKILL.md`.
+Every bug fix must leave a test behind: reproduce it first, add a failing case to `scripts/eval_routing.json` (routing bug) or `scripts/test_canary.py` (CLI/format bug), then fix the code. The new case must go green without breaking the other 130, then regenerate the manifest (`scripts/eval_manifest.py` + `--verify`) and log the decision in `decision.tsv`. A fix with no test will regress — the full workflow is in `skills/rsi-loop/SKILL.md`.
 
 ## How to report a problem
 

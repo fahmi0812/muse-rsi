@@ -7,15 +7,16 @@ templates for registry/eval figures that no longer match state/facts.json
 repo is a red check: exit 1. Exit 0 only when nothing is stale.
 
 What it flags (known-stale literals, not live numbers):
-  17/17            the old routing-eval size (now 125/125)
-  registry 261 / 261 entri / 261 entries   the old registry total (now 246)
+  17/17            the old routing-eval size (now 130/130)
+  registry 261 / 261 entri / 261 entries   the old registry total (now 248)
   260 entri / 260 entries                  the other stale total seen in VM scenes
   five queries / all five hold             test_canary.py docstring (now seven)
   9 original / 10 skill                    stale original-skill / installed-skill counts
 
 It also requires the current figures to actually appear where they are
-claimed: README.md and INSTALL.md must state the current eval score
-("125/125") and registry total ("246").
+claimed: README.md and INSTALL.md must state the current eval score and
+registry total from state/facts.json (derived at run time, never hard-
+coded here — hard-coding them is how this checker itself went stale).
 
 Usage: python3 scripts/drift_check.py [--repo PATH] [--facts PATH]
 """
@@ -44,10 +45,7 @@ STALE_PATTERNS = [
 ]
 
 # Files that must actually state the current figures (not just avoid stale ones).
-EXPECTED_PRESENT = {
-    'README.md': ['125/125', '246'],
-    'INSTALL.md': ['125/125', '246'],
-}
+# The expected figures are derived from state/facts.json at run time in main().
 
 # Scan every Markdown file in the repo plus the canary script's docstring;
 # skip generated data, the facts file itself, and this checker (it contains
@@ -85,6 +83,13 @@ def main():
               f'run `python3 scripts/gen_facts.py` first', file=sys.stderr)
         return 2
     facts = json.loads(facts_path.read_text(encoding='utf-8'))
+    # Expected figures, derived from the Truth Layer — never hard-coded:
+    # v3.0 shipped this checker with 125/125 and 246 baked in, so it
+    # enforced the old numbers after the registry grew to 248 / 130/130.
+    expected_present = {
+        'README.md': [facts.get('eval_top3'), str(facts.get('registry_total'))],
+        'INSTALL.md': [facts.get('eval_top3'), str(facts.get('registry_total'))],
+    }
 
     problems = []
     scanned = 0
@@ -97,8 +102,8 @@ def main():
                 if pattern.search(line):
                     problems.append(
                         f'{rel}:{lineno}: {label}: {line.strip()[:120]}')
-        if rel in EXPECTED_PRESENT:
-            for token in EXPECTED_PRESENT[rel]:
+        if rel in expected_present:
+            for token in expected_present[rel]:
                 if token not in text:
                     problems.append(
                         f'{rel}: missing current figure {token!r} '

@@ -1,7 +1,7 @@
 # Install muse-rsi
 
 One system, four ways to install it. Pick the one that fits your machine.
-Every method ends with the same verification — all 4 checks green — and the
+Every method ends with the same verification — all 10 checks green — and the
 same activation: the agent becomes fully autonomous. Only its name and
 character stay; SOUL, MEMORY, and IDENTITY follow the full muse-rsi setup.
 
@@ -16,7 +16,7 @@ character stay; SOUL, MEMORY, and IDENTITY follow the full muse-rsi setup.
 curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh | bash
 ```
 
-This clones the repo to `~/muse-rsi`, runs the setup, then runs all 4 checks.
+This clones the repo to `~/muse-rsi`, runs the setup, then runs all 10 checks.
 If `~/muse-rsi` already exists as a git checkout, `install.sh` updates it
 first with `git pull --ff-only` (and continues with the existing copy if the
 pull fails); an existing non-git copy is used as-is. Read `install.sh` first
@@ -93,9 +93,9 @@ ke versi terbaru. Fakta di MEMORY.md dipertahankan; snapshot rollback
 dibuat dulu seperti biasa. Kalau dulu install pakai `--skills-only`,
 update juga pakai `--skills-only` supaya file sistem tidak disentuh.
 
-Setelah update, buktikan versi baru: registry 246 entri, routing eval
-125/125, 12 skill terpasang. Kalau angkanya masih angka lama (mis.
-registry bukan 246, eval bukan 125/125, skill bukan 12), copy repo
+Setelah update, buktikan versi baru: registry 248 entri, routing eval
+130/130, 12 skill terpasang. Kalau angkanya masih angka lama (mis.
+registry bukan 248, eval bukan 130/130, skill bukan 12), copy repo
 tidak ter-update — ambil ulang (clone baru atau ZIP), jangan lanjut. Cek juga job
 `rsi-daily-self-improvement` masih ada; kalau hilang, buat ulang (lihat
 [Activate the 24-hour loop](#activate-the-24-hour-loop)).
@@ -122,7 +122,7 @@ tidak ter-update — ambil ulang (clone baru atau ZIP), jangan lanjut. Cek juga 
   matches a template system heading are replaced, then the marked block is
   appended. The loop itself is activated after install — see [Activate the 24-hour
   loop](#activate-the-24-hour-loop) — because a setup script cannot schedule it.
-- **Skills:** the 11 original skills + the `muse-rsi` router (246-entry registry).
+- **Skills:** the 11 original skills + the `muse-rsi` router (248-entry registry).
 - **Tools:** gitleaks (secret scan), visual-check (Playwright + Chrome +
   axe), `scan-secrets.sh`, `run_all_checks.sh`.
 - **Identity (`IDENTITY.md`):** rewritten from the muse-rsi template (Core
@@ -157,11 +157,11 @@ tidak ter-update — ambil ulang (clone baru atau ZIP), jangan lanjut. Cek juga 
 ~/workspace/tools/run_all_checks.sh
 ```
 
-All 4 checks must pass: registry check, routing eval (125/125), validate,
+All 10 checks must pass: registry check, routing eval (130/130), validate,
 secret scan. The setup installs this script, so the command always exists
 after a successful install.
 
-If you installed with `--no-gitleaks`, check 4/4 (secret scan) reports
+If you installed with `--no-gitleaks`, check 10/10 (secret scan) reports
 gitleaks missing — that is expected, not a broken install. Install gitleaks
 later (re-run setup without the flag) or run checks 1–3 only; never push to
 a public repo without a passing secret scan.

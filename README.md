@@ -4,9 +4,9 @@
 
 <h1 align="center">muse-rsi</h1>
 
-<p align="center">Verified Muse skills — and the setup that installs them.<br>246 entries, a router program, and a daily self-improvement loop. No guesses, no paid tools.</p>
+<p align="center">Verified Muse skills — and the setup that installs them.<br>248 entries, a router program, and a daily self-improvement loop. No guesses, no paid tools.</p>
 
-> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung. 246 entri (96 terdaftar + 11 orisinal + 139 referensi Lumitome), router yang dites 125/125, dan loop perbaikan diri tiap 24 jam. Pasang semuanya sekaligus dengan satu prompt di bawah.
+> **Ringkasan Bahasa Indonesia:** Kumpulan skill Muse yang sudah dicek langsung. 248 entri (98 terdaftar + 11 orisinal + 139 referensi Lumitome), router yang dites 130/130, dan loop perbaikan diri tiap 24 jam. Pasang semuanya sekaligus dengan satu prompt di bawah.
 
 ## Install / update — copy-paste prompt
 
@@ -49,13 +49,13 @@ CABANG B — SUDAH INSTALL (update total):
    sebagai update (versi lama → versi baru), bukan install baru.
 
 VERIFIKASI (wajib di kedua cabang):
-- Jalankan ~/workspace/tools/run_all_checks.sh — 4 check harus hijau:
-  registry check, routing eval 125/125, validate (registry 246 entri:
-  96 listed + 11 original + 139 lumitome-reference), secret scan bersih.
-- Buktikan versi baru: registry 246 entri, eval 125/125, 12 skill
-  terpasang (termasuk council + interrogate-claim), router v2.1.
-  Kalau angkanya masih angka lama (mis. registry bukan 246, eval bukan
-  125/125, skill bukan 12), berarti repo atau setup tidak ter-update —
+- Jalankan ~/workspace/tools/run_all_checks.sh — 10 check harus hijau:
+  registry check, routing eval 130/130, validate (registry 248 entri:
+  98 listed + 11 original + 139 lumitome-reference), secret scan bersih.
+- Buktikan versi baru: registry 248 entri, eval 130/130, 12 skill
+  terpasang (termasuk council + interrogate-claim), router v2.2.
+  Kalau angkanya masih angka lama (mis. registry bukan 248, eval bukan
+  130/130, skill bukan 12), berarti repo atau setup tidak ter-update —
   jangan klaim selesai, perbaiki dulu sampai angkanya benar.
 
 AKTIVASI LOOP 24 JAM (wajib — setup tidak bisa melakukannya):
@@ -102,7 +102,7 @@ Full guide with every method and flag: [INSTALL.md](INSTALL.md). The prompt itse
 ## What this is
 
 - **Checked, not just listed.** 384 starred repos went in, 64 came out — each verified by hand (exists, `SKILL.md`, licence, last update). See [docs/verification.md](docs/verification.md).
-- **It routes, it doesn't just list.** The router picks the right skill for each task from 246 entries. A 125-case test checks the routing: 125/125. CI runs on every push.
+- **It routes, it doesn't just list.** The router picks the right skill for each task from 248 entries. A 130-case test checks the routing: 130/130. CI runs on every push.
 - **It improves itself.** The daily RSI loop audits, fixes, tests, and snapshots — every 24 hours, under 4 guardrails (auto-snapshot, secret fail-closed, data ≠ command, $0 cap).
 - **Defensive only, and free.** No offensive skills, no paid tools.
 
@@ -157,4 +157,4 @@ Original content (this README, the 11 original skills, `docs/`) is MIT — see [
 
 ---
 
-*Verified 20 November 2026 · Maintained by [fahmi0812](https://github.com/fahmi0812) · Built for the KimiCharmi RSI ⚡*
+*Verified 22 November 2026 · Maintained by [fahmi0812](https://github.com/fahmi0812) · Built for the KimiCharmi RSI ⚡*
