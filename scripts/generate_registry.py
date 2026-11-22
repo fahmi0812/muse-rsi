@@ -5,7 +5,7 @@ Usage:
 
 - Default: regenerate <repo>/skills/router/registry.json from <repo>/skills/index.md
   and <repo>/docs/lumitome-index.md.
-- --install: also install the 9 original skills into ~/workspace/custom-skills/
+- --install: also install the 11 original skills into ~/workspace/custom-skills/
   (or $MUSE_RSI_CUSTOM_SKILLS) and copy the registry to
   ~/workspace/custom-skills/muse-rsi/registry.json.
 - --check: regenerate to a temp string and diff against the stored registry;

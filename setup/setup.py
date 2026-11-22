@@ -13,7 +13,7 @@ What it does (new agent or long-running one):
   3. Repairs MEMORY.md (clean <60-line structure + memory/scenes/) without
      deleting the user's facts. A broken single-line MEMORY.md is replaced from
      the template, keeping the user's name when it can be found.
-  4. Installs the 9 original skills + the muse-rsi router (registry 244 entries)
+  4. Installs the 11 original skills + the muse-rsi router (registry 246 entries)
      into ~/workspace/custom-skills/.
   5. Installs the tools: gitleaks (secret scan) + visual-check (Playwright +
      Chrome headless shell + axe) + scan-secrets.sh + run_all_checks.sh.
@@ -482,7 +482,7 @@ def main():
         if 'memory/scenes/' not in new_mem:
             new_mem = new_mem.rstrip() + '\n\nSee `memory/scenes/` for details (env-stack, projects, auth-map, skills, bottlenecks, changelog).\n'
         if 'muse-rsi' not in new_mem:
-            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 96 listed (64 core + 32 reference) + 9 originals + 139 Lumitome reference = 244 registry entries.\n'
+            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 96 listed (64 core + 32 reference) + 11 originals + 139 Lumitome reference = 246 registry entries.\n'
         write_home('MEMORY.md', new_mem)
     if not args.dry_run and not args.skills_only:
         (home / 'memory' / 'scenes').mkdir(parents=True, exist_ok=True)
@@ -491,7 +491,7 @@ def main():
             'env-stack.md': '# env-stack — Work environment\n\n(Fill in: OS, Node/Python versions, tools in ~/workspace/tools/.)\n',
             'projects.md': '# projects — Active projects & repo rules\n\n(Fill in: the user\'s active projects and their rules.)\n',
             'auth-map.md': '# auth-map — Accounts & vault map\n\nMap only — NEVER write passwords/tokens/.env contents here.\n',
-            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (244 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`.\n',
+            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (246 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`.\n',
             'bottlenecks.md': '# bottlenecks — Bottleneck queue\n\nDelete an entry as soon as it is resolved.\n',
             'changelog.md': '# changelog — System changes\n\n- Setup: muse-rsi system installed.\n',
         }.items():

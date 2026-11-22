@@ -77,7 +77,7 @@ Route any task to the right verified skill before doing the work. The index live
 
 `route.py` scores each candidate as 3.0·idf per keyword-field hit +
 2.0·idf per domain-field hit + 1.0·idf per notes-field hit, where
-idf = log((n−d+0.5)/(d+0.5)+1) and n is the registry size (244).
+idf = log((n−d+0.5)/(d+0.5)+1) and n is the registry size (246).
 On this scale one rare keyword hit is worth about 15 points and one
 common keyword hit about 5, so a top-1 score under 10 means the match
 rests on a single common term or weak overlap — thin evidence.
