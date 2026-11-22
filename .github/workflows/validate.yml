@@ -133,7 +133,7 @@ jobs:
       pull-requests: read
     env:
       OWNER: fahmi0812
-      GATE_SHA256: e5cc5cd1730527ae3e4520f6d4e8a6d9bdc0299e7d66d64fc6057f47a5556e8e
+      GATE_SHA256: c42d613ca7af6f192f29dcdaebd7aee37d7293ac27a87f7b73bb23d79f60f7fe
     steps:
       - uses: actions/checkout@v5
         with:
