@@ -29,10 +29,18 @@ What it does (new agent or long-running one):
   the installing agent applies each staged file with its own file tool, then
   deletes the staging copy and runs the verification.
 
+  Self-healing (v3.2, setup/selfheal.py): a failed step is not a stop. The
+  cause is repaired (dependency, folder, permission, PATH/TMPDIR, missing
+  tool, flaky network), the step is retried, and every repair is printed as
+  "[fix] ...". Each step's result is kept in ~/.muse-rsi/install_state.json;
+  re-running after a partial failure continues from the failed step
+  (automatically, or with --resume). It never weakens the checks, never
+  deletes data, and never touches the vault contents.
+
 Usage:
   python3 setup.py [--home PATH] [--repo PATH] [--name NAME] [--user-name NAME]
                    [--dry-run] [--yes] [--no-visual-check] [--no-gitleaks]
-                   [--skills-only]
+                   [--skills-only] [--resume]
 
 Stdlib only. $0: everything it installs is free and open source. It never
 writes the user's private info into the repo — it only reads the agent's own

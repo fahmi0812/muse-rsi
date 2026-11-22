@@ -17,10 +17,10 @@ curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh |
 ```
 
 This clones the repo to `~/muse-rsi`, runs the setup, then runs all 10 checks.
-If `~/muse-rsi` already exists as a git checkout, `install.sh` updates it
-first with `git pull --ff-only` (and continues with the existing copy if the
-pull fails); an existing non-git copy is used as-is. Read `install.sh` first
-if you like — it is short. To skip the heavy parts, pass flags after `--`:
+If `~/muse-rsi` already exists, `install.sh` updates it to the latest `main`
+first. It never stops to ask when something fails — it repairs and continues
+(see [If something fails](#if-something-fails)). Read `install.sh` first if
+you like. To skip the heavy parts, pass flags after `--`:
 
 ```text
 curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh | bash -s -- --no-visual-check
@@ -54,7 +54,9 @@ python3 ~/muse-rsi/setup/setup.py --yes
 ~/workspace/tools/run_all_checks.sh
 ```
 
-Or let `install.sh` do it for you: `MUSE_RSI_USE_ZIP=1 bash install.sh`.
+Or let `install.sh` do it for you: `MUSE_RSI_USE_ZIP=1 bash install.sh`. When
+git is available it turns the ZIP copy into a real git checkout afterwards,
+because the Loop Engine and the checks need git history.
 
 ## Method 4 — Skills only (no system files touched)
 
@@ -75,9 +77,10 @@ your agent's operating files.
 ## Update (sudah pernah install)
 
 Satu perintah yang sama untuk install baru dan update — `install.sh`
-menyesuaikan sendiri: kalau `~/muse-rsi` sudah ada sebagai git checkout,
-ia `git pull --ff-only` dulu; kalau belum ada, ia clone; lalu setup +
-verifikasi jalan seperti biasa:
+menyesuaikan sendiri: kalau `~/muse-rsi` sudah ada, ia update ke `main`
+terbaru (edit lokal disimpan ke git stash, branch yang menyimpang disimpan
+ke `backup/pre-update-<waktu>`, copy non-git diganti copy baru dan yang lama
+dipindah ke samping); kalau belum ada, ia clone; lalu setup + verifikasi:
 
 ```text
 curl -sSL https://raw.githubusercontent.com/fahmi0812/muse-rsi/main/install.sh | bash
@@ -109,6 +112,7 @@ tidak ter-update — ambil ulang (clone baru atau ZIP), jangan lanjut. Cek juga 
 | `--skills-only` | Install skills + tools only. No system files touched. |
 | `--dry-run` | Preview only. Writes nothing. |
 | `--name Nova` | Name for a fresh agent (an existing agent's name is never changed). |
+| `--resume` | Continue a failed install/update: steps that already succeeded for this repo version are skipped. Re-running after a failure does this automatically. |
 | `--home PATH` / `--repo PATH` | Install into a different home, or use a repo clone elsewhere. |
 
 ## What the setup installs
@@ -172,9 +176,11 @@ The setup installs the `rsi-loop` skill, but it cannot schedule it — only the
 agent can. So the last install step is yours, the agent:
 
 1. Create a daily scheduled job named `rsi-daily-self-improvement`, every
-   24 hours, that runs the `rsi-loop` skill: audit, pick 1 fix, snapshot,
-   test, secret scan, log.
-2. Trigger the first run manually once, to prove the loop works.
+   24 hours, that runs the Loop Engine:
+   `cd ~/muse-rsi && python3 scripts/rsi_cycle.py run`.
+2. Trigger the first run manually once, to prove the loop works: it exits 0
+   and `~/.muse-rsi/decision.tsv` gets a new row. The setup already recorded
+   the SOUL §1–4 baseline the engine checks, so no reset is needed.
 
 That is what makes the agent fully autonomous like KimiCharmi — it keeps
 improving itself every day, on its own. Name and character stay; `SOUL.md`
@@ -198,9 +204,34 @@ The setup exits non-zero until the staged files are applied.
 
 ## If something fails
 
-Do not continue silently. Report the step, the error message, and what you
-already tried — as an issue, or back to the human who asked you to install.
-See [skills/contribute/SKILL.md](skills/contribute/SKILL.md).
+Do not stop to ask, and do not skip anything silently. The installer and the
+setup repair the cause, continue from the failed step, and report every
+repair as `[fix] ...` plus a `Self-heal:` summary at the end:
+
+- **Missing tool or package:** curl and unzip fall back to Python, PyYAML is
+  installed with `pip --user` (or `ensurepip` first), Node/npm is installed
+  user-level in `~/workspace/tools/node` from nodejs.org with a SHA-256 check,
+  git/python3 via `sudo -n` only when that works without a password.
+- **Folder, permission, path:** missing folders are created, files you own
+  get `chmod u+rw`, `PATH` and `TMPDIR` are set (a small `/tmp` moves to
+  `~/workspace/tmp`), the npm cache moves to `~/workspace/.npm-cache`.
+- **Network:** downloads and git fetches are retried with backoff; a failed
+  clone falls back to the ZIP.
+- **Repo state:** local edits go to `git stash`, a diverged branch is kept as
+  `backup/pre-update-<time>`, an old non-git copy is moved aside — nothing is
+  deleted.
+- **Resume:** every setup step is recorded in `~/.muse-rsi/install_state.json`.
+  Run the same command again (or `setup.py --yes --resume`) and only the
+  failed steps run.
+
+Limits that hold even when something fails: the secret scan and the checks
+are never skipped or weakened, hard-core files (trust, limits, critique,
+autonomy gate, verifier self-test, `.github/`, SOUL §1–4) are never edited to
+make a step pass, the vault is never touched, no password sudo, no paid
+services, and runtime approval cards are never worked around. If one step
+truly cannot be repaired, everything else still finishes and that step is
+reported with its error and what was tried — as an issue, or to the human who
+asked for the install (see [skills/contribute/SKILL.md](skills/contribute/SKILL.md)).
 
 ## After it works
 

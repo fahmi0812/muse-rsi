@@ -76,10 +76,10 @@ JSON yang tidak terbaca, atau situasi tak dikenal = HARD.
 2. Settings → Actions → General → Workflow permissions: pilih **Read and
    write permissions** dan centang **Allow GitHub Actions to create and
    approve pull requests** (auto-merge membuka PR dengan token workflow).
-3. Setelah PR ini di-merge, di VM: jalankan ulang setup supaya SOUL §1
-   baru terpasang, lalu hapus `~/.muse-rsi/soul_hash.txt` sekali supaya
-   PRECHECK mencatat baseline baru. Tanpa ini PRECHECK HALT karena hash
-   SOUL §1–4 berubah.
+3. Setelah update, jalankan ulang setup (atau one-liner install). Sejak
+   setup v3.2, setup sendiri mencatat baseline SOUL §1–4 yang baru untuk
+   Loop Engine (langkah `2b-soul-baseline`), jadi tidak perlu menghapus
+   `~/.muse-rsi/soul_hash.txt` dengan tangan.
 4. Setiap kali `scripts/autonomy_gate.py` berubah (PR hard core), perbarui
    `GATE_SHA256` di kedua workflow dengan `sha256sum scripts/autonomy_gate.py`.
 
