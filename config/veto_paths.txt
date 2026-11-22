@@ -9,8 +9,8 @@
 #   * removing a test_* function from scripts/test_canary.py
 #   * editing or deleting a known-bad sample in tests/bad/
 #   * deleting any verifier, engine, or test file
-# Adding cases, adding canaries, adding samples, and fixing engine code
-# are VETO. CI runs scripts/verifier_selftest.py on every change, so a
+# Adding cases and adding canaries are VETO; fixing engine code is AUTO.
+# CI runs scripts/verifier_selftest.py on every change, so a
 # patch that makes a check stop catching known-bad input turns red and
 # never merges.
 #

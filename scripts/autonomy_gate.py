@@ -10,11 +10,12 @@ about it:
 
   AUTO  merge as soon as CI is green. Skills, router, registry, docs,
         tools, setup templates, and the eval manifest (CI re-verifies it).
+        Engine/verifier fixes under config/veto_paths.txt also merge here
+        (except new eval cases and new canaries, which stay VETO).
   VETO  merge automatically after the veto window (config/limits.yaml,
         autonomy.veto_window_hours) unless Fahmi labels the PR `veto`.
-        Additive or tightening changes to the verifier and engine
-        (config/veto_paths.txt), model changes, and changes bigger than
-        the per-cycle diff limits.
+        New eval cases, new canary tests (config/veto_paths.txt), and
+        changes bigger than the per-cycle diff limits.
   HARD  Fahmi merges. Anything that could loosen the safety envelope:
         the files in config/protected_paths.txt, deleting or editing an
         existing eval case, removing a canary test, deleting or editing
@@ -187,12 +188,22 @@ def classify_tree(repo, base, head=None, work=None):
         if f.startswith('tests/bad/') and st != 'A':
             bump('HARD', f'{f}: known-bad calibration sample edited')
             continue
+        if f == 'scripts/eval_routing.json':
+            # Pure additions only reach here (removals/edits went HARD
+            # above); a brand-new manifest (st == 'A') is also an
+            # addition of cases.
+            bump('VETO', f'{f}: new eval case(s)')
+            continue
+        if f == 'scripts/test_canary.py':
+            # Pure additions only reach here (removals went HARD above).
+            bump('VETO', f'{f}: new canary test(s)')
+            continue
         if f in AUTO_OVERRIDES:
             reasons.append(f'AUTO: {f} (bookkeeping, re-verified by CI)')
             continue
         pat = _match(f, veto)
         if pat:
-            bump('VETO', f'{f} is verifier/engine (veto_paths: {pat})')
+            reasons.append(f'AUTO: {f} is an engine/verifier fix (veto_paths: {pat})')
             continue
         reasons.append(f'AUTO: {f}')
     if len(changes) > lim['max_files_changed']:

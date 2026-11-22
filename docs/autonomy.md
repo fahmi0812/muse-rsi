@@ -12,8 +12,8 @@ menyetujui sebelumnya.
 
 | Kelas gate | Trust Ladder | Contoh | Yang terjadi |
 |---|---|---|---|
-| AUTO | A2 / A3 | skill, router, registri, docs, tools, template, file root VM | merge begitu CI hijau |
-| VETO | A4 | kasus eval baru, canary baru, perbaikan engine/verifier, `MODELS.yaml`, setup, diff lebih besar dari batas per siklus | merge otomatis setelah 24 jam kecuali diberi label `veto` |
+| AUTO | A2 / A3 | skill, router, registri, docs, tools, template, file root VM, perbaikan engine/verifier | merge begitu CI hijau |
+| VETO | A4 | kasus eval baru, canary baru, `MODELS.yaml`, setup, diff lebih besar dari batas per siklus | merge otomatis setelah 2 jam kecuali diberi label `veto` |
 | HARD | A5 | trust/limits/critique, protected/veto paths, gate, self-test, `.github/`, SOUL §1–4; hapus/ubah kasus eval, hapus canary, ubah sampel known-bad, hapus file verifier | tidak di-merge otomatis; masuk digest untuk Fahmi |
 
 Aksi di luar repo yang tetap A5: uang atau API berbayar, pesan ke orang
@@ -48,7 +48,7 @@ JSON yang tidak terbaca, atau situasi tak dikenal = HARD.
   dalam satu langkah.
 - Revert PR yang sudah ter-merge → siklus berikutnya mencatat demosi:
   kelas itu 7 hari di mode veto window (merge ditunda, tetap tidak bertanya).
-- Rem otomatis tanpa manusia: maksimal 10 merge per hari, dan 3 siklus
+- Rem otomatis tanpa manusia: maksimal 20 merge per hari, dan 3 siklus
   merah berturut-turut membuat loop jeda sendiri 24 jam
   (`config/limits.yaml`, blok `autonomy`).
 
@@ -93,7 +93,7 @@ JSON yang tidak terbaca, atau situasi tak dikenal = HARD.
 | B4 | Workflow 403 | Tetap, dan sengaja: loop tidak boleh mengubah aturan merge-nya. Hanya saat workflow berubah. |
 | B5 | Staging exit 20 | Quirk runtime tetap, tetapi A3 kini otomatis: agen menerapkan file staged lewat file tool tanpa bertanya. |
 | B6 | A3 butuh persetujuan | **Hilang** (snapshot + T2 + digest). |
-| B7 | A4 hanya usulan | **Menyempit** ke hard core yang melonggarkan; menambah/mengetatkan verifier dan memperbaiki engine = auto setelah 24 jam. |
+| B7 | A4 hanya usulan | **Menyempit** ke hard core yang melonggarkan; perbaikan engine/verifier = AUTO begitu CI hijau, kasus eval/canary baru = auto setelah 2 jam. |
 | B8 | A5 eksternal/berbayar | Tetap. Uang, pesan ke orang lain, deploy produksi, vault, hapus permanen tidak diotomatiskan. |
 | B9 | Siklus nyata pertama | Terjawab oleh jadwal; jalur AUTO/VETO/HARD sudah diuji end-to-end di salinan repo. |
 | B10 | Promosi trust | **Tidak diperlukan lagi**: otonomi tidak perlu diraih, hanya bisa hilang lewat demosi. |

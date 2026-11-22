@@ -98,8 +98,20 @@ class GateTests(unittest.TestCase):
         self.write('tests/bad/secret-01.diff', '+nothing to see\n')
         self.assertEqual(self.classify()['class'], 'HARD')
 
-    def test_engine_fix_is_veto(self):
+    def test_engine_fix_is_auto(self):
         self.write('scripts/rsi_cycle.py', 'print(2)\n')
+        self.assertEqual(self.classify()['class'], 'AUTO')
+
+    def test_adding_eval_case_with_engine_fix_is_veto(self):
+        data = json.loads(json.dumps(CASES))
+        data['cases'].append({'query': 'tulis email resmi', 'expected_domains': ['Office']})
+        self.write('scripts/eval_routing.json', json.dumps(data, indent=1))
+        self.write('scripts/rsi_cycle.py', 'print(2)\n')
+        self.assertEqual(self.classify()['class'], 'VETO')
+
+    def test_engine_fix_with_big_diff_is_veto(self):
+        self.write('scripts/rsi_cycle.py', 'print(2)\n')
+        self.write('docs/big.md', ''.join(f'line {i}\n' for i in range(500)))
         self.assertEqual(self.classify()['class'], 'VETO')
 
     def test_deleting_engine_is_hard(self):
