@@ -22,6 +22,15 @@ Usage:
     --check recomputes the facts and compares them with the stored file
     (ignoring generated_at); exit 0 on match, 1 on any mismatch,
     2 when no stored file exists yet.
+    The head field is compared by ANCESTRY, not equality: the stored
+    head only has to be an ancestor of HEAD. Any later commit (even a
+    workflow-only one) moves HEAD, so demanding exact equality would
+    make --check fail on every commit after the facts were written.
+    All other fields (registry, eval, canary, manifest) are still
+    compared exactly — a real content change still fails the check.
+    Ancestry is checked shallow-clone-safe: a depth-1 checkout (CI
+    default) does not contain the stored head, so the check unshallows
+    the repo once before concluding "not an ancestor".
 """
 import argparse
 import datetime
@@ -172,6 +181,67 @@ def head_sha(repo):
     return proc.stdout.strip() if proc.returncode == 0 else 'unknown'
 
 
+def is_ancestor(repo, sha, ref='HEAD'):
+    """True when sha is an ancestor of ref (or equal to it).
+
+    git merge-base --is-ancestor exits 0 for an ancestor, 1 for a
+    non-ancestor, and 128 for an unknown revision — all three are
+    handled here, so an unknown stored head is a plain False, never
+    an exception.
+
+    Shallow clones (CI: actions/checkout@v5 defaults to fetch-depth 1)
+    do NOT contain the stored head at all, so merge-base fails even
+    for a true ancestor — exactly the PR #11 CI failure ("stored
+    'f2ca3c9' is not an ancestor of HEAD '1e0e538'" in a depth-1
+    checkout, while a full clone shows f2ca3c9 IS the parent of
+    1e0e538). When the repo is shallow, unshallow it once
+    (git fetch --unshallow) and retry; a sha that is still not an
+    ancestor afterwards — or cannot be fetched at all — is False.
+    """
+    if not sha or not isinstance(sha, str):
+        return False
+    proc = _run(['git', 'merge-base', '--is-ancestor', sha, ref], cwd=repo)
+    if proc.returncode == 0:
+        return True
+    shallow = _run(['git', 'rev-parse', '--is-shallow-repository'],
+                   cwd=repo)
+    if shallow.stdout.strip() == 'true':
+        _run(['git', 'fetch', '--quiet', '--unshallow'], cwd=repo)
+        proc = _run(['git', 'merge-base', '--is-ancestor', sha, ref],
+                    cwd=repo)
+        return proc.returncode == 0
+    return False
+
+
+def compare_facts(stored, fresh, repo):
+    """Mismatch strings between stored and freshly computed facts.
+
+    Every field except head is compared exactly. For head, the stored
+    value only has to be an ancestor of HEAD: a later commit (workflow
+    file, docs, anything) moves HEAD and therefore moves the fresh
+    head, but the stored numbers are still true for that ancestor —
+    and any number that actually changed still fails on its own field.
+    A stored head that is missing, unknown, or not an ancestor (e.g.
+    from a rewritten/diverged history) is a mismatch.
+    Returns [] when the stored facts are still valid.
+    """
+    problems = []
+    for key in sorted(set(stored) | set(fresh)):
+        if key == 'head':
+            continue
+        if stored.get(key) != fresh.get(key):
+            problems.append(f'{key}: stored {stored.get(key)!r} '
+                            f'!= current {fresh.get(key)!r}')
+    stored_head = stored.get('head')
+    fresh_head = fresh.get('head')
+    if not stored_head:
+        problems.append('head: missing in stored facts')
+    elif stored_head != fresh_head and not is_ancestor(repo, stored_head):
+        problems.append(f'head: stored {stored_head!r} is not an ancestor '
+                        f'of HEAD (current head {fresh_head!r})')
+    return problems
+
+
 def compute_facts(repo):
     facts = {
         'generated_at': datetime.datetime.now(datetime.timezone.utc)
@@ -205,20 +275,20 @@ def main():
         stored.pop('generated_at', None)
         fresh_cmp = dict(fresh)
         fresh_cmp.pop('generated_at', None)
-        problems = []
-        for key in sorted(set(stored) | set(fresh_cmp)):
-            if stored.get(key) != fresh_cmp.get(key):
-                problems.append(f'{key}: stored {stored.get(key)!r} '
-                                f'!= current {fresh_cmp.get(key)!r}')
+        problems = compare_facts(stored, fresh_cmp, repo)
         if problems:
             print('FACTS MISMATCH — stored facts.json is stale:')
             for p in problems:
                 print(f'  - {p}')
             return 1
+        head_note = ''
+        if stored.get('head') != fresh['head']:
+            head_note = (f" (stored head {stored.get('head')} is an "
+                         f"ancestor of current head {fresh['head']})")
         print(f'FACTS OK: {out} matches current repo state '
               f'(registry {fresh["registry_total"]}, eval top-3 '
               f'{fresh["eval_top3"]}, top-1 {fresh["eval_top1_positive"]}, '
-              f'canary {fresh["canary"]}, head {fresh["head"]})')
+              f'canary {fresh["canary"]}, head {fresh["head"]}){head_note}')
         return 0
 
     out.parent.mkdir(parents=True, exist_ok=True)
