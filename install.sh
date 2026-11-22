@@ -46,6 +46,13 @@ if ! command -v python3 >/dev/null 2>&1; then
   command -v python3 >/dev/null 2>&1 || { echo "python3 not found and cannot be installed without a password — install Python 3, then re-run this same command (it resumes)."; exit 1; }
 fi
 
+# --- git (the Loop Engine needs it) -------------------------------------
+if ! command -v git >/dev/null 2>&1 && command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+  if command -v apt-get >/dev/null 2>&1; then sudo -n apt-get install -y git >/dev/null && fix "git missing -> apt-get install git"
+  elif command -v dnf >/dev/null 2>&1; then sudo -n dnf install -y git >/dev/null && fix "git missing -> dnf install git"
+  fi
+fi
+
 # --- fetch helpers with fallbacks ---------------------------------------
 download() {  # url dest
   for i in 1 2 3; do
@@ -79,6 +86,20 @@ fetch_zip() {  # -> repo at $REPO_DIR (an existing non-checkout dir is moved asi
   mv "$src" "$REPO_DIR"
   rm -rf "$tmp_dir"
   echo "Downloaded $BRANCH to $REPO_DIR (ZIP)."
+  # The Loop Engine and the checks need git history: turn the ZIP copy into
+  # a real (shallow) checkout of the same branch when git is available.
+  if command -v git >/dev/null 2>&1; then
+    if git -C "$REPO_DIR" init -q -b "$BRANCH" 2>/dev/null || git -C "$REPO_DIR" init -q; then
+      git -C "$REPO_DIR" remote add origin "$REPO_URL" 2>/dev/null || git -C "$REPO_DIR" remote set-url origin "$REPO_URL"
+      if git -C "$REPO_DIR" fetch --quiet --depth 1 origin "$BRANCH" && git -C "$REPO_DIR" reset -q FETCH_HEAD; then
+        git -C "$REPO_DIR" checkout -q -B "$BRANCH" 2>/dev/null
+        fix "ZIP copy converted to a git checkout of $BRANCH (the Loop Engine needs git history)"
+      else
+        rm -rf "$REPO_DIR/.git"
+        echo "  NOTE: could not fetch git history — the copy stays a plain ZIP (checks report what needs git)."
+      fi
+    fi
+  fi
 }
 
 # --- get or update the repo ---------------------------------------------
