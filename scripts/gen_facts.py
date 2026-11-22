@@ -181,6 +181,11 @@ def head_sha(repo):
     return proc.stdout.strip() if proc.returncode == 0 else 'unknown'
 
 
+def _is_git_checkout(repo):
+    proc = _run(['git', 'rev-parse', '--is-inside-work-tree'], cwd=repo)
+    return proc.returncode == 0 and proc.stdout.strip() == 'true'
+
+
 def is_ancestor(repo, sha, ref='HEAD'):
     """True when sha is an ancestor of ref (or equal to it).
 
@@ -236,6 +241,12 @@ def compare_facts(stored, fresh, repo):
     fresh_head = fresh.get('head')
     if not stored_head:
         problems.append('head: missing in stored facts')
+    elif fresh_head == 'unknown' and not _is_git_checkout(repo):
+        # ZIP install (INSTALL.md Method 3): there is no history to check
+        # the head against. Every number above was still recomputed and
+        # compared, so the facts are verified; only ancestry is not.
+        print(f'NOTE: {repo} is not a git checkout (ZIP install) — head ancestry '
+              f'not checkable; all numeric facts were compared')
     elif stored_head != fresh_head and not is_ancestor(repo, stored_head):
         problems.append(f'head: stored {stored_head!r} is not an ancestor '
                         f'of HEAD (current head {fresh_head!r})')
