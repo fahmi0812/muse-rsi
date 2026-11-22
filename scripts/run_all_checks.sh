@@ -44,8 +44,9 @@ python3 "$REPO/scripts/gen_facts.py" --check --repo "$REPO"
 echo "== 8/10 drift_check =="
 python3 "$REPO/scripts/drift_check.py" --repo "$REPO"
 
-echo "== 9/10 scorecard tests + cycle read-only audit =="
+echo "== 9/10 scorecard tests + gen_facts tests + cycle read-only audit =="
 python3 "$REPO/tests/test_scorecard.py"
+python3 "$REPO/tests/test_gen_facts.py"
 python3 "$REPO/scripts/rsi_cycle.py" check-readonly
 
 echo "== 10/10 secret scan =="
