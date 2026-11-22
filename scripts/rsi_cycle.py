@@ -48,8 +48,15 @@ Safety properties, enforced by code, not prose:
     scripts/run_budget.py when it exists; otherwise an internal
     counter with identical semantics is used and the substitution is
     logged. Step 41 -> budget exhausted -> HALT + revert to snapshot.
-    Identical error twice -> that path stops. 3 red cycles in a row ->
-    HALT until Fahmi reviews (counted from decision.tsv v2).
+    Identical error twice -> that path stops. N red cycles in a row
+    (limits.yaml autonomy.red_cycles_cooldown, default 3) -> the loop
+    pauses itself for cooldown_hours; no human review is needed to resume.
+  * Maximum autonomy (v3.1, docs/autonomy.md): RISK classifies the patch
+    with scripts/autonomy_gate.py. AUTO and VETO changes are applied and
+    committed on branch rsi/<run_id>; the auto-merge workflow merges them
+    (VETO after the veto window). HARD changes (class A5) are escalated:
+    queued in ~/.muse-rsi/escalations.jsonl for the digest, nothing
+    applied, and the cycle ends cleanly (outcome escalated, not red).
 
 Modes:
   * --dry-run: walks every state, runs the read-only checks for real,
@@ -59,11 +66,13 @@ Modes:
   * real run: one hypothesis per cycle. A hypothesis is applied only
     as a patch file (--patch PATH, unified diff). Without --patch the
     cycle is observation-only and ends `empty`. COMMIT commits the
-    applied patch in the repo (never pushes — push is a separate,
-    human-approved step).
+    applied patch on branch rsi/<run_id> (local main is never moved) and
+    writes a push plan to ~/.muse-rsi/outbox/<run_id>.json. The engine has
+    no credentials and never pushes; the agent pushes the branch and the
+    auto-merge workflow does the rest.
 
-Exit codes: 0 = green cycle (accepted|empty), 3 = halted, 1 = error,
-2 = usage error.
+Exit codes: 0 = cycle finished (accepted|empty|escalated|reverted),
+3 = halted, 1 = error, 2 = usage error.
 
 Environment overrides (for tests; defaults are the real paths):
   MUSE_RSI_HOME  state dir (default ~/.muse-rsi)
@@ -107,6 +116,10 @@ MANIFEST_INPUTS = [
 DEFAULT_MAX_STEPS = 40
 DEFAULT_MAX_MINUTES = 45
 DEFAULT_MAX_USD = 0
+DEFAULT_AUTONOMY = {'veto_window_hours': 24, 'max_auto_merges_per_day': 10,
+                    'red_cycles_cooldown': 3, 'cooldown_hours': 24}
+# autonomy_gate.py class -> Trust Ladder class (v3.1, docs/autonomy.md).
+GATE_TO_CLASS = {'AUTO': 'A2', 'VETO': 'A4', 'HARD': 'A5'}
 EXIT_HALTED = 3
 
 
@@ -130,22 +143,63 @@ def _soul_path():
 
 
 def _limits(repo):
-    """Budget + envelope values. config/limits.yaml wins; else built-ins (Bab 4.2)."""
+    """Budget + envelope values. config/limits.yaml wins; else built-ins (Bab 4.2).
+
+    Reads the `cycle:` block (max_steps, max_minutes, max_cost_usd) and the
+    v3.1 `autonomy:` block; the legacy `run_budget:` key is still honoured.
+    """
     vals = {'max_steps': DEFAULT_MAX_STEPS, 'max_minutes': DEFAULT_MAX_MINUTES,
             'max_usd': DEFAULT_MAX_USD, 'source': 'built-in defaults (Bab 4.2 Tabel 13)'}
+    vals.update(DEFAULT_AUTONOMY)
     p = repo / 'config' / 'limits.yaml'
     try:
         import yaml  # PyYAML is available on the VM; absence is not fatal.
         if p.exists():
             data = yaml.safe_load(p.read_text(encoding='utf-8')) or {}
-            b = data.get('run_budget', {}) or {}
+            legacy = data.get('run_budget', {}) or {}
+            cyc = data.get('cycle', {}) or {}
             for k in ('max_steps', 'max_minutes', 'max_usd'):
-                if k in b:
-                    vals[k] = b[k]
-            vals['source'] = f'{p} (run_budget)'
+                if k in legacy:
+                    vals[k] = legacy[k]
+            for src, dst in (('max_steps', 'max_steps'), ('max_minutes', 'max_minutes'),
+                             ('max_cost_usd', 'max_usd')):
+                if src in cyc:
+                    vals[dst] = cyc[src]
+            auto = data.get('autonomy', {}) or {}
+            for k in DEFAULT_AUTONOMY:
+                if k in auto:
+                    vals[k] = auto[k]
+            vals['source'] = f'{p} (cycle/autonomy)'
     except Exception as e:  # noqa: BLE001 - limits are advisory; defaults are safe.
         vals['note'] = f'limits.yaml unreadable ({e}); using defaults'
     return vals
+
+
+def _recent_red_streak(decision_file):
+    """(count of trailing red cycles, ended_at of the last one) from decision.tsv v2."""
+    p = pathlib.Path(decision_file)
+    if not p.exists():
+        return 0, None
+    lines = p.read_text(encoding='utf-8').splitlines()
+    if not lines:
+        return 0, None
+    cols = lines[0].split('\t')
+    if 'outcome' not in cols:
+        return 0, None
+    oi = cols.index('outcome')
+    ei = cols.index('ended_at') if 'ended_at' in cols else None
+    streak, last_end = 0, None
+    for line in reversed(lines[1:]):
+        parts = line.split('\t')
+        if len(parts) <= oi:
+            continue
+        if parts[oi] in ('reverted', 'halted'):
+            streak += 1
+            if last_end is None and ei is not None and len(parts) > ei:
+                last_end = parts[ei]
+        else:
+            break
+    return streak, last_end
 
 
 def _soul_system_block(soul_path):
@@ -275,6 +329,22 @@ class Halt(Exception):
         self.reason = reason
 
 
+class Escalate(Exception):
+    """Hard-core change (class A5): not applied, queued for Fahmi, NOT a red cycle."""
+
+    def __init__(self, reason):
+        super().__init__(reason)
+        self.reason = reason
+
+
+class Skip(Exception):
+    """Self-imposed pause (cool-down after red cycles): an empty cycle, not a HALT."""
+
+    def __init__(self, reason):
+        super().__init__(reason)
+        self.reason = reason
+
+
 class Cycle:
     def __init__(self, repo, home, dry_run=False, hypothesis='', axis='',
                  action_class='', patch=None, t2_report=None, decision_file=None,
@@ -282,6 +352,8 @@ class Cycle:
         self.metrics_before = _load_metrics_file(metrics_before)
         self.metrics_after = _load_metrics_file(metrics_after)
         self.gate_reasons = []
+        self.autonomy = 'HARD'  # until RISK runs the gate, assume the strictest
+        self.gate_reasons_risk = []
         self.repo = repo
         self.home = home  # real home: STOP file + directives.yaml live here
         # state_home: lock / state / budget / soul baseline / trajectory.
@@ -427,6 +499,24 @@ class Cycle:
         stop = _stop_active(self.home)
         if stop:
             raise Halt(f'STOP active in PRECHECK: {stop}')
+        # Self-imposed cool-down (v3.1): N red cycles in a row pause the
+        # loop for cooldown_hours instead of waiting for a human review.
+        if not self.dry_run:
+            streak, last_end = _recent_red_streak(
+                self.decision_file or (self.state_home / 'decision.tsv'))
+            need = int(self.limits.get('red_cycles_cooldown', 3))
+            if streak >= need and last_end:
+                try:
+                    end = datetime.datetime.fromisoformat(last_end)
+                    if end.tzinfo is None:
+                        end = end.replace(tzinfo=datetime.timezone.utc)
+                    hours = (datetime.datetime.now(datetime.timezone.utc) - end
+                             ).total_seconds() / 3600.0
+                except ValueError:
+                    hours = 0.0
+                if hours < float(self.limits.get('cooldown_hours', 24)):
+                    raise Skip(f'cool-down: {streak} red cycles in a row, last '
+                               f'{hours:.1f} h ago (< {self.limits.get("cooldown_hours")} h)')
         # Constitution hash (M-11).
         soul = _soul_path()
         digest = _soul_hash(soul)
@@ -492,12 +582,41 @@ class Cycle:
         print(f'PROPOSE: axis={self.axis} hypothesis={self.hypothesis[:80]}')
 
     def state_risk(self):
-        cls = self.action_class or ('A1' if self.patch else 'A0')
+        # v3.1 maximum autonomy: the class comes from the DIFF
+        # (scripts/autonomy_gate.py), never from the agent's own label.
+        # AUTO -> A2 (auto-merge), VETO -> A4 (merge after the veto
+        # window), HARD -> A5 (escalated to Fahmi, nothing applied). An
+        # explicit A5 from the caller is always escalated; a lower
+        # explicit label can never downgrade the gate's verdict.
+        self.autonomy = 'AUTO'
+        self.gate_reasons_risk = []
+        if self.patch:
+            gate = self.repo / 'scripts' / 'autonomy_gate.py'
+            rc, out = _run([sys.executable, str(gate), 'classify', '--json',
+                            '--repo', str(self.repo), '--patch', str(self.patch)])
+            try:
+                res = json.loads(out[out.index('{'):])
+                self.autonomy = res.get('class', 'HARD')
+                self.gate_reasons_risk = res.get('reasons', [])
+            except (ValueError, json.JSONDecodeError):
+                self.autonomy = 'HARD'
+                self.gate_reasons_risk = [f'gate output unreadable (rc={rc}): {out[-200:]}']
+        gate_cls = GATE_TO_CLASS[self.autonomy] if self.patch else 'A0'
+        order = ['A0', 'A1', 'A2', 'A3', 'A4', 'A5']
+        asked = self.action_class or ''
+        cls = gate_cls
+        if asked in order and order.index(asked) > order.index(gate_cls):
+            cls = asked
+        if self.patch and cls == 'A0':
+            cls = 'A1'
         self.action_class = cls
-        print(f'RISK: action_class={cls} (patch={"yes" if self.patch else "no"})')
-        if cls in ('A4', 'A5'):
-            raise Halt(f'action class {cls} needs Fahmi approval (T4) — '
-                       f'cycle escalates, nothing applied')
+        print(f'RISK: autonomy={self.autonomy} action_class={cls} '
+              f'(patch={"yes" if self.patch else "no"})')
+        for r in self.gate_reasons_risk[:8]:
+            print(f'RISK:  - {r}')
+        if cls == 'A5':
+            raise Escalate('hard core (A5) — queued for Fahmi, nothing applied: '
+                           + '; '.join(self.gate_reasons_risk[:3]))
 
     def state_snapshot(self):
         if self.dry_run:
@@ -628,16 +747,48 @@ class Cycle:
         if self.dry_run or not self.patch or self.outcome != 'accepted':
             print('COMMIT: skipped (dry-run / no patch / not accepted)')
             return
-        rc, out = _git(self.repo, 'add', '--', *getattr(self, 'patch_files', []))
+        # v3.1: commit on a branch rsi/<run_id>, never on main, so the
+        # local main stays identical to origin/main. The agent pushes the
+        # branch (connector push_files); the auto-merge workflow merges it
+        # (AUTO at once, VETO after the window). The engine itself has no
+        # credentials and never pushes.
+        files = getattr(self, 'patch_files', [])
+        branch = f'rsi/{self.run_id}'
+        rc, out = _git(self.repo, 'rev-parse', '--abbrev-ref', 'HEAD')
+        home_branch = out.strip() if rc == 0 else ''
+        rc, out = _git(self.repo, 'switch', '-c', branch)
         if rc != 0:
-            raise Halt(f'COMMIT git add failed: {out.strip()[:200]}')
-        rc, out = _git(self.repo, 'commit', '-m',
-                       f'rsi-cycle {self.run_id}: {self.hypothesis[:100]}')
-        if rc != 0:
-            raise Halt(f'COMMIT failed: {out.strip()[:200]}')
-        rc, out = _git(self.repo, 'rev-parse', '--short', 'HEAD')
-        self.commit_after = out.strip() if rc == 0 else ''
-        print(f'COMMIT: {self.commit_after} (never pushes — push is human-approved)')
+            raise Halt(f'COMMIT could not create {branch}: {out.strip()[:200]}')
+        try:
+            rc, out = _git(self.repo, 'add', '--', *files)
+            if rc != 0:
+                raise Halt(f'COMMIT git add failed: {out.strip()[:200]}')
+            msg = (f'rsi-cycle {self.run_id}: {self.hypothesis[:100]}\n\n'
+                   f'autonomy: {self.autonomy} (class {self.action_class})')
+            rc, out = _git(self.repo, 'commit', '-m', msg)
+            if rc != 0:
+                raise Halt(f'COMMIT failed: {out.strip()[:200]}')
+            rc, out = _git(self.repo, 'rev-parse', '--short', 'HEAD')
+            self.commit_after = out.strip() if rc == 0 else ''
+        finally:
+            if home_branch and home_branch != 'HEAD':
+                _git(self.repo, 'switch', home_branch)
+        outbox = self.state_home / 'outbox'
+        outbox.mkdir(parents=True, exist_ok=True)
+        plan = {
+            'run_id': self.run_id, 'branch': branch, 'base': home_branch or 'main',
+            'commit': self.commit_after, 'files': files,
+            'title': f'rsi-cycle {self.run_id}: {self.hypothesis[:80]}',
+            'autonomy': self.autonomy, 'action_class': self.action_class,
+            'merge': {'AUTO': 'auto-merge when CI is green',
+                      'VETO': f"auto-merge after {self.limits.get('veto_window_hours', 24)} h "
+                              f"unless labelled veto"}.get(self.autonomy, 'Fahmi'),
+            'gate_reasons': self.gate_reasons_risk,
+        }
+        (outbox / f'{self.run_id}.json').write_text(json.dumps(plan, indent=2),
+                                                     encoding='utf-8')
+        print(f'COMMIT: {self.commit_after} on {branch} ({self.autonomy}); push plan '
+              f'-> {outbox / (self.run_id + ".json")}')
 
     def state_learn(self):
         if self.dry_run:
@@ -724,6 +875,31 @@ class Cycle:
             if self.state != 'HALT':
                 self._transition('HALT', note=f'cycle finished: {self.outcome}')
             self._save_state()
+            print(f'cycle {self.run_id} finished: outcome={self.outcome} '
+                  f'steps={self.steps_spent}')
+            return 0
+        except (Escalate, Skip) as e:
+            # Not a failure: an escalation is queued for Fahmi's digest, a
+            # cool-down is the loop pausing itself. Both end the cycle cleanly.
+            self.outcome = 'escalated' if isinstance(e, Escalate) else 'empty'
+            self.note = str(e)
+            print(('ESCALATE: ' if isinstance(e, Escalate) else 'SKIP: ') + str(e))
+            if not self.dry_run:
+                if isinstance(e, Escalate):
+                    q = self.state_home / 'escalations.jsonl'
+                    with q.open('a', encoding='utf-8') as f:
+                        f.write(json.dumps({'run_id': self.run_id, 'at': _now(),
+                                            'hypothesis': self.hypothesis,
+                                            'patch': str(self.patch or ''),
+                                            'reasons': getattr(self, 'gate_reasons_risk', [])})
+                                + '\n')
+                self.state = 'REPORT'
+                self.history.append({'state': 'REPORT', 'at': _now(), 'note': str(e)})
+                self.state_report()
+                self.state = 'HALT'
+                self.history.append({'state': 'HALT', 'at': _now(),
+                                     'note': f'cycle finished: {self.outcome}'})
+                self._save_state()
             print(f'cycle {self.run_id} finished: outcome={self.outcome} '
                   f'steps={self.steps_spent}')
             return 0

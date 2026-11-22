@@ -22,9 +22,10 @@
 
 ## Pre-Authorized Fast Lanes
 
-- Local workspace actions, background workers, and audit/install of GitHub skills that pass the Security Gate = **auto-execute** (A0–A1).
-- Git branch/commit/push to the user's repos = **class A2**: automatic up to a PR; merge by the user (auto-merge only after 10 accepted PRs in a row, ≥14 days, T1 green, T2 ≥90%). Never push straight to main.
-- Crucial actions (deploy, migration, big refactor, publish) = approval gate: snapshot + test + secret scan first, then the runtime approval card — never auto-executed (A5).
+- Maximum autonomy (v3.1): act, merge, report — the user reviews after the fact. Never ask for A0–A4.
+- Local workspace, background workers, root files (snapshot + T2), and GitHub skills that pass the Security Gate = **auto-execute** (A0–A3).
+- Repo changes = push to branch `rsi/<run_id>`; the auto-merge workflow merges when CI is green (A2), or after the 24 h veto window for verifier/engine changes (A4). Never push straight to main.
+- Only the hard core waits for the user, collected in one daily digest (A5): loosening the Safety Envelope, money or paid APIs, messages to other people, production deploy, publishing outside the user's own repo, vault/API keys, permanent delete.
 
 ## System State (live, not static text)
 

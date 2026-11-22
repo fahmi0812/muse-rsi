@@ -1,0 +1,185 @@
+# auto-merge.yml — v3.1 otonomi maksimal (docs/autonomy.md).
+#
+# The agent pushes each accepted cycle to a branch rsi/<run_id>. This
+# workflow opens the PR, asks scripts/autonomy_gate.py (from MAIN, SHA-256
+# pinned below) how much review the diff needs, and merges it without
+# asking anyone:
+#   AUTO  merge as soon as the `validate` check is green
+#   VETO  merge after autonomy.veto_window_hours (config/limits.yaml)
+#   HARD  never merged here — labelled needs-fahmi for Fahmi
+# Fahmi's controls, all after the fact:
+#   * label a PR `veto` (or comment "veto" / "stop") -> never merged
+#   * repo variable AUTOMERGE_PAUSED=true -> this workflow merges nothing
+#   * revert a merged PR -> the next cycle records a demotion
+# The logic lives in this file on purpose: the GitHub App cannot write
+# workflows (403), so the loop cannot change how it is merged.
+name: Auto-merge rsi branches
+
+on:
+  push:
+    branches: ['rsi/**']
+  workflow_run:
+    workflows: ['Validate registry']
+    types: [completed]
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+  checks: read
+
+concurrency:
+  group: auto-merge
+  cancel-in-progress: false
+
+env:
+  OWNER: fahmi0812
+  # SHA-256 of scripts/autonomy_gate.py that Fahmi approved. A changed gate
+  # stops all automatic merges until this pin is updated by Fahmi.
+  GATE_SHA256: e5cc5cd1730527ae3e4520f6d4e8a6d9bdc0299e7d66d64fc6057f47a5556e8e
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+      - name: Gate is the one Fahmi pinned
+        run: echo "$GATE_SHA256  scripts/autonomy_gate.py" | sha256sum -c -
+      - name: Open PRs for rsi/ branches and merge what the gate allows
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PAUSED: ${{ vars.AUTOMERGE_PAUSED }}
+        run: |
+          python3 - <<'PY'
+          import datetime, json, os, subprocess, sys
+          import yaml
+
+          R, OWNER = os.environ['REPO'], os.environ['OWNER']
+          if os.environ.get('PAUSED', '').strip().lower() == 'true':
+              print('AUTOMERGE_PAUSED=true -> nothing is merged'); sys.exit(0)
+
+          def gh(path, *args):
+              r = subprocess.run(['gh', 'api', path, *args], capture_output=True, text=True)
+              if r.returncode != 0:
+                  print(f'gh api {path} failed: {r.stderr.strip()[-300:]}')
+                  return None
+              return json.loads(r.stdout) if r.stdout.strip() else {}
+
+          def git(*args):
+              return subprocess.run(['git', *args], capture_output=True, text=True)
+
+          def label(num, name):
+              gh(f'repos/{R}/issues/{num}/labels', '-X', 'POST', '-f', f'labels[]={name}')
+
+          def comment_once(num, marker, body, comments):
+              if any(marker in (c.get('body') or '') for c in comments):
+                  return
+              gh(f'repos/{R}/issues/{num}/comments', '-X', 'POST', '-f', f'body={marker}\n{body}')
+
+          auto = (yaml.safe_load(open('config/limits.yaml', encoding='utf-8')) or {}).get('autonomy', {})
+          window_h = float(auto.get('veto_window_hours', 24))
+          cap = int(auto.get('max_auto_merges_per_day', 10))
+          now = datetime.datetime.now(datetime.timezone.utc)
+
+          # 1. Every rsi/ branch without a PR gets one.
+          prs = gh(f'repos/{R}/pulls?state=open&per_page=100') or []
+          have = {p['head']['ref'] for p in prs}
+          for b in gh(f'repos/{R}/branches?per_page=100') or []:
+              ref = b['name']
+              if not ref.startswith('rsi/') or ref in have:
+                  continue
+              owner = R.split('/')[0]
+              if gh(f'repos/{R}/pulls?state=closed&head={owner}:{ref}'):
+                  continue  # already handled once (merged or closed by Fahmi)
+              git('fetch', '--quiet', 'origin', ref)
+              title = git('log', '-1', '--format=%s', f'origin/{ref}').stdout.strip() or ref
+              pr = gh(f'repos/{R}/pulls', '-X', 'POST', '-f', f'title={title}', '-f', f'head={ref}',
+                      '-f', 'base=main', '-f',
+                      'body=Opened by auto-merge (v3.1). Review class decided by scripts/autonomy_gate.py. '
+                      'Label `veto` to stop it.')
+              if pr:
+                  prs.append(pr)
+                  print(f'opened PR #{pr["number"]} for {ref}')
+
+          # 2. Merge budget for today (runaway brake).
+          today = now.date().isoformat()
+          merged_today = sum(1 for p in gh(f'repos/{R}/pulls?state=closed&per_page=50&sort=updated&direction=desc') or []
+                             if (p.get('merged_at') or '')[:10] == today and p['head']['ref'].startswith('rsi/'))
+          merged_any = False
+
+          for p in prs:
+              ref, num = p['head']['ref'], p['number']
+              if not ref.startswith('rsi/') or not p['head'].get('repo') or p['head']['repo']['full_name'] != R:
+                  continue  # forks and non-loop branches are never auto-merged
+              labels = {l['name'] for l in p.get('labels', [])}
+              comments = gh(f'repos/{R}/issues/{num}/comments?per_page=100') or []
+              owner_veto = any(c['user']['login'] == OWNER and any(w in (c.get('body') or '').lower() for w in ('veto', 'stop'))
+                               for c in comments)
+              if 'veto' in labels or owner_veto:
+                  if 'vetoed' not in labels:
+                      label(num, 'vetoed')
+                  print(f'#{num} vetoed by Fahmi -> not merged'); continue
+              sha = p['head']['sha']
+              git('fetch', '--quiet', 'origin', ref)
+              base = git('merge-base', 'origin/main', sha).stdout.strip()
+              res = subprocess.run([sys.executable, 'scripts/autonomy_gate.py', 'classify', '--json',
+                                    '--base', base or 'origin/main', '--head', sha], capture_output=True, text=True)
+              try:
+                  verdict = json.loads(res.stdout[res.stdout.index('{'):])
+              except ValueError:
+                  verdict = {'class': 'HARD', 'reasons': ['gate output unreadable']}
+              cls = verdict['class']
+              print(f'#{num} {ref}: {cls}')
+              if cls == 'HARD':
+                  if 'needs-fahmi' not in labels:
+                      label(num, 'needs-fahmi')
+                  comment_once(num, '<!-- automerge:hard -->',
+                               'Hard core (A5): this PR is left for Fahmi.\n\n' + '\n'.join(f'- {r}' for r in verdict['reasons'][:10]),
+                               comments)
+                  continue
+              runs = (gh(f'repos/{R}/commits/{sha}/check-runs?per_page=100') or {}).get('check_runs', [])
+              val = [c for c in runs if c['name'] == 'validate']
+              if not val:
+                  gh(f'repos/{R}/actions/workflows/validate.yml/dispatches', '-X', 'POST', '-f', f'ref={ref}')
+                  print(f'#{num}: no validate run yet -> dispatched'); continue
+              if any(c['status'] != 'completed' for c in val):
+                  print(f'#{num}: validate still running'); continue
+              if not all(c['conclusion'] == 'success' for c in val):
+                  if 'ci-red' not in labels:
+                      label(num, 'ci-red')
+                  print(f'#{num}: validate red -> not merged'); continue
+              created = datetime.datetime.fromisoformat(p['created_at'].replace('Z', '+00:00'))
+              age_h = (now - created).total_seconds() / 3600
+              if cls == 'VETO' and age_h < window_h:
+                  if 'veto-window' not in labels:
+                      label(num, 'veto-window')
+                  due = (created + datetime.timedelta(hours=window_h)).strftime('%Y-%m-%d %H:%M UTC')
+                  comment_once(num, '<!-- automerge:veto-window -->',
+                               f'Verifier/engine change: merges automatically at {due} unless labelled `veto`.', comments)
+                  print(f'#{num}: in veto window ({age_h:.1f}/{window_h} h)'); continue
+              if merged_today >= cap:
+                  print(f'daily cap {cap} reached -> stop merging'); break
+              m = gh(f'repos/{R}/pulls/{num}/merge', '-X', 'PUT', '-f', 'merge_method=squash')
+              if m and m.get('merged'):
+                  merged_today += 1
+                  merged_any = True
+                  print(f'#{num} merged ({cls})')
+                  gh(f'repos/{R}/git/refs/heads/{ref}', '-X', 'DELETE')
+
+          # Merges made with the workflow token do not trigger push workflows:
+          # re-run validate on main so the envelope-guard sees every merge.
+          if merged_any:
+              gh(f'repos/{R}/actions/workflows/validate.yml/dispatches', '-X', 'POST', '-f', 'ref=main')
+          PY

@@ -4,9 +4,13 @@
 # validate.yml -> paste seluruh isi ini -> Commit.
 # Perubahan vs v2: path filter +eval/ +config/ +docs/**; gitleaks pakai
 # checksum SHA-256; job envelope-guard; job held-out (slot decrypt).
+# v3.1 (otonomi maksimal): workflow_dispatch (auto-merge.yml memanggilnya),
+# unit test gate + verifier_selftest, envelope-guard sungguhan memakai
+# scripts/autonomy_gate.py yang SHA-256-nya di-pin di bawah.
 name: Validate registry
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'skills/**'
@@ -18,7 +22,7 @@ on:
       - 'setup/**'
       - 'install.sh'
       - 'tools/**'
-      - '.github/workflows/validate.yml'
+      - '.github/**'
   pull_request:
     paths:
       - 'skills/**'
@@ -30,7 +34,7 @@ on:
       - 'setup/**'
       - 'install.sh'
       - 'tools/**'
-      - '.github/workflows/validate.yml'
+      - '.github/**'
 
 jobs:
   validate:
@@ -40,6 +44,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Install PyYAML
+        run: pip install pyyaml
       - name: Registry matches the generator
         run: python3 scripts/generate_registry.py --check
       - name: Routing eval (full suite, top-3)
@@ -58,13 +64,17 @@ jobs:
         run: |
           python3 scripts/gen_facts.py --check
           python3 scripts/drift_check.py
-      - name: Scorecard tests + cycle read-only audit
+      - name: Unit tests + cycle read-only audit
         run: |
           python3 tests/test_scorecard.py
+          python3 tests/test_gen_facts.py
+          python3 tests/test_autonomy_gate.py
+          python3 tests/test_trust.py
           python3 scripts/rsi_cycle.py check-readonly
+      - name: Verifier self-test (every guard must reject known-bad input)
+        run: python3 scripts/verifier_selftest.py
       - name: SKILL.md frontmatter is present and parses
         run: |
-          pip install pyyaml
           python3 - <<'PY'
           import pathlib, sys, yaml
           bad = []
@@ -111,33 +121,90 @@ jobs:
       # dicek 22 Nov 2026). Bila gitleaks di-upgrade, ganti URL +
       # SHA dari file checksums rilis yang bersangkutan.
 
-  # Envelope guard (G2, Bab 4.6): logika ditulis langsung di workflow
-  # supaya loop tidak bisa mengubahnya. Gagal bila commit menyentuh
-  # path terlindungi tanpa PR yang disetujui Fahmi.
+  # Envelope guard v3.1 (Bab 4.6, docs/autonomy.md). Classifies every change
+  # with scripts/autonomy_gate.py taken from MAIN and checked against the
+  # pinned SHA-256. On main it FAILS (main red -> next cycle HALTs) when a
+  # HARD change landed without Fahmi, or a VETO change skipped the veto
+  # window. On PRs and rsi/ branches it only reports the class.
   envelope-guard:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      OWNER: fahmi0812
+      GATE_SHA256: e5cc5cd1730527ae3e4520f6d4e8a6d9bdc0299e7d66d64fc6057f47a5556e8e
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Protected paths need Fahmi's approval
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+      - name: Classify the change and check who let it in
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          GHREF: ${{ github.ref }}
+          BEFORE: ${{ github.event.before }}
+          BASE_REF: ${{ github.base_ref }}
+          ACTOR: ${{ github.actor }}
+          REPO: ${{ github.repository }}
         run: |
-          PROTECTED=$(cat config/protected_paths.txt | grep -v '^#' | grep -v '^$' || true)
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          echo "Changed files:"; echo "$CHANGED"
-          HIT=0
-          for pat in $PROTECTED; do
-            if echo "$CHANGED" | grep -qF "$pat"; then
-              echo "PROTECTED PATH TOUCHED: $pat"; HIT=1
-            fi
-          done
-          if [ "$HIT" = "1" ]; then
-            echo "This PR touches protected paths (verifier/engine/limits/trust/CI/constitution)."
-            echo "It MUST be merged by Fahmi (@fahmi0812) — not by automation."
-            echo "Approval check: PR author is ${{ github.event.pull_request.user.login }}."
-          fi
-          echo "envelope-guard done (detection only — merge stays human)."
+          git fetch --quiet origin main
+          # Gate from main; before v3.1 is merged main has none yet (bootstrap),
+          # so fall back to this checkout's copy. Either way it must match the pin.
+          git show origin/main:scripts/autonomy_gate.py > /tmp/gate.py 2>/dev/null || cp scripts/autonomy_gate.py /tmp/gate.py
+          echo "$GATE_SHA256  /tmp/gate.py" | sha256sum -c - || { echo "autonomy_gate.py on main is not the pinned version - Fahmi must re-pin GATE_SHA256"; exit 1; }
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          ev, ref, actor, owner, repo = (os.environ[k] for k in ('EVENT', 'GHREF', 'ACTOR', 'OWNER', 'REPO'))
+          def git(*a):
+              return subprocess.run(['git', *a], capture_output=True, text=True).stdout.strip()
+          head = git('rev-parse', 'HEAD')
+          if ev == 'pull_request':
+              base = git('merge-base', f"origin/{os.environ.get('BASE_REF') or 'main'}", head)
+          elif ev == 'push' and ref == 'refs/heads/main' and set(os.environ.get('BEFORE', '0')) - {'0'}:
+              base = os.environ['BEFORE']
+          elif ref == 'refs/heads/main':
+              base = git('rev-parse', 'HEAD~1')
+          else:
+              base = git('merge-base', 'origin/main', head)
+          r = subprocess.run([sys.executable, '/tmp/gate.py', 'classify', '--json', '--repo', '.',
+                              '--base', base, '--head', head], capture_output=True, text=True)
+          try:
+              v = json.loads(r.stdout[r.stdout.index('{'):])
+          except ValueError:
+              v = {'class': 'HARD', 'reasons': ['gate output unreadable: ' + r.stdout[-200:] + r.stderr[-200:]]}
+          print(f"class={v['class']} ({ev} {ref}, {base[:8]}..{head[:8]})")
+          for reason in v.get('reasons', [])[:20]:
+              print('  ' + reason)
+          if ref != 'refs/heads/main' or ev == 'pull_request' or v['class'] == 'AUTO':
+              print('envelope-guard: report only'); sys.exit(0)
+          if actor == owner:
+              print(f'{v["class"]} change pushed by {owner} himself -> OK'); sys.exit(0)
+          shas = git('rev-list', f'{base}..{head}').split()
+          ok = True
+          for sha in shas:
+              out = subprocess.run(['gh', 'api', f'repos/{repo}/commits/{sha}/pulls'], capture_output=True, text=True).stdout
+              prs = json.loads(out) if out.strip() else []
+              merged_by = set()
+              for pr in prs:
+                  full = json.loads(subprocess.run(['gh', 'api', f"repos/{repo}/pulls/{pr['number']}"],
+                                                   capture_output=True, text=True).stdout or '{}')
+                  if full.get('merged_by'):
+                      merged_by.add(full['merged_by']['login'])
+              allowed = {owner} | ({'github-actions[bot]'} if v['class'] == 'VETO' else set())
+              if not merged_by & allowed:
+                  ok = False
+                  print(f'{sha[:8]}: {v["class"]} change landed on main without '
+                        + ('Fahmi' if v['class'] == 'HARD' else 'the veto window') + f' (merged_by={sorted(merged_by) or "direct push"})')
+          if not ok:
+              print('ENVELOPE VIOLATION: main is red until Fahmi reviews or reverts. The next cycle HALTs.')
+              sys.exit(1)
+          print('envelope-guard: every protected change on main came through Fahmi or the veto window')
+          PY
 
   # Held-out eval slot (G2, Bab 4.6): kasus parafrase tersembunyi.
   # AKTIFKAN hanya setelah Fahmi memasang secret HELDOUT_EVAL_B64

@@ -1,37 +1,33 @@
-# protected_paths.txt — Safety Envelope layer 1 (Bab 4.6, G2).
+# protected_paths.txt — HARD core of the Safety Envelope (v3.1, maximum autonomy).
 #
-# Paths the Loop Engine may never change. APPLY refuses any diff touching
-# them (the cycle HALTs and reverts); the CI envelope-guard fails any
-# commit touching them without a Fahmi-approved PR; CODEOWNERS routes
-# them to fahmi0812. Patterns are matched with fnmatch against the
-# repo-relative path (a trailing "/" also matches everything under it).
-# This file itself is protected: the engine never edits it, and neither
-# do limits/trust/critique configs below.
+# Only changes to these paths still need Fahmi. Everything else is merged
+# by automation: AUTO as soon as CI is green, or after the veto window for
+# the verifier/engine paths in config/veto_paths.txt (see
+# scripts/autonomy_gate.py and docs/autonomy.md).
 #
-# Verifier + engine (M-02, M-11)
-scripts/eval_routing.json
-eval/
-scripts/test_canary.py
-scripts/eval_*.py
-scripts/run_eval_k.py
-scripts/run_all_checks.sh
-scripts/rsi_cycle.py
-scripts/run_budget.py
-scripts/critique.py
-scripts/trust.py
-scripts/gen_facts.py
-scripts/drift_check.py
-# Limits + permissions (the loop must not loosen its own envelope)
-config/limits.yaml
+# Enforcement:
+#   * scripts/autonomy_gate.py classifies any diff touching these as HARD
+#     (it reads this list from the BASE side of the diff, so a change can
+#     never shrink its own review).
+#   * The Loop Engine escalates a HARD patch instead of applying it.
+#   * CI envelope-guard turns main red when a HARD change lands without
+#     Fahmi; the next cycle's PRECHECK then HALTs.
+# Patterns are fnmatch against the repo-relative path; a trailing "/" also
+# matches everything under it.
+#
+# The envelope itself: who may do what, and how much.
 config/trust.yaml
+config/limits.yaml
 config/critique.yaml
 config/protected_paths.txt
-# CI (GitHub App cannot write workflows anyway — this makes it policy)
-.github/workflows/
-# Constitution: the <!-- muse-rsi:system --> block in SOUL.md §1-4,
-# IDENTITY.md and USER.md are hash-checked in PRECHECK (M-11).
-# They are whole files here because the engine cannot do a partial-file
-# CODEOWNERS review; the hash check is the fine-grained guard.
+config/veto_paths.txt
+# The judge of autonomy and its anti-weakening proof.
+scripts/autonomy_gate.py
+scripts/verifier_selftest.py
+# CI and code owners (the GitHub App cannot write workflows anyway).
+.github/
+# Constitution: the template of SOUL §1-4 and the live root files.
+setup/templates/SOUL-system.md
 SOUL.md
 IDENTITY.md
 USER.md

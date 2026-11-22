@@ -1,31 +1,39 @@
 #!/usr/bin/env python3
-"""trust.py — Trust Ladder A0–A5 (Bab 4.5).
+"""trust.py — Trust Ladder A0–A5, v3.1 maximum autonomy (Bab 4.5, docs/autonomy.md).
 
-Permission is per action class. This script is the reader/enforcer of
-config/trust.yaml; the Loop Engine asks it before acting. The evidence
-ledger lives in ~/.muse-rsi/trust_ledger.json (per-agent runtime data,
-never committed, never edited by the loop itself):
+Permission is per action class (config/trust.yaml). Since v3.1 the
+default is autonomy: A0–A3 run and merge without asking, A4 merges after
+the veto window, and only A5 (the hard core) needs Fahmi. Nothing has to
+be earned first; trust is LOST by incidents and restored by time.
 
-  {"A2": {"accepted_prs": 0, "reverts": 0, "corrections": 0,
-          "canary_trips": 0, "demoted_until": null, ...}, ...}
+The evidence ledger lives in ~/.muse-rsi/trust_ledger.json (per-agent
+runtime data, never committed, never edited by the loop itself):
 
-Promotion (A2 -> auto-merge): 10 consecutive accepted PRs without a
-revert, over >= 14 days, T1 green, T2 calibration >= 90%.
-Demotion (any class): 1 revert after merge / 1 Fahmi correction /
-canary tripped -> back to Fahmi-merge for 14 days (A2), or back to
-approval-only (A3). Demotion is automatic and immediate; promotion is
-earned and only recorded here, never self-granted by the loop.
+  {"A2": {"accepted_prs": 0, "reverts": 0, "vetoes": 0, "corrections": 0,
+          "canary_trips": 0, "demoted_until": null, "demoted_mode": null,
+          "first_accepted_at": "..."}, ...}
+
+Demotion is automatic and immediate: an event listed in the class's
+`demote_on` switches it to its `demoted_mode` for `demote_for_days`
+(default 7). For A2/A3 that mode is `veto_window`, so even a demoted class
+does not start asking for permission; its merges are only delayed.
+
+Modes and `check` exit codes:
+  automatic, auto_merge -> 0  allowed now
+  veto_window           -> 4  allowed after the veto window
+  fahmi_merge, fahmi_only, anything else -> 1  needs Fahmi
+  usage error           -> 2
 
 Usage:
   python3 scripts/trust.py status [--config PATH] [--ledger PATH]
   python3 scripts/trust.py check <action_class> [--config PATH] [--ledger PATH]
-      # exit 0 = allowed (prints mode), 1 = needs Fahmi / not allowed
   python3 scripts/trust.py record --class A2 --event accepted_pr|revert_after_merge|
-      fahmi_correction|canary_tripped|snapshot_restore_failed [--ledger PATH]
+      veto|fahmi_correction|canary_tripped|snapshot_restore_failed [--ledger PATH]
 """
 import argparse
 import datetime
 import json
+import os
 import pathlib
 import sys
 
@@ -35,8 +43,13 @@ except ImportError:  # pragma: no cover - PyYAML is on the VM.
     yaml = None
 
 CLASSES = ['A0', 'A1', 'A2', 'A3', 'A4', 'A5']
-DEMOTE_EVENTS = {'revert_after_merge', 'fahmi_correction', 'canary_tripped',
-                 'snapshot_restore_failed'}
+ALLOWED_NOW = {'automatic', 'auto_merge'}
+ALLOWED_AFTER_WINDOW = {'veto_window'}
+EXIT_ALLOWED, EXIT_NEEDS_FAHMI, EXIT_USAGE, EXIT_AFTER_WINDOW = 0, 1, 2, 4
+DEMOTE_EVENTS = {'revert_after_merge': 'reverts', 'veto': 'vetoes',
+                 'fahmi_correction': 'corrections', 'canary_tripped': 'canary_trips',
+                 'snapshot_restore_failed': 'snapshot_failures'}
+EVENTS = ['accepted_pr'] + list(DEMOTE_EVENTS)
 
 
 def _default_config_path():
@@ -44,7 +57,6 @@ def _default_config_path():
 
 
 def _default_ledger_path():
-    import os
     home = pathlib.Path(os.environ.get('MUSE_RSI_HOME',
                                        str(pathlib.Path.home() / '.muse-rsi')))
     return home / 'trust_ledger.json'
@@ -69,40 +81,53 @@ def _save_ledger(path, data):
     path.write_text(json.dumps(data, indent=2), encoding='utf-8')
 
 
-def _demoted_until(ledger_entry):
-    raw = (ledger_entry or {}).get('demoted_until')
+def _now():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+def _parse(raw):
     if not raw:
         return None
     try:
-        return datetime.datetime.fromisoformat(raw)
+        dt = datetime.datetime.fromisoformat(raw)
     except ValueError:
         return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=datetime.timezone.utc)
 
 
 def effective_mode(cfg, ledger, cls):
     """Current mode for a class, honouring an active demotion."""
     entry = ledger.get(cls, {})
-    until = _demoted_until(entry)
-    if until and datetime.datetime.now(datetime.timezone.utc) < until.replace(
-            tzinfo=datetime.timezone.utc):
-        return entry.get('demoted_mode', 'pr_then_fahmi_merge'), f'demoted until {until.date()}'
+    until = _parse(entry.get('demoted_until'))
+    if until and _now() < until:
+        spec = cfg.get('classes', {}).get(cls, {})
+        mode = entry.get('demoted_mode') or spec.get('demoted_mode', 'fahmi_merge')
+        return mode, f'demoted until {until.date()}'
     return cfg.get('current', {}).get(cls, 'unknown'), ''
+
+
+def check_exit(mode):
+    if mode in ALLOWED_NOW:
+        return EXIT_ALLOWED
+    if mode in ALLOWED_AFTER_WINDOW:
+        return EXIT_AFTER_WINDOW
+    return EXIT_NEEDS_FAHMI
 
 
 def cmd_status(args):
     cfg = _load_config(args.config)
     ledger = _load_ledger(args.ledger)
-    print(f"Trust Ladder (config: {args.config})")
+    print(f"Trust Ladder v{cfg.get('version', '?')} (config: {args.config})")
     for cls in CLASSES:
         spec = cfg.get('classes', {}).get(cls, {})
         mode, why = effective_mode(cfg, ledger, cls)
-        entry = ledger.get(cls, {})
+        e = ledger.get(cls, {})
         print(f"  {cls} {spec.get('name', '')}: mode={mode}"
               + (f' ({why})' if why else '')
-              + f" | accepted_prs={entry.get('accepted_prs', 0)}"
-              f" reverts={entry.get('reverts', 0)}"
-              f" corrections={entry.get('corrections', 0)}"
-              f" canary_trips={entry.get('canary_trips', 0)}")
+              + f" | accepted_prs={e.get('accepted_prs', 0)}"
+              f" reverts={e.get('reverts', 0)} vetoes={e.get('vetoes', 0)}"
+              f" corrections={e.get('corrections', 0)}"
+              f" canary_trips={e.get('canary_trips', 0)}")
     return 0
 
 
@@ -110,69 +135,50 @@ def cmd_check(args):
     cls = args.action_class.upper()
     if cls not in CLASSES:
         print(f'error: unknown action class {cls} (A0..A5)', file=sys.stderr)
-        return 2
+        return EXIT_USAGE
     cfg = _load_config(args.config)
-    ledger = _load_ledger(args.ledger)
-    mode, why = effective_mode(cfg, ledger, cls)
-    if mode in ('automatic', 'auto_merge'):
-        print(f'{cls}: ALLOWED ({mode})' + (f' — {why}' if why else ''))
-        return 0
-    print(f'{cls}: NEEDS FAHMI ({mode})' + (f' — {why}' if why else ''))
-    return 1
+    mode, why = effective_mode(cfg, _load_ledger(args.ledger), cls)
+    code = check_exit(mode)
+    label = {EXIT_ALLOWED: 'ALLOWED', EXIT_AFTER_WINDOW: 'ALLOWED AFTER VETO WINDOW',
+             EXIT_NEEDS_FAHMI: 'NEEDS FAHMI'}[code]
+    print(f'{cls}: {label} ({mode})' + (f' — {why}' if why else ''))
+    return code
 
 
 def cmd_record(args):
     cls = args.action_class.upper()
     if cls not in CLASSES:
         print(f'error: unknown action class {cls}', file=sys.stderr)
-        return 2
+        return EXIT_USAGE
+    cfg = _load_config(args.config)
+    spec = cfg.get('classes', {}).get(cls, {})
     ledger = _load_ledger(args.ledger)
-    entry = ledger.setdefault(cls, {'accepted_prs': 0, 'reverts': 0,
-                                    'corrections': 0, 'canary_trips': 0,
-                                    'demoted_until': None, 'demoted_mode': None,
-                                    'first_accepted_at': None})
-    ev = args.event
-    now = datetime.datetime.now(datetime.timezone.utc)
+    entry = ledger.setdefault(cls, {})
+    for k in ('accepted_prs', 'reverts', 'vetoes', 'corrections', 'canary_trips'):
+        entry.setdefault(k, 0)
+    ev, now = args.event, _now()
     if ev == 'accepted_pr':
-        entry['accepted_prs'] = entry.get('accepted_prs', 0) + 1
-        entry.setdefault('first_accepted_at', now.isoformat(timespec='seconds'))
-        # Promotion check for A2 (Bab 4.5): 10 PRs, >=14 days.
-        if cls == 'A2':
-            first = entry.get('first_accepted_at')
-            days = 0
-            if first:
-                try:
-                    days = (now - datetime.datetime.fromisoformat(first)
-                            .replace(tzinfo=datetime.timezone.utc)).days
-                except ValueError:
-                    days = 0
-            if entry['accepted_prs'] >= 10 and days >= 14:
-                print(f'A2 promotion criteria met ({entry["accepted_prs"]} PRs, '
-                      f'{days} days) — auto-merge is EARNED; record it in '
-                      f'trust.yaml via a Fahmi-approved change, never here.')
+        entry['accepted_prs'] += 1
+        if not entry.get('first_accepted_at'):
+            entry['first_accepted_at'] = now.isoformat(timespec='seconds')
+        print(f"{cls}: accepted_pr recorded ({entry['accepted_prs']} total)")
     elif ev in DEMOTE_EVENTS:
-        key = {'revert_after_merge': 'reverts', 'fahmi_correction': 'corrections',
-               'canary_tripped': 'canary_trips',
-               'snapshot_restore_failed': 'snapshot_failures'}.get(ev)
+        key = DEMOTE_EVENTS[ev]
         entry[key] = entry.get(key, 0) + 1
-        if cls == 'A2':
-            entry['accepted_prs'] = 0  # consecutive streak resets
-            entry['demoted_until'] = (now + datetime.timedelta(days=14)).isoformat(
+        if ev in spec.get('demote_on', []):
+            days = int(spec.get('demote_for_days', 7))
+            mode = spec.get('demoted_mode', 'fahmi_merge')
+            entry['accepted_prs'] = 0
+            entry['demoted_until'] = (now + datetime.timedelta(days=days)).isoformat(
                 timespec='seconds')
-            entry['demoted_mode'] = 'pr_then_fahmi_merge'
-            print(f'A2 DEMOTED: {ev} -> Fahmi merge for 14 days '
+            entry['demoted_mode'] = mode
+            print(f"{cls} DEMOTED: {ev} -> {mode} for {days} days "
                   f"(until {entry['demoted_until'][:10]})")
-        elif cls == 'A3':
-            entry['demoted_until'] = (now + datetime.timedelta(days=14)).isoformat(
-                timespec='seconds')
-            entry['demoted_mode'] = 'staging_plus_t2_then_fahmi_digest'
-            print(f'A3 DEMOTED: {ev} -> back to approval for 14 days')
         else:
-            print(f'{cls}: demotion event recorded ({ev}); mode unchanged '
-                  f'({cls} has no auto mode to lose)')
+            print(f'{cls}: {ev} recorded; mode unchanged (not in demote_on)')
     else:
         print(f'error: unknown event {ev}', file=sys.stderr)
-        return 2
+        return EXIT_USAGE
     _save_ledger(args.ledger, ledger)
     print(f'ledger updated: {args.ledger}')
     return 0
@@ -184,8 +190,6 @@ def main():
     ap.add_argument('--ledger', default=str(_default_ledger_path()))
     sub = ap.add_subparsers(dest='command', required=True)
 
-    # --config/--ledger are also accepted AFTER the subcommand (SUPPRESS
-    # so a value given before the subcommand is never overwritten).
     def _add_common(p):
         p.add_argument('--config', default=argparse.SUPPRESS)
         p.add_argument('--ledger', default=argparse.SUPPRESS)
@@ -193,21 +197,15 @@ def main():
     p = sub.add_parser('status', help='show the ladder and ledger counters')
     _add_common(p)
     p.set_defaults(func=cmd_status)
-
     p = sub.add_parser('check', help='is this action class allowed now?')
     p.add_argument('action_class')
     _add_common(p)
     p.set_defaults(func=cmd_check)
-
-    p = sub.add_parser('record', help='record a promotion/demotion event')
+    p = sub.add_parser('record', help='record an accepted PR or a demotion event')
     p.add_argument('--class', dest='action_class', required=True)
-    p.add_argument('--event', required=True,
-                   choices=['accepted_pr', 'revert_after_merge',
-                            'fahmi_correction', 'canary_tripped',
-                            'snapshot_restore_failed'])
+    p.add_argument('--event', required=True, choices=EVENTS)
     _add_common(p)
     p.set_defaults(func=cmd_record)
-
     args = ap.parse_args()
     return args.func(args)
 

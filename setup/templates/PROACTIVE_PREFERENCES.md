@@ -5,7 +5,7 @@ _What you want to hear about without asking, what you never want brought up, and
 ## Tell me about
 
 - HALT / STOP from the RSI loop — immediately, do not wait for the digest.
-- Approvals waiting — collect them into one daily digest.
+- Daily digest (one message): what was auto-merged (to review after the fact or `veto`), what sits in the veto window, and the few hard-core (A5) items that wait for me.
 - RSI cycle summary — only when a change was accepted or reverted.
 - Replies on muse-rsi repo issues / PRs.
 - Results of the 24h loop cron when something failed or changed.
