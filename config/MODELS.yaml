@@ -1,4 +1,4 @@
-# MODELS.yaml — role-based model delegation for muse-rsi (v2.0, Fase 3)
+# MODELS.yaml — role-based model delegation for muse-rsi (v3.0, G2)
 #
 # TEMPLATE, not a live config. Nothing in this file is called automatically:
 # no API key is stored here, and no paid call happens unless the user
@@ -6,10 +6,26 @@
 # (Muse) does the work until a key is added. Adapt the picks below to
 # whatever the user has keys for; keep the shape (role -> model + fallback).
 #
-# Every model id below was verified against a live source on 2026-11-21.
-# Each entry carries its source. If a source page later disagrees, the
-# page wins — re-check before pinning a new id. Retired ids that old
-# tutorials still copy are listed at the bottom under retired_do_not_use.
+# v2 changes (Bab 4.7, M-07, M-16):
+#   * every model entry now carries `status` (template|live) and
+#     `verified_at` (date the slug was last checked against a live
+#     source). Slugs are NOT changed here: names from Bab 1.3 that were
+#     not independently verified (GPT-6.2, Gemini 4 Neon/Carbon,
+#     Fable 5.2, Muse Wonder Full) are not substituted in. The monthly
+#     model census re-verifies slugs and retires stale ones.
+#   * `local_base_model` records the local agent's own base model:
+#     the local agent runs on the Muse platform and its base model is
+#     NOT recorded anywhere verifiable — it is listed here as
+#     "unverified, check from runtime settings", with a recheck date.
+#     Never guess a slug for it.
+#   * council seat conflict fixed (M-07): seat 1 (anthropic) is the
+#     same family as the coder (anthropic claude-opus-5-5). Rule, now
+#     enforced in data: a seat whose provider family matches the
+#     maker's family ABSTAINS; quorum is then 2 of the remaining
+#     seats; if fewer than 2 remain, the decision escalates to Fahmi
+#     (T4). See `council.seat_conflict_rule` below.
+#   * Loop Engine (scripts/rsi_cycle.py) and critique.py are real
+#     readers of this file (previously no script read it).
 #
 # Roles:
 #   router     — pick the skill, fast and cheap. One pass, no reasoning.
@@ -19,15 +35,32 @@
 #   writer     — long-form writing in Indonesian or English.
 # temperature: 0.0 = deterministic (routing, judging), higher = freer (writing).
 # max_steps: hard cap on agentic steps per task for that role.
+# status: template = a suggested pick, not a live call; live = actually
+#   called and verified in this deployment. verified_at: last live-source
+#   check of the slug (YYYY-MM-DD), or null when never verified.
 
-version: 1
+version: 2
 verified: "2026-11-21"
+recheck_due: "2026-12-21"
+
+# The local agent itself. Its base model is not recorded in any
+# verifiable source — do NOT invent a slug. Check it from the runtime
+# settings and record the finding here with a date.
+local_base_model:
+  platform: "Muse"
+  model: null
+  status: template
+  verified_at: null
+  note: "unverified — local agent runs on the Muse platform; base model not recorded. Check from runtime settings; recheck by 2026-12-21."
+  recheck_by: "2026-12-21"
 
 roles:
   router:
     purpose: "Pick the right skill for a task, fast and cheap"
     provider: anthropic
     model: claude-haiku-5-5
+    status: template
+    verified_at: "2026-11-21"
     model_source: "platform.claude.com API reference (BetaManagedAgentsModel enum) — fastest model for high-volume, real-time tasks"
     price_per_1m_tokens: "$0.10 in / $0.50 out"
     temperature: 0.0
@@ -35,6 +68,8 @@ roles:
     fallback:
       provider: google
       model: gemini-3-flash
+      status: template
+      verified_at: "2026-11-21"
       model_source: "Google Gemini 3 family pricing, multiple guides Nov 2026 — $0.50 in / $3.00 out, 1M context"
     notes: "If the router model is unavailable, fall back — never silently swap in a stronger model and bill for it."
 
@@ -42,6 +77,8 @@ roles:
     purpose: "Read sources, compare claims, summarise with citations"
     provider: anthropic
     model: claude-sonnet-5-5
+    status: template
+    verified_at: "2026-11-21"
     model_source: "platform.claude.com API reference (BetaManagedAgentsModel enum) — efficient model for coding and agents; 1M context"
     price_per_1m_tokens: "$2 in / $10 out"
     temperature: 0.3
@@ -49,12 +86,16 @@ roles:
     fallback:
       provider: google
       model: gemini-3-pro-preview
+      status: template
+      verified_at: "2026-11-21"
       model_source: "Google Gemini 3 Pro preview, multiple guides Nov 2026 — $2 in / $12 out, 1M context"
 
   coder:
     purpose: "Write and change code, run tests, fix failures"
     provider: anthropic
     model: claude-opus-5-5
+    status: template
+    verified_at: "2026-11-21"
     model_source: "platform.claude.com API reference (BetaManagedAgentsModel enum) — powerful intelligence for coding, knowledge work, and long-running agents; 1M context"
     price_per_1m_tokens: "$4 in / $20 out"
     temperature: 0.2
@@ -62,12 +103,16 @@ roles:
     fallback:
       provider: openai
       model: gpt-6.1-sol
+      status: template
+      verified_at: "2026-11-21"
       model_source: "developers.openai.com deprecations page — OpenAI's own recommended replacement for gpt-5 / o3; $2 in / $10 out, 1.05M context"
 
   reviewer:
     purpose: "Judge work, verify verdicts, sit on the council"
     provider: anthropic
     model: claude-opus-5-5
+    status: template
+    verified_at: "2026-11-21"
     model_source: "platform.claude.com API reference (BetaManagedAgentsModel enum)"
     price_per_1m_tokens: "$4 in / $20 out"
     temperature: 0.0
@@ -75,6 +120,8 @@ roles:
     fallback:
       provider: google
       model: gemini-3-pro-preview
+      status: template
+      verified_at: "2026-11-21"
       model_source: "Google Gemini 3 Pro preview, multiple guides Nov 2026"
     notes: "A reviewer never reviews its own output. If the author was Opus 5.5, the review seat goes to the fallback or to the council."
 
@@ -82,6 +129,8 @@ roles:
     purpose: "Long-form writing in Indonesian or English"
     provider: anthropic
     model: claude-sonnet-5-5
+    status: template
+    verified_at: "2026-11-21"
     model_source: "platform.claude.com API reference (BetaManagedAgentsModel enum)"
     price_per_1m_tokens: "$2 in / $10 out"
     temperature: 0.7
@@ -89,6 +138,8 @@ roles:
     fallback:
       provider: moonshot
       model: kimi-k3.1-pro
+      status: template
+      verified_at: "2026-11-21"
       model_source: "Moonshot Kimi API docs via migration guides Nov 2026 — named replacement for the K2 series; $2 in / $10 out, 1M context"
 
 # The blind council (see skills/council/SKILL.md): exactly three judges,
@@ -96,17 +147,31 @@ roles:
 # A judge is never swapped for another provider's model mid-deliberation
 # (anti-substitution rule) — if a seat is unavailable, the council does
 # not run and the decision escalates to the user.
+# SEAT CONFLICT RULE (M-07 fix): seat 1 shares a provider family with
+# the coder (anthropic). When the maker is from that family, seat 1
+# ABSTAINS; quorum is then 2 of the remaining seats. If fewer than 2
+# seats remain able to judge, the decision escalates to Fahmi (T4).
+# At $0 the council does not run at all — anything that needs it
+# escalates to Fahmi instead (Bab 4.7).
 council:
   quorum: 2
+  seat_conflict_rule: "A seat whose provider family matches the maker's family abstains; quorum is 2 of the remaining seats; fewer than 2 remaining -> escalate to Fahmi (T4)."
   judges:
     - provider: anthropic
       model: claude-opus-5-5
+      status: template
+      verified_at: "2026-11-21"
       model_source: "platform.claude.com API reference"
+      conflict_with: "coder (same family: anthropic) — abstains when the maker is anthropic"
     - provider: openai
       model: gpt-6.1-sol
+      status: template
+      verified_at: "2026-11-21"
       model_source: "developers.openai.com deprecations page — recommended replacement for gpt-5"
     - provider: google
       model: gemini-3-pro-preview
+      status: template
+      verified_at: "2026-11-21"
       model_source: "Google Gemini 3 Pro preview, multiple guides Nov 2026"
 
 # Retired or closing ids. Old tutorials still copy these — do not use them.

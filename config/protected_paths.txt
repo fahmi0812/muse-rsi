@@ -1,0 +1,39 @@
+# protected_paths.txt — Safety Envelope layer 1 (Bab 4.6, G2).
+#
+# Paths the Loop Engine may never change. APPLY refuses any diff touching
+# them (the cycle HALTs and reverts); the CI envelope-guard fails any
+# commit touching them without a Fahmi-approved PR; CODEOWNERS routes
+# them to fahmi0812. Patterns are matched with fnmatch against the
+# repo-relative path (a trailing "/" also matches everything under it).
+# This file itself is protected: the engine never edits it, and neither
+# do limits/trust/critique configs below.
+#
+# Verifier + engine (M-02, M-11)
+scripts/eval_routing.json
+eval/
+scripts/test_canary.py
+scripts/eval_*.py
+scripts/run_eval_k.py
+scripts/run_all_checks.sh
+scripts/rsi_cycle.py
+scripts/run_budget.py
+scripts/critique.py
+scripts/trust.py
+scripts/gen_facts.py
+scripts/drift_check.py
+# Limits + permissions (the loop must not loosen its own envelope)
+config/limits.yaml
+config/trust.yaml
+config/critique.yaml
+config/protected_paths.txt
+# CI (GitHub App cannot write workflows anyway — this makes it policy)
+.github/workflows/
+# Constitution: the <!-- muse-rsi:system --> block in SOUL.md §1-4,
+# IDENTITY.md and USER.md are hash-checked in PRECHECK (M-11).
+# They are whole files here because the engine cannot do a partial-file
+# CODEOWNERS review; the hash check is the fine-grained guard.
+SOUL.md
+IDENTITY.md
+USER.md
+# Directives ledger lives outside the repo (~/.muse-rsi/directives.yaml);
+# only a message from Fahmi may create an entry there.
