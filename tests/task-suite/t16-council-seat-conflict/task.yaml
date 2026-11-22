@@ -1,0 +1,22 @@
+id: t16-council-seat-conflict
+title: "Council: kursi 1 (anthropic) abstain saat maker anthropic; kuorum 2"
+skill: council
+model_involved: true
+prompt: "Terapkan seat-conflict rule MODELS.yaml untuk maker anthropic"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 - "$REPO" <<'PYEOF'
+  import json, sys, yaml
+  cfg = yaml.safe_load(open(f"{sys.argv[1]}/config/MODELS.yaml", encoding="utf-8"))
+  maker_provider = "anthropic"  # provider role coder
+  seats = cfg["council"]["judges"]
+  abstain = [s["provider"] for s in seats if s["provider"] == maker_provider]
+  eligible = [s for s in seats if s["provider"] != maker_provider]
+  out = {"maker_provider": maker_provider, "abstentions": abstain,
+         "eligible_count": len(eligible), "quorum": cfg["council"]["quorum"],
+         "quorum_met": len(eligible) >= cfg["council"]["quorum"]}
+  json.dump(out, open("council-decision.json", "w", encoding="utf-8"), indent=2)
+  print(json.dumps(out))
+  PYEOF
+notes: "Prosedur deterministik dari MODELS.yaml; voting model asli butuh kunci (lihat t17)."

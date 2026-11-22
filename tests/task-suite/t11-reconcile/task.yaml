@@ -1,0 +1,22 @@
+id: t11-reconcile
+title: "Rekonsiliasi: total ledger vs bank + baris selisih A3"
+skill: office-corporate
+model_involved: true
+prompt: "Rekonsiliasi ledger.csv dengan bank.csv: total masing-masing dan baris yang selisih"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 - "$PWD" <<'PYEOF'
+  import csv, sys
+  def load(p):
+      return {r["id"]: int(r["amount"]) for r in csv.DictReader(open(p, encoding="utf-8"))}
+  led, bank = load(f"{sys.argv[1]}/ledger.csv"), load(f"{sys.argv[1]}/bank.csv")
+  tl, tb = sum(led.values()), sum(bank.values())
+  bad = [k for k in led if led.get(k) != bank.get(k)]
+  lines = ["# Rekonsiliasi ledger vs bank",
+           f"- Total ledger: {tl}", f"- Total bank: {tb}",
+           f"- Selisih: {tl - tb}"]
+  for k in bad:
+      lines.append(f"- Baris tidak cocok: {k} (ledger {led[k]}, bank {bank[k]})")
+  open(f"{sys.argv[1]}/reconciliation.md", "w", encoding="utf-8").write("\n".join(lines) + "\n")
+  PYEOF

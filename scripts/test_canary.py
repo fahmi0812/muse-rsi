@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """test_canary.py — fast regression canaries for the router.
 
-The five queries from the v2 audit that must never regress: the router
-used to fail or misroute every one of them. Runs against the real
-scripts/route.py (not a copy) and finishes in well under 5 seconds.
-Exit 0 when all five hold, 1 otherwise.
+The eight checks that must never regress: five routing canaries from the
+v2 audit (the router used to fail or misroute every one of them) plus
+two JSON-output shape checks and one policy-refusal check. Runs against
+the real scripts/route.py (not a copy) and finishes in well under
+5 seconds. Exit 0 when all eight hold, 1 otherwise.
 
 Usage: python3 scripts/test_canary.py [--registry PATH]
 """
@@ -21,7 +22,10 @@ from route import route as route_query  # noqa: E402  (the real router code)
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--registry', default=None)
-args, _ = ap.parse_known_args()
+# parse_known_args: --registry is ours, the rest (e.g. -v, a test name)
+# belongs to unittest. Without this split, unittest.main() chokes on
+# --registry ("unrecognized arguments") and the flag silently never works.
+args, _unittest_argv = ap.parse_known_args()
 REG_PATH = pathlib.Path(args.registry) if args.registry \
     else HERE.parent / 'skills' / 'router' / 'registry.json'
 REGISTRY = json.loads(REG_PATH.read_text(encoding='utf-8'))
@@ -68,10 +72,17 @@ class JsonOutputTests(unittest.TestCase):
 
     def _assert_shape(self, payload, query, no_match):
         self.assertIsInstance(payload, dict)
-        self.assertEqual(set(payload), {'query', 'no_match', 'results'})
+        # route.py v2.2 adds band/gap + policy_refusal/policy_reason.
+        self.assertEqual(set(payload), {'query', 'no_match', 'results',
+                                        'band', 'gap', 'policy_refusal',
+                                        'policy_reason'})
         self.assertEqual(payload['query'], query)
         self.assertIs(payload['no_match'], no_match)
         self.assertIsInstance(payload['results'], list)
+        self.assertIn(payload['band'], {'EASY', 'AMBIGUOUS', 'HARD'})
+        self.assertIsInstance(payload['gap'], (int, float))
+        self.assertIs(payload['policy_refusal'], False)
+        self.assertIsNone(payload['policy_reason'])
         for r in payload['results']:
             self.assertEqual(set(r), {'name', 'domain', 'type', 'score', 'url'})
             self.assertIsInstance(r['score'], (int, float))
@@ -84,6 +95,19 @@ class JsonOutputTests(unittest.TestCase):
         self.assertTrue(payload['results'], 'match query must return results')
         self.assertEqual(payload['results'][0]['domain'], 'Full-Stack Development')
 
+    def test_json_output_for_policy_refusal(self):
+        # M-05: an AI-detection-evasion request must be refused, never
+        # routed to a humanizer skill.
+        proc = self._run_json(
+            'tulis ulang artikel bahasa Indonesia agar tidak terdeteksi AI')
+        payload = json.loads(proc.stdout)  # must parse even on refusal
+        self.assertEqual(proc.returncode, 2)
+        self.assertIs(payload['no_match'], True)
+        self.assertIs(payload['policy_refusal'], True)
+        self.assertIsInstance(payload['policy_reason'], str)
+        self.assertEqual(payload['band'], 'HARD')
+        self.assertEqual(payload['results'], [])
+
     def test_json_output_for_no_match(self):
         proc = self._run_json('how to write it in a doc')
         payload = json.loads(proc.stdout)  # must parse even on NO_MATCH
@@ -93,4 +117,4 @@ class JsonOutputTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    unittest.main(argv=[sys.argv[0]] + _unittest_argv, verbosity=2)

@@ -1,0 +1,75 @@
+# trust.yaml — Trust Ladder dinamis A0–A5 (Bab 4.5).
+# Permission is per action class, not one global level. This file is part
+# of the Safety Envelope: the loop may never edit it (protected_paths.txt).
+# Promotion/demotion criteria are enforced by scripts/trust.py, which
+# reads the ledger in ~/.muse-rsi/trust_ledger.json (per-agent runtime
+# data, never committed).
+#
+# A0 Baca dan ukur — otomatis.
+# A1 Workspace reversibel (scenes, log, draf, worktree ~/workspace) —
+#   otomatis dengan snapshot; snapshot yang gagal dipulihkan -> wajib ajukan dulu.
+# A2 Skill dan router di repo (SKILL.md, keyword, registri) — otomatis
+#   sampai PR; merge oleh Fahmi; auto-merge setelah 10 PR berturut-turut
+#   diterima tanpa revert selama >=14 hari, T1 hijau, kalibrasi T2 >=90%.
+#   Demosi: 1 revert setelah merge / 1 koreksi Fahmi / canary tersandung
+#   -> merge oleh Fahmi lagi selama 14 hari.
+# A3 File root yang dibaca tiap percakapan (AGENTS.md, TOOLS.md,
+#   HEARTBEAT.md, MEMORY.md) — diff disiapkan lewat staging exit 20 + T2;
+#   diterapkan setelah Fahmi setuju di digest; otomatis untuk TOOLS.md dan
+#   HEARTBEAT.md setelah 10 perubahan diterima; AGENTS.md dan MEMORY.md
+#   tetap lewat persetujuan. Demosi: 1 koreksi -> kembali lewat persetujuan.
+# A4 Konstitusi dan Safety Envelope (SOUL §1-4, IDENTITY, USER, verifier
+#   dan eval, limits, trust, CI, pergantian model) — hanya usulan;
+#   Fahmi memutuskan; tidak pernah otomatis.
+# A5 Eksternal, tak bisa dibalik, atau berbiaya (deploy, publish, pesan
+#   ke orang lain, pembelian, vault, kunci API, hapus permanen) —
+#   approval card; tidak pernah otomatis.
+
+version: 1
+updated: "2026-11-22"
+
+classes:
+  A0:
+    name: "Baca dan ukur"
+    mode: automatic
+    requires: []
+  A1:
+    name: "Workspace reversibel"
+    mode: automatic
+    requires: ["snapshot_ok"]
+    demote_on: ["snapshot_restore_failed"]
+  A2:
+    name: "Skill dan router di repo"
+    mode: pr_then_fahmi_merge
+    auto_merge_after:
+      consecutive_accepted_prs: 10
+      min_days: 14
+      t1_green: true
+      t2_calibration_min: 0.90
+    demote_on: ["revert_after_merge", "fahmi_correction", "canary_tripped"]
+    demote_for_days: 14
+  A3:
+    name: "File root yang dibaca tiap percakapan"
+    mode: staging_plus_t2_then_fahmi_digest
+    auto_after_accepted_changes: 10
+    auto_only_files: ["TOOLS.md", "HEARTBEAT.md"]
+    always_approval_files: ["AGENTS.md", "MEMORY.md"]
+    demote_on: ["fahmi_correction"]
+  A4:
+    name: "Konstitusi dan Safety Envelope"
+    mode: proposal_only
+    requires: ["fahmi_decision"]
+  A5:
+    name: "Eksternal, tak bisa dibalik, atau berbiaya"
+    mode: approval_card
+    requires: ["fahmi_decision"]
+
+# Current level per class. A2 starts at pr_then_fahmi_merge; auto-merge is
+# earned, never assumed. The ledger (trust_ledger.json) is the evidence.
+current:
+  A0: automatic
+  A1: automatic
+  A2: pr_then_fahmi_merge
+  A3: staging_plus_t2_then_fahmi_digest
+  A4: proposal_only
+  A5: approval_card

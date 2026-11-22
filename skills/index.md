@@ -1,6 +1,6 @@
 # Skill Index — muse-rsi
 
-> Complete index of the **64 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 7 Full-Stack + 8 Office + 5 Research + 7 Health, plus 11 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 139 Lumitome skills. All 64 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)).
+> Complete index of the **66 listed skills** in muse-rsi: 6 Tier 1 skills + 15 verified gap fillers + 8 DevOps + 8 Academic + 8 Full-Stack + 8 Office + 5 Research + 7 Health + 1 Agent & Orchestration (repo-level), plus 11 original skills in this repo, further reference for Tiers 2–6, and a link-only index of 139 Lumitome skills. All 66 were verified directly — the last 27 via the web on 20 November 2026 (see [docs/recheck-web.md](../docs/recheck-web.md)), plus 2 more verified 22 November 2026 (modern-web-guidance, elephant-goldfish-model).
 >
 > To install the whole system at once (skills + router + tools + memory + SOUL merge, keeping your agent's character), run `python3 setup/setup.py --yes` — see [setup/README.md](../setup/README.md).
 >
@@ -16,11 +16,12 @@
 | Gap fillers from the critique — 15 skills | 15 | Passed; close the 5 biggest gaps |
 | Domain Pack — DevOps & Infra | 8 | Fully verified (SKILL.md + licence) |
 | Domain Pack — College & Academic | 8 | Fully verified (SKILL.md + licence) |
-| Domain Pack — Full-Stack Development | 7 | Verified via web 20 Nov 2026 |
+| Domain Pack — Full-Stack Development | 8 | Verified via web 20 Nov 2026; row 8 verified 22 Nov 2026 |
 | Domain Pack — Office & Corporate | 8 | Verified via web 20 Nov 2026 |
 | Domain Pack — Research | 5 | Verified via web 20 Nov 2026 |
 | Domain Pack — Health & Medical | 7 | Verified via web 20 Nov 2026 |
-| **Total listed skills** | **64** | — |
+| Agent & Orchestration (repo-level) | 1 | Verified via web 22 Nov 2026 |
+| **Total listed skills** | **66** | — |
 | Original skills in this repository | 11 | Written for this RSI system |
 | Lumitome Reference Index (link only) | 139 | Verified locally from the Lumitome clone |
 | Pending re-check | 0 | All 30 re-checked via web on 20 Nov 2026 — 27 promoted, 3 not (see below) |
@@ -115,19 +116,28 @@ Fully verified on 20 November 2026 (SKILL.md + licence checked directly). See [d
 The Lumitome registry holds 930 skills in total (`router/skills-registry.json`, verified locally), of which 764 are routable — the 166-skill red-team pack is disabled by design and is **never** included here, even as a reference.
 
 
-## Domain Pack — Full-Stack Development (7)
+## Domain Pack — Full-Stack Development (8)
 
-Verified via the web on 20 November 2026 (SKILL.md + licence read from each repo page). See [docs/recheck-web.md](../docs/recheck-web.md).
+Verified via the web on 20 November 2026 (SKILL.md + licence read from each repo page). See [docs/recheck-web.md](../docs/recheck-web.md). Row 8 (modern-web-guidance) verified 22 November 2026.
 
-| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
-|---|---|---|---|---|---|
-| 1 | [petrkindlmann/qa-skills](https://github.com/petrkindlmann/qa-skills) | 291 | Yes (`skills/accessibility-testing/SKILL.md`) | MIT | QA / test automation (Playwright, Cypress, E2E). Top pick. |
-| 2 | [PramodDutta/qaskills](https://github.com/PramodDutta/qaskills) | 250 | Yes (`.claude/skills/ship-prod/SKILL.md`) | MIT | QA/testing directory. Overlaps with petrkindlmann — pick one. |
-| 3 | [wsimmonds/claude-nextjs-skills](https://github.com/wsimmonds/claude-nextjs-skills) | 115 | Yes (root folders, e.g. `nextjs-advanced-routing/SKILL.md`) | MIT | Next.js skills. Last commit 24 Oct 2025 — stale, over 1 year old. |
-| 4 | [laguagu/claude-code-nextjs-skills](https://github.com/laguagu/claude-code-nextjs-skills) | 74 | Yes (`skills/ai-app/SKILL.md`) | MIT | Next.js 16 + AI SDK 7 + pgvector + Bun. Active. |
-| 5 | [kazdenc/builder-skills](https://github.com/kazdenc/builder-skills) | 46 | Yes (`.claude/skills/dev/test/test-plan/SKILL.md`) | MIT | 47 skills: product, frontend, full-stack, browser automation. Last update 9 Mar 2026. |
-| 6 | [PyModel/react-frontend-skills](https://github.com/PyModel/react-frontend-skills) | 43 | Yes (`skills/react/SKILL.md`) | MIT | React 19 / Next.js 16 / TypeScript, testing, UI. |
-| 7 | [leejpsd/typescript-react-nextjs-patterns](https://github.com/leejpsd/typescript-react-nextjs-patterns) | 22 | Yes (at root) | MIT | TypeScript/React/Next.js decision guides. Small repo. |
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes | Keywords |
+|---|---|---|---|---|---|---|
+| 1 | [petrkindlmann/qa-skills](https://github.com/petrkindlmann/qa-skills) | 291 | Yes (`skills/accessibility-testing/SKILL.md`) | MIT | QA / test automation (Playwright, Cypress, E2E). Top pick. | |
+| 2 | [PramodDutta/qaskills](https://github.com/PramodDutta/qaskills) | 250 | Yes (`.claude/skills/ship-prod/SKILL.md`) | MIT | QA/testing directory. Overlaps with petrkindlmann — pick one. | |
+| 3 | [wsimmonds/claude-nextjs-skills](https://github.com/wsimmonds/claude-nextjs-skills) | 115 | Yes (root folders, e.g. `nextjs-advanced-routing/SKILL.md`) | MIT | Next.js skills. Last commit 24 Oct 2025 — stale, over 1 year old. | |
+| 4 | [laguagu/claude-code-nextjs-skills](https://github.com/laguagu/claude-code-nextjs-skills) | 74 | Yes (`skills/ai-app/SKILL.md`) | MIT | Next.js 16 + AI SDK 7 + pgvector + Bun. Active. | |
+| 5 | [kazdenc/builder-skills](https://github.com/kazdenc/builder-skills) | 46 | Yes (`.claude/skills/dev/test/test-plan/SKILL.md`) | MIT | 47 skills: product, frontend, full-stack, browser automation. Last update 9 Mar 2026. | |
+| 6 | [PyModel/react-frontend-skills](https://github.com/PyModel/react-frontend-skills) | 43 | Yes (`skills/react/SKILL.md`) | MIT | React 19 / Next.js 16 / TypeScript, testing, UI. | |
+| 7 | [leejpsd/typescript-react-nextjs-patterns](https://github.com/leejpsd/typescript-react-nextjs-patterns) | 22 | Yes (at root) | MIT | TypeScript/React/Next.js decision guides. Small repo. | |
+| 8 | [googlechrome/modern-web-guidance](https://github.com/googlechrome/modern-web-guidance) | 24,695 | Yes (`skills/modern-web-guidance/SKILL.md`) | Apache-2.0 | 210 expert guides for the modern web platform: CSS, HTML, client-side JS, accessibility, dark mode, dialog, modal, popover, container queries, view transitions, forms, validation, autofill, passkeys, performance, web components. CLI search/retrieve via npx, Node >=22. | dialog, modal, dark mode, container queries, accessibility, popover, forms, validation, autofill, passkeys, performance, web components, CSS, HTML, typography, carousel, accordion, tabs, toast, scrollbar, wasm, webassembly, oklch, CWV, LCP, INP, CLS, built-in AI, sanitization, chrome |
+
+## Agent & Orchestration — repo-level (1)
+
+Repo-level upstream entry for Google's Elephant-Goldfish Model (design-doc workflow: Elephant drafts with full context, Goldfish blind-reviews without it). Verified via the web on 22 November 2026. Upstream has 8 skills; 7 are already indexed as Lumitome references from Fahmi's Lumitome clone (`egm-bootstrap`, `egm-brainstorm`, `egm-draft`, `egm-drift-report`, `egm-resolve`, `egm-review`, `egm-review-loop`) — `egm-lite` is not in `docs/lumitome-index.md` yet (pre-existing gap, not added here). This row adds only the upstream repo, not duplicate per-skill entries.
+
+| # | Skill | Stars (22 Nov 2026) | SKILL.md? | Licence | Notes | Keywords |
+|---|---|---|---|---|---|---|
+| 1 | [google/elephant-goldfish-model](https://github.com/google/elephant-goldfish-model) | 21,959 | Yes (8 skills in subfolders) | Apache-2.0 | Elephant drafts design docs with full context; Goldfish blind review audits them without prior context. 8 skills: brainstorm, draft, review, review-loop, resolve, lite, bootstrap, drift-report. | egm, elephant, goldfish, blind review, design doc, design document, specification, spec, fresh eyes, review loop, brainstorm, drift, rfc, architecture, trade-off, assumption, reviewer, design review, spec review |
 
 ## Domain Pack — Office & Corporate (8)
 
@@ -180,7 +190,7 @@ All 30 pending repos were re-checked via the web on 20 November 2026 (see [docs/
 
 ## Router — Install and Route (skills/router/)
 
-[skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (246 entries: 64 core + 32 reference + 11 originals + 139 Lumitome reference). Install the router as a custom skill together with the 11 original skills. It scores each request with a BM25-style ranker over `keywords` (3.0) + `domain` (2.0) + `notes` (1.0), breaks ties by tier (original > core > reference > lumitome-reference), and returns `NO_MATCH` when no keyword matches. Routing is covered by a 125-case eval (`scripts/eval_routing.py`) — all 125 passed on 21 November 2026.
+[skills/router/SKILL.md](router/SKILL.md) + [skills/router/registry.json](router/registry.json) (248 entries: 66 core + 32 reference + 11 originals + 139 Lumitome reference). Install the router as a custom skill together with the 11 original skills. It scores each request with a BM25-style ranker over `keywords` (3.0) + `domain` (2.0) + `notes` (1.0), breaks ties by tier (original > core > reference > lumitome-reference), and returns `NO_MATCH` when no keyword matches. Routing is covered by a 130-case eval (`scripts/eval_routing.py`) — all 130 passed on 22 November 2026.
 
 ## Original Skills in This Repository (11)
 

@@ -1,0 +1,9 @@
+id: t19-interrogate-no-evidence
+title: "Interogasi: klaim tanpa bukti -> unproven (bukan 'benar')"
+skill: interrogate-claim
+model_involved: true
+prompt: "Interogasi klaim 'Model baru GPT-6.2 sudah terverifikasi resmi' tanpa file bukti"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/tests/task-suite/_helpers/interrogate.py" claim.txt evidence verdict.json

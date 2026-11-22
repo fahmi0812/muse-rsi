@@ -1,0 +1,5 @@
+--- a/scripts/route.py
++++ b/scripts/route.py
+-    return scores.sort()
++    return sorted(scores, reverse=True)
+ # fix: sort() returns None, sorted() returns the list

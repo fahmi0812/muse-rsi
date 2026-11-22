@@ -1,0 +1,10 @@
+id: t13-decision-log-cycle
+title: "decision_log v2: satu baris cycle tercatat dengan run_id"
+skill: rsi-loop
+model_involved: false
+prompt: "Catat satu siklus RSI ke decision.tsv v2 dengan run_id dan outcome"
+timeout_s: 60
+check: check.py
+solve: |
+  python3 "$REPO/scripts/decision_log.py" cycle --run-id t13-decision-log-001 --axis-target C --action-class A1 --critique-tier T1 --outcome empty --note "task-suite t13" --file decision.tsv
+notes: "Memakai --file agar tidak mengotori state/ repo."

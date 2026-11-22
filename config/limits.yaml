@@ -1,0 +1,23 @@
+# config/limits.yaml — Safety Envelope budget limits for one RSI cycle (v3.0 G1, Bab 4.2).
+#
+# Enforced by scripts/run_budget.py, which the Loop Engine calls before and
+# after every step. The loop itself may NEVER loosen these values — changing
+# this file is class A4 (Fahmi decides). Initial values are the design's
+# Table 13 starting point, to be calibrated after 2 weeks of cycle data.
+#
+#   max_steps         model steps per cycle (spend #41 must exit non-zero)
+#   max_minutes       wall-clock minutes per cycle (45 min = browser-batch rule)
+#   max_cost_usd      paid-API spend per cycle; $0 default — any paid call
+#                     while this is 0 exhausts the budget immediately
+#   max_files_changed files a cycle may touch
+#   max_diff_lines    added+removed lines a cycle may produce
+#   max_retries       failed attempts on one approach before the cycle must
+#                     revert (design: fail 2x = change approach, 3x = revert)
+version: 1
+cycle:
+  max_steps: 40
+  max_minutes: 45
+  max_cost_usd: 0
+  max_files_changed: 10
+  max_diff_lines: 400
+  max_retries: 3

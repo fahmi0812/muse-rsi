@@ -66,6 +66,9 @@ STOPWORDS = {
     'setelah', 'sebelum', 'karena', 'sehingga', 'namun', 'tetapi', 'tapi',
     'pun', 'lah', 'kah', 'nya', 'ku', 'mu', 'per', 'hal', 'cara', 'buat',
     'bikin', 'tolong', 'mohon', 'silakan',
+    # 'tulis' is Indonesian "write": symmetric with English 'write'
+    # above (see scripts/route.py). Keep the two STOPWORDS sets identical.
+    'tulis',
 }
 SHORT_WHITELIST = {
     'ui', 'ux', 'qa', 'ci', 'cd', '3d', 'ai', 'ml', 'db', 'id', 'go',
@@ -235,20 +238,18 @@ custom = pathlib.Path(os.environ.get('MUSE_RSI_CUSTOM_SKILLS') or
 out_path = pathlib.Path(args.out) if args.out else repo / 'skills' / 'router' / 'registry.json'
 
 # ---------- 1. Install the 11 original skills ----------
-originals = {
-    'rsi-loop': ('Daily RSI loop', 'Work and knowledge', None),
-    'self-audit': ('New-skill audit checklist', 'Work and knowledge', None),
-    'anti-slop-checklist': ('Anti-slop checklist', 'Work and knowledge', None),
-    'health-research-literacy': ('Health research literacy', 'Health and fitness', None),
-    'academic-campus': ('College and campus workflow', 'Work and knowledge', None),
-    'office-corporate': ('Office and corporate workflow', 'Work and knowledge', None),
-    'fullstack-delivery': ('Full-stack delivery workflow', 'Work and knowledge', None),
-    'visual-check': ('Visual Check', 'Work and knowledge',
-                     'Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow — so design work is judged by looking at it, not by reading code.'),
-    'contribute': ('Contribute back to muse-rsi', 'Work and knowledge', None),
-    'council': ('Blind multi-model council', 'Work and knowledge', None),
-    'interrogate-claim': ('Interrogate a claim', 'Work and knowledge', None),
-}
+# Single source of truth: config/originals.json (v3.0 G1, M-13). Do not
+# duplicate this list here or in setup.py — both read the same file.
+def load_originals(repo_root):
+    data = json.loads((pathlib.Path(repo_root) / 'config' / 'originals.json')
+                      .read_text(encoding='utf-8'))
+    return data['originals']
+
+
+originals_list = load_originals(repo)
+originals = {e['name']: (e['title'], e['category'], e['description_override'])
+             for e in originals_list}
+ORIGINAL_DOMAINS = {e['name']: e['domain'] for e in originals_list}
 if args.install:
     for name, (title, category, desc_override) in originals.items():
         src = repo / 'skills' / name / 'SKILL.md'
@@ -323,6 +324,12 @@ def parse_index_tables(path):
             'skill_md': col.get('skillmd', ''),
             'license': col.get('licence', '') or col.get('license', '') or 'Check Upstream',
             'notes': col.get('notes', '') or col.get('closes the gap in', ''),
+            # Optional per-entry routing keywords (header "Keywords").
+            # Most rows leave it empty and rely on name + domain keywords;
+            # a row that needs topical terms its name does not carry (e.g.
+            # modern-web-guidance: dialog, modal, dark mode) lists them
+            # here. They enter the 3.0 keyword field, like name terms.
+            'keywords': col.get('keywords', ''),
         })
     return entries
 
@@ -382,6 +389,7 @@ def section_domain(section):
     if 'health' in s: return 'Health & Medical'
     if 'tier 1' in s: return 'Core RSI'
     if 'gap filler' in s: return 'Gap Fillers'
+    if 'agent & orchestration' in s: return 'Agent & Orchestration'
     if 'tier 2' in s: return 'Video'
     if 'tier 3' in s: return 'Defensive Security'
     if 'tier 4' in s: return 'Research, Documents & Voice'
@@ -399,7 +407,7 @@ registry = {'version': 2, 'source_repo': 'fahmi0812/muse-rsi', 'verified': '2026
             'counts': {}, 'skills': []}
 for e in listed:
     domain = section_domain(e['section'])
-    kws = domain_keywords(domain) | normalize_terms(e['name'])
+    kws = domain_keywords(domain) | normalize_terms(e['name']) | normalize_terms(e.get('keywords', ''))
     tier = 'reference' if (e['section'] or '').startswith('Tier ') and 'Tier 1' not in (e['section'] or '') else 'core'
     registry['skills'].append({
         'name': e['name'], 'type': 'listed', 'tier': tier, 'domain': domain,
@@ -407,19 +415,6 @@ for e in listed:
         'skill_md': e['skill_md'], 'license': e['license'],
         'notes': e['notes'], 'keywords': sorted(kws),
     })
-ORIGINAL_DOMAINS = {
-    'rsi-loop': 'Core RSI',
-    'self-audit': 'Core RSI',
-    'anti-slop-checklist': 'Gap Fillers',
-    'health-research-literacy': 'Health & Medical',
-    'academic-campus': 'College & Academic',
-    'office-corporate': 'Office & Corporate',
-    'fullstack-delivery': 'Full-Stack Development',
-    'visual-check': 'Core RSI',
-    'contribute': 'Core RSI',
-    'council': 'Core RSI',
-    'interrogate-claim': 'Core RSI',
-}
 for name, (title, category, _desc) in originals.items():
     od = ORIGINAL_DOMAINS[name]
     kws = domain_keywords(od) | normalize_terms(title + ' ' + name)

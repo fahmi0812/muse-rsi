@@ -1,11 +1,11 @@
 # MEMORY.md — Hot Core & Scene Index
 
-<!-- HARD LIMIT: <60 lines. Read this file always; open MAX 1 scene file per task. NEVER store passwords/tokens/.env contents here. -->
+<!-- HARD LIMIT: 8 KB. Read this file always; open MAX 1 scene file per task. NEVER store passwords/tokens/.env contents here. Numbers live in state/facts.json (repo) — never copy them here by hand. -->
 
 ## Core Facts
 
 - **User:** (fill in the user's name).
-- **Mode:** Full-Autonomous Orchestrator (0% confirmation for local work) + Friendly, simple frontstage.
+- **Mode:** Full-Autonomous Orchestrator (A0–A1 without asking; A2–A5 only through their gate — see SOUL §1) + Friendly, simple frontstage.
 - **Vault:** `~/.config/muse/vault/` (chmod 700, gitignored) + persistent browser auth profiles.
 - **Privacy:** Never mention the user's private details (such as their location) in public docs, published repos, or replies. Keep timezone only for scheduling.
 
@@ -22,17 +22,17 @@
 
 ## Pre-Authorized Fast Lanes
 
-- All local workspace actions, git branch/commit/push to the user's repos, background workers, and audit/install of GitHub skills that pass the Security Gate = **auto-execute**.
-- Crucial actions (deploy, migration, big refactor, publish) = approval gate: snapshot + test + secret scan first, then the runtime approval card — never auto-executed.
+- Local workspace actions, background workers, and audit/install of GitHub skills that pass the Security Gate = **auto-execute** (A0–A1).
+- Git branch/commit/push to the user's repos = **class A2**: automatic up to a PR; merge by the user (auto-merge only after 10 accepted PRs in a row, ≥14 days, T1 green, T2 ≥90%). Never push straight to main.
+- Crucial actions (deploy, migration, big refactor, publish) = approval gate: snapshot + test + secret scan first, then the runtime approval card — never auto-executed (A5).
 
-## System State
+## System State (live, not static text)
 
-- **Repo:** `muse-rsi` — 96 listed (64 core + 32 reference) + 11 originals + 139 Lumitome reference = **246 registry entries**.
-- **Router:** skill `muse-rsi` installed (`include_in_prompt: true`); registry at `skills/router/registry.json`.
+- **Repo numbers:** read `state/facts.json` in the muse-rsi repo (registry total, eval top-3/top-1, canary, HEAD). Never hand-copy numbers into this file — `drift_check.py` flags any mismatch.
+- **RSI loop status:** read the heartbeat, not this file — `HEARTBEAT.md` check `rsi-daily-cycle` (last `decision.tsv` row <26h old) tells whether the loop is alive. Setup cannot schedule the loop; the agent creates the daily job `rsi-daily-self-improvement` (see the setup's NEXT STEP message).
+- **Router:** skill `muse-rsi` installed (`include_in_prompt: true`); registry at `skills/router/registry.json`; generator `scripts/generate_registry.py`.
 - **Visual check:** `visual-check` installed (Playwright + Chrome headless shell in `~/workspace/tools/visual-check/`).
-- **RSI loop:** NOT active until the agent creates the daily job `rsi-daily-self-improvement` (every 24h) — the setup cannot schedule it; see the setup's NEXT STEP message.
 - **Secret scan:** gitleaks in `~/workspace/tools/gitleaks/`; mandatory before any public push (see skill `self-audit`).
-- **Registry generator:** `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`.
 
 ## Memory Hygiene
 

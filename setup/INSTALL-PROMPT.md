@@ -46,9 +46,9 @@ VERIFIKASI (wajib di kedua cabang):
   96 listed + 11 original + 139 lumitome-reference), secret scan bersih.
 - Buktikan versi baru: registry 246 entri, eval 125/125, 12 skill
   terpasang (termasuk council + interrogate-claim), router v2.1.
-  Kalau angkanya masih angka lama (mis. registry 261, eval 17/17,
-  skill 10), berarti repo atau setup tidak ter-update — jangan klaim
-  selesai, perbaiki dulu sampai angkanya benar.
+  Kalau angkanya masih angka lama (mis. registry bukan 246, eval bukan
+  125/125, skill bukan 12), berarti repo atau setup tidak ter-update —
+  jangan klaim selesai, perbaiki dulu sampai angkanya benar.
 
 AKTIVASI LOOP 24 JAM (wajib — setup tidak bisa melakukannya):
 - Setup hanya memasang skill rsi-loop — ia tidak bisa membuat jadwal.

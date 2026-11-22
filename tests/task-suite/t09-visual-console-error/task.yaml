@@ -1,0 +1,10 @@
+id: t09-visual-console-error
+title: "Visual-check: console error JS terdeteksi di report"
+skill: visual-check
+model_involved: false
+prompt: "Jalankan visual-check pada halaman yang melempar error konsol dan pastikan error tercatat"
+timeout_s: 180
+check: check.py
+solve: |
+  if [ ! -f "$VISUAL_CHECK_DIR/check.mjs" ]; then echo "visual-check tool tidak ada di $VISUAL_CHECK_DIR" > visual-tool-missing.txt; exit 3; fi
+  node "$VISUAL_CHECK_DIR/check.mjs" page.html out err

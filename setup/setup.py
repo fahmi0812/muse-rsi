@@ -13,7 +13,7 @@ What it does (new agent or long-running one):
   3. Repairs MEMORY.md (clean <60-line structure + memory/scenes/) without
      deleting the user's facts. A broken single-line MEMORY.md is replaced from
      the template, keeping the user's name when it can be found.
-  4. Installs the 11 original skills + the muse-rsi router (registry 246 entries)
+  4. Installs the 11 original skills + the muse-rsi router (registry 248 entries)
      into ~/workspace/custom-skills/.
   5. Installs the tools: gitleaks (secret scan) + visual-check (Playwright +
      Chrome headless shell + axe) + scan-secrets.sh + run_all_checks.sh.
@@ -51,26 +51,22 @@ import subprocess
 import sys
 import urllib.request
 
-ORIGINALS = {
-    'rsi-loop': ('Daily RSI loop', 'Work and knowledge', None),
-    'self-audit': ('New-skill audit checklist', 'Work and knowledge', None),
-    'anti-slop-checklist': ('Anti-slop checklist', 'Work and knowledge', None),
-    'health-research-literacy': ('Health research literacy', 'Health and fitness', None),
-    'academic-campus': ('College and campus workflow', 'Work and knowledge', None),
-    'office-corporate': ('Office and corporate workflow', 'Work and knowledge', None),
-    'fullstack-delivery': ('Full-stack delivery workflow', 'Work and knowledge', None),
-    'visual-check': ('Visual Check', 'Work and knowledge',
-                     'Screenshot any page or HTML file at 360, 768, and 1280 pixels plus dark mode, and report console errors, failed requests, and horizontal overflow — so design work is judged by looking at it, not by reading code.'),
-    'contribute': ('Contribute back to muse-rsi', 'Work and knowledge', None),
-    'council': ('Blind multi-model council', 'Work and knowledge', None),
-    'interrogate-claim': ('Interrogate a claim', 'Work and knowledge', None),
-}
+def load_originals(repo_root):
+    """The 11 original skills, from the single source of truth
+    config/originals.json (v3.0 G1, M-13). Returns
+    {name: (title, category, description_override)} — the same shape the
+    old inline ORIGINALS dict had. Do not duplicate the list here."""
+    data = json.loads((pathlib.Path(repo_root) / 'config' / 'originals.json')
+                      .read_text(encoding='utf-8'))
+    return {e['name']: (e['title'], e['category'], e['description_override'])
+            for e in data['originals']}
 # Marker pair that delimits the muse-rsi system block inside SOUL.md.
 # Everything between the markers is owned by the template; everything
 # outside them belongs to the agent and is never touched by a merge.
 SYS_START = '<!-- muse-rsi:system:start -->'
 SYS_END = '<!-- muse-rsi:system:end -->'
-RUNTIME_FILES = ['SOUL.md', 'IDENTITY.md', 'USER.md', 'MEMORY.md', 'AGENTS.md', 'TOOLS.md']
+RUNTIME_FILES = ['SOUL.md', 'IDENTITY.md', 'USER.md', 'MEMORY.md', 'AGENTS.md', 'TOOLS.md',
+                 'HEARTBEAT.md', 'PROACTIVE_PREFERENCES.md']
 
 log_lines = []
 
@@ -180,7 +176,7 @@ def strip_frontmatter(text):
 def install_skills(repo, home, dry):
     custom = home / 'workspace' / 'custom-skills'
     installed = []
-    for name, (title, category, desc_override) in ORIGINALS.items():
+    for name, (title, category, desc_override) in load_originals(repo).items():
         src = repo / 'skills' / name / 'SKILL.md'
         text, desc = strip_frontmatter(src.read_text(encoding='utf-8'))
         if not desc:
@@ -354,7 +350,8 @@ def main():
     here = pathlib.Path(__file__).resolve()
     repo = pathlib.Path(args.repo) if args.repo else here.parent.parent
     tpl = here.parent / 'templates'
-    for f in ('SOUL-system.md', 'IDENTITY.md', 'MEMORY.md', 'AGENTS-additions.md'):
+    for f in ('SOUL-system.md', 'IDENTITY.md', 'MEMORY.md', 'AGENTS-additions.md',
+            'TOOLS.md', 'HEARTBEAT.md', 'PROACTIVE_PREFERENCES.md'):
         if not (tpl / f).exists():
             sys.exit(f'template missing: {tpl / f}')
     if not (repo / 'skills' / 'router' / 'registry.json').exists():
@@ -482,7 +479,7 @@ def main():
         if 'memory/scenes/' not in new_mem:
             new_mem = new_mem.rstrip() + '\n\nSee `memory/scenes/` for details (env-stack, projects, auth-map, skills, bottlenecks, changelog).\n'
         if 'muse-rsi' not in new_mem:
-            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo:** `muse-rsi` — 96 listed (64 core + 32 reference) + 11 originals + 139 Lumitome reference = 246 registry entries.\n'
+            new_mem = new_mem.rstrip() + '\n\n## System State\n\n- **Repo numbers:** read `state/facts.json` in the muse-rsi repo (single source of truth — never hand-copy numbers into MEMORY.md).\n'
         write_home('MEMORY.md', new_mem)
     if not args.dry_run and not args.skills_only:
         (home / 'memory' / 'scenes').mkdir(parents=True, exist_ok=True)
@@ -491,7 +488,7 @@ def main():
             'env-stack.md': '# env-stack — Work environment\n\n(Fill in: OS, Node/Python versions, tools in ~/workspace/tools/.)\n',
             'projects.md': '# projects — Active projects & repo rules\n\n(Fill in: the user\'s active projects and their rules.)\n',
             'auth-map.md': '# auth-map — Accounts & vault map\n\nMap only — NEVER write passwords/tokens/.env contents here.\n',
-            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (246 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`.\n',
+            'skills.md': '# skills — Skill registry & installed tools\n\n- Router `muse-rsi` (248 entries). Generator: `scripts/generate_registry.py` in the muse-rsi repo; registry: `skills/router/registry.json`. Repo numbers: `state/facts.json`.\n',
             'bottlenecks.md': '# bottlenecks — Bottleneck queue\n\nDelete an entry as soon as it is resolved.\n',
             'changelog.md': '# changelog — System changes\n\n- Setup: muse-rsi system installed.\n',
         }.items():
@@ -509,6 +506,20 @@ def main():
     else:
         log('[6] AGENTS.md: appended operating rules (existing conventions kept)')
         write_home('AGENTS.md', agents.rstrip() + '\n' + additions)
+
+    # --- 6b. Control files: TOOLS.md / HEARTBEAT.md / PROACTIVE_PREFERENCES.md ---
+    # v3.0 G1 (M-10): these were empty templates before; setup now installs
+    # the filled-in versions. Existing files are kept as-is (the user may
+    # have customized them) — only a missing file is written from template.
+    # Skipped entirely under --skills-only (no system files touched).
+    if not args.skills_only:
+        for _name in ('TOOLS.md', 'HEARTBEAT.md', 'PROACTIVE_PREFERENCES.md'):
+            _existing = read_home(_name)
+            if _existing is None:
+                log(f'[6b] {_name}: fresh install — wrote template')
+                write_home(_name, (tpl / _name).read_text(encoding='utf-8'))
+            else:
+                log(f'[6b] {_name}: already present — kept as-is')
 
     # --- 7. vault ---
     vault = home / '.config' / 'muse' / 'vault'
@@ -603,7 +614,7 @@ def main():
         log('')
         log('NEXT STEP — activate the 24h RSI loop (the setup cannot schedule it; the agent must):')
         log('  Create a daily scheduled job named rsi-daily-self-improvement, every 24h,')
-        log('  that runs the rsi-loop skill: audit, pick 1 fix, snapshot, test, secret scan, log.')
+        log('  that runs the Loop Engine: python3 scripts/rsi_cycle.py run')
         log('  Then trigger the first run manually once, to prove the loop works.')
     if staged:
         log('')

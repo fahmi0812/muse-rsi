@@ -32,7 +32,7 @@ memercayainya.
 Kalau klaimnya tidak bisa ditulis dalam 1 kalimat, klaim itu belum
 jelas — minta diperjelas dulu, jangan lanjut.
 
-Contoh: "Eval routing lolos 17/17 setelah registry berubah."
+Contoh: "Eval routing lolos 125/125 setelah registry berubah."
 
 ### 2. Minta buktinya — yang bisa dibuka
 

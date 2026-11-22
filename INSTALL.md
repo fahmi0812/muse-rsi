@@ -95,8 +95,8 @@ update juga pakai `--skills-only` supaya file sistem tidak disentuh.
 
 Setelah update, buktikan versi baru: registry 246 entri, routing eval
 125/125, 12 skill terpasang. Kalau angkanya masih angka lama (mis.
-registry 261, eval 17/17, 10 skill), copy repo tidak ter-update — ambil
-ulang (clone baru atau ZIP), jangan lanjut. Cek juga job
+registry bukan 246, eval bukan 125/125, skill bukan 12), copy repo
+tidak ter-update — ambil ulang (clone baru atau ZIP), jangan lanjut. Cek juga job
 `rsi-daily-self-improvement` masih ada; kalau hilang, buat ulang (lihat
 [Activate the 24-hour loop](#activate-the-24-hour-loop)).
 
@@ -157,7 +157,7 @@ ulang (clone baru atau ZIP), jangan lanjut. Cek juga job
 ~/workspace/tools/run_all_checks.sh
 ```
 
-All 4 checks must pass: registry check, routing eval (17/17), validate,
+All 4 checks must pass: registry check, routing eval (125/125), validate,
 secret scan. The setup installs this script, so the command always exists
 after a successful install.
 

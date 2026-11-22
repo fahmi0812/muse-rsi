@@ -5,13 +5,13 @@ description: Route any task to the right verified skill from the muse-rsi index.
 
 # muse-rsi Skill Router
 
-Route any task to the right verified skill before doing the work. The index lives in `registry.json` beside this file: 64 core listed skills, 32 further-reference skills, 11 original skills written for this system (all 11 wired into `registry.json`), and a 139-skill Lumitome reference index. The public index is at https://github.com/fahmi0812/muse-rsi.
+Route any task to the right verified skill before doing the work. The index lives in `registry.json` beside this file: 66 core listed skills, 32 further-reference skills, 11 original skills written for this system (all 11 wired into `registry.json`), and a 139-skill Lumitome reference index. The public index is at https://github.com/fahmi0812/muse-rsi.
 
 ## Route the request
 
 - Read the request and name its domain first: full-stack, DevOps, office, academic, research, health, design, video, security, or agent work.
 
-- Run the router as a program when the match is not obvious: `python3 scripts/route.py "<task>"` (in the muse-rsi repo; `route.py` scores the request against the same registry the eval tests — `scripts/eval_routing.py`, 125 queries, must pass). Use its top 3 as the starting point, then apply your judgment.
+- Run the router as a program when the match is not obvious: `python3 scripts/route.py "<task>"` (in the muse-rsi repo; `route.py` scores the request against the same registry the eval tests — `scripts/eval_routing.py`, 130 queries, must pass). Use its top 3 as the starting point, then apply your judgment.
 
 - How `route.py` scores (v2): a small BM25-style ranker over three weighted fields — `keywords` (3.0), `domain` (2.0), `notes` (1.0) — with one shared token normalisation, so hyphenated/dotted phrases (`next.js`, `full-stack`) and multi-word phrases (`systematic review`) match as single terms. Ties break by tier (original > core > reference > lumitome-reference), then by name ascending. A query with no keyword-field hit returns `NO_MATCH` instead of a junk guess.
 
@@ -77,7 +77,7 @@ Route any task to the right verified skill before doing the work. The index live
 
 `route.py` scores each candidate as 3.0·idf per keyword-field hit +
 2.0·idf per domain-field hit + 1.0·idf per notes-field hit, where
-idf = log((n−d+0.5)/(d+0.5)+1) and n is the registry size (246).
+idf = log((n−d+0.5)/(d+0.5)+1) and n is the registry size (248).
 On this scale one rare keyword hit is worth about 15 points and one
 common keyword hit about 5, so a top-1 score under 10 means the match
 rests on a single common term or weak overlap — thin evidence.
@@ -101,25 +101,23 @@ denylist protects words stemming must not touch (`glass`, `bias`,
 term (a name that appears in exactly one entry) can dominate a query
 — if top-1 rests on a single rare name-word, treat it as AMBIGUOUS.
 
-Three bands (thresholds measured on the 125-case eval, 2026-11-21;
+Three bands (thresholds measured on the 130-case eval, 2026-11-22;
 re-measure when the registry grows):
 
 - **EASY — top-1 ≥ 10 and (top-2 in the same domain as top-1, or the
-  gap is ≥ 5).** Single pass, use top-1. Measured: 95 of 125 eval
-  cases, e.g. "contribute a new skill to muse-rsi" (70.60 vs 9.45,
+  gap is ≥ 5).** Single pass, use top-1. Measured: 102 of 130 eval
+  cases, e.g. "contribute a new skill to muse-rsi" (98.12 vs 22.19,
   same domain).
 - **AMBIGUOUS — top-1 ≥ 10, top-2 in a different domain, and the gap
   is < 5.** The router genuinely cannot tell which domain wins — run
-  [council](../council/SKILL.md) before acting. Measured: 14 of 125,
-  e.g. "check my React components for accessibility WCAG" (12.82 Gap
-  Fillers vs 9.33 Full-Stack Development, gap 3.49) and "tulis abstrak
-  skripsi" (15.22 College & Academic vs 11.63 Writing & Language (ID),
-  gap 3.59).
+  [council](../council/SKILL.md) before acting. Measured: 11 of 130,
+  e.g. "review my code for bugs" (20.09 Security vs 20.09 Full-Stack
+  Development, gap 0.00 — an exact-score tie, broken alphabetically).
 - **HARD — `NO_MATCH`, or top-1 < 10.** Do not guess. Run
   [interrogate-claim](../interrogate-claim/SKILL.md) on the request, or ask the user
-  exactly one clarifying detail. Measured: 16 of 125 — 15 are deliberate
-  `NO_MATCH` negatives, and 1 is a thin match: "create a REST API with
-  FastAPI and PostgreSQL" (top-1 5.69). The price of this band is one
-  clarifying question on thin matches: the routing is usually still
+  exactly one clarifying detail. Measured: 17 of 130 — 16 are deliberate
+  `NO_MATCH` negatives (15 plain + 1 policy refusal, case #77), and 1 is
+  a thin match: "create a REST API with FastAPI and PostgreSQL" (top-1
+  5.66). The price of this band is one clarifying question on thin matches: the routing is usually still
   right at top-1, but the evidence is a single common term, so the
   question is cheaper than a wrong action.

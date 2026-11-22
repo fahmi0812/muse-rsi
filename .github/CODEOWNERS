@@ -1,0 +1,34 @@
+# This file is a reviewer and code owner for protected paths in muse-rsi.
+# It lives in the sandbox only for now: workflow/CODEOWNERS changes are
+# applied by Fahmi through the GitHub web UI (GitHub App cannot write
+# .github/ files via API), together with the envelope-guard workflow.
+# Owner: fahmi0812 (repo owner).
+
+# Verifier + engine (M-02, M-11)
+scripts/eval_routing.json @fahmi0812
+eval/ @fahmi0812
+scripts/test_canary.py @fahmi0812
+scripts/eval_*.py @fahmi0812
+scripts/run_eval_k.py @fahmi0812
+scripts/run_all_checks.sh @fahmi0812
+scripts/rsi_cycle.py @fahmi0812
+scripts/run_budget.py @fahmi0812
+scripts/critique.py @fahmi0812
+scripts/trust.py @fahmi0812
+scripts/gen_facts.py @fahmi0812
+scripts/drift_check.py @fahmi0812
+
+# Limits + permissions (Safety Envelope — the loop must not loosen itself)
+config/limits.yaml @fahmi0812
+config/trust.yaml @fahmi0812
+config/critique.yaml @fahmi0812
+config/protected_paths.txt @fahmi0812
+
+# CI
+.github/workflows/ @fahmi0812
+.github/CODEOWNERS @fahmi0812
+
+# Constitution (hash-checked in PRECHECK; whole-file ownership here)
+/SOUL.md @fahmi0812
+/IDENTITY.md @fahmi0812
+/USER.md @fahmi0812
