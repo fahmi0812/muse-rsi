@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-22T07:49:38Z",
-  "head": "1e0e538",
+  "generated_at": "2026-11-23T19:14:11Z",
+  "head": "7626626",
   "router_version": "2.2",
   "registry_version": 2,
   "registry_total": 248,
@@ -10,8 +10,8 @@
   "eval_top3": "130/130",
   "eval_top3_passed": 130,
   "eval_top3_total": 130,
-  "eval_top1_positive": "106/114",
-  "eval_top1_positive_passed": 106,
+  "eval_top1_positive": "114/114",
+  "eval_top1_positive_passed": 114,
   "eval_top1_positive_total": 114,
   "eval_top1_negative": "16/16",
   "eval_top1_negative_passed": 16,
@@ -20,5 +20,5 @@
   "canary_passed": 8,
   "canary_total": 8,
   "manifest_ok": true,
-  "manifest_sha256": "3c2588a9934415280d11ed8869f0e3298819d8b708167aa57e8735964073f96d"
+  "manifest_sha256": "5bdac8e961c35e2464b0ec2414f5cb1772a89fcfcaa6fbf21911e0267d8c4d7c"
 }
