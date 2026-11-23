@@ -175,6 +175,7 @@
     "generic",
     "indonesi",
     "land",
+    "layout",
     "leonxlnx",
     "leonxlnx taste-skill",
     "memory",
@@ -868,6 +869,7 @@
     "cd",
     "ci",
     "cloud",
+    "cluster",
     "deploy",
     "docker",
     "helm",
@@ -1527,6 +1529,8 @@
     "playwright",
     "qa",
     "react",
+    "rest",
+    "rest api",
     "skill",
     "stack",
     "test",
@@ -1766,6 +1770,7 @@
     "mcp",
     "off",
     "orchestrat",
+    "prompt",
     "review",
     "review design",
     "review loop",
@@ -1932,8 +1937,11 @@
     "offic",
     "outlook",
     "perusaha",
+    "plan",
     "powerpoint",
     "ppt",
+    "quarterly",
+    "quarterly plan",
     "resmi",
     "skill",
     "spreadsheet",
@@ -2081,6 +2089,7 @@
     "corporat",
     "document",
     "dokumen",
+    "draft",
     "email",
     "email resmi",
     "excel",
@@ -3823,6 +3832,7 @@
    "notes": "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s do…",
    "keywords": [
     "api",
+    "bug",
     "cod",
     "code-review",
     "codereview",
@@ -7332,7 +7342,8 @@
    "license": "Check Upstream",
    "notes": "You MUST use this before any creative work - creating features, building components, adding functionality, modifying behavior, or planning… *(Generic creative-thinking workflow (from obra/superpowers).)*",
    "keywords": [
-    "brainstorm"
+    "brainstorm",
+    "idea"
    ]
   },
   {

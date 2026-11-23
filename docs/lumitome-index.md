@@ -47,14 +47,14 @@ sub-skills and `-2`/`-3` variant dirs that are not all separately registered.
 
 Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 chars).
 
-| Skill | 1-line purpose | Domain |
-|---|---|---|
+| Skill | 1-line purpose | Domain | Keywords |
+|---|---|---|---|
 | `antislop` | Anti Slop: Rules for AI Coding Agents. The core filter. Load always to stop generic AI slop. | Full-Stack Development |
 | `antislop-code` | Code comment hygiene for AI coding agents: remove generic AI-slop comments, keep the valuable ones, never touch the code. | Full-Stack Development |
 | `archify-review` | Review Archify issues, PRs, or code through value, cost, and impact to support evidence-based maintenance decisions. Use for issue triage,… | Full-Stack Development |
 | `chrome-devtools-axi` | Control a Chromium session through chrome-devtools-axi after opencode-chromium-cdp start. Use when an observed browser issue needs diagnost… | Full-Stack Development |
 | `code-polish` | Polish changed code when the user explicitly asks, or when an active workflow requests post-implementation | Full-Stack Development |
-| `code-review` | Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s do… | Full-Stack Development |
+| `code-review` | Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s do… | Full-Stack Development | bug |
 | `commit` | Commit staged or intended changes: compose a Conventional Prefix or Natural Language message, then use ai-commit — | Full-Stack Development |
 | `correct` | Find the mistakes agents keep repeating in this repo and make each one impossible. Try architecture first, then types, then a lint whose er… | Full-Stack Development |
 | `docs-pack` | Bootstrap a 12-file living documentation pack for a project (PRD, architecture, data model, design system, security, testing, code style, A… *(12 living project docs (PRD, architecture, API spec…).)* | Full-Stack Development |
@@ -186,7 +186,7 @@ Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 c
 | `deep-research` | Synthesizes a question across sources, separating claims, evidence, and gaps. | Research |
 | `research` | Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants… | Research |
 | `audit` | a user-authored audit skill *(Empty stub — SKILL.md contains only frontmatter + "Not pinned".)* | Other |
-| `brainstorming` | You MUST use this before any creative work - creating features, building components, adding functionality, modifying behavior, or planning… *(Generic creative-thinking workflow (from obra/superpowers).)* | Other |
+| `brainstorming` | You MUST use this before any creative work - creating features, building components, adding functionality, modifying behavior, or planning… *(Generic creative-thinking workflow (from obra/superpowers).)* | Other | idea |
 | `platformio` | Bangun, flash, dan monitor firmware PlatformIO/Arduino/ESP32: validasi proyek, diagnosa build terstruktur, audit pin GPIO, flash + verifika… *(Embedded firmware (ESP32/Arduino), not web full-stack.)* | Other |
 
 ## Health & Medical — finding (verified by grep on the clone)

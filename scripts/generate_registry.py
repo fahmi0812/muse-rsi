@@ -353,7 +353,11 @@ for line in text.splitlines():
         name = cells[0].strip('`')
         if name in ('Skill',):
             continue
-        lumi.append({'name': name, 'purpose': cells[1], 'domain': cells[2]})
+        lumi.append({'name': name, 'purpose': cells[1], 'domain': cells[2],
+                     # Optional 4th column "Keywords": topical terms the skill
+                     # name does not carry (same mechanism as the Keywords
+                     # column in skills/index.md for listed skills).
+                     'keywords': cells[3] if len(cells) > 3 else ''})
 print('lumitome skills parsed:', len(lumi))
 
 # ---------- 3. Domain keywords for routing ----------
@@ -429,7 +433,7 @@ for l in lumi:
         'name': l['name'], 'type': 'lumitome-reference', 'domain': l['domain'],
         'repo': 'fahmi0812/Lumitome', 'url': 'https://github.com/fahmi0812/Lumitome',
         'path': f'.opencode/skills/{l["name"]}/SKILL.md', 'license': 'Check Upstream',
-        'notes': l['purpose'], 'keywords': sorted(domain_keywords(l['domain']) | normalize_terms(l['name'])),
+        'notes': l['purpose'], 'keywords': sorted(domain_keywords(l['domain']) | normalize_terms(l['name']) | normalize_terms(l.get('keywords', ''))),
     })
 from collections import Counter
 registry['counts'] = {'listed': len(listed), 'original': len(originals), 'lumitome_reference': len(lumi),

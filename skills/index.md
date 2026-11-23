@@ -45,9 +45,9 @@ Install these first.
 
 These close the 5 biggest gaps found in the critique (see [docs/critique.md](../docs/critique.md)): anti-slop / design taste, long-term memory, testing / QA / accessibility, Bahasa Indonesia, and browser + advanced video + presentations.
 
-| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Closes the gap in |
-|---|---|---|---|---|---|
-| 1 | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | 119,141 | Yes | MIT | Anti-slop / design taste. |
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Closes the gap in | Keywords |
+|---|---|---|---|---|---|---|
+| 1 | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | 119,141 | Yes | MIT | Anti-slop / design taste. | layout |
 | 2 | [browser-use/browser-use](https://github.com/browser-use/browser-use) | 121,585 | Yes | MIT | Browser agent. |
 | 3 | [OpenMontageInc/OpenMontage](https://github.com/OpenMontageInc/OpenMontage) | 81,870 | Yes | AGPL-3.0 | Full video production system. |
 | 4 | [mem0ai/mem0](https://github.com/mem0ai/mem0) | 69,274 | Yes (integration folder) | Apache-2.0 | Long-term agent memory. |
@@ -68,11 +68,11 @@ These close the 5 biggest gaps found in the critique (see [docs/critique.md](../
 
 Fully verified on 20 November 2026 (SKILL.md + licence checked directly). See [docs/expansion.md](../docs/expansion.md).
 
-| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
-|---|---|---|---|---|---|
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes | Keywords |
+|---|---|---|---|---|---|---|
 | 1 | [antonbabenko/terraform-skill](https://github.com/antonbabenko/terraform-skill) | 2,481 | Yes (`skills/terraform-skill/SKILL.md`) | Apache-2.0 | Terraform & OpenTofu, top pick. |
 | 2 | [BagelHole/DevOps-Security-Agent-Skills](https://github.com/BagelHole/DevOps-Security-Agent-Skills) | 1,210 | Yes (`skills/`, 80+ skills) | MIT | Widest coverage: K8s, Terraform, AWS/Azure/GCP, hardening, SOC2/ISO27001. Import selectively, not the whole tree. |
-| 3 | [LukasNiessen/kubernetes-skill](https://github.com/LukasNiessen/kubernetes-skill) | 479 | Yes (at root) | MIT | K8s/Helm/Kustomize, EKS/GKE/AKS, GitOps. |
+| 3 | [LukasNiessen/kubernetes-skill](https://github.com/LukasNiessen/kubernetes-skill) | 479 | Yes (at root) | MIT | K8s/Helm/Kustomize, EKS/GKE/AKS, GitOps. | cluster |
 | 4 | [zxkane/aws-skills](https://github.com/zxkane/aws-skills) | 379 | Yes (`plugins/*/skills/*/SKILL.md`) | MIT | AWS IaC, serverless, cost ops. |
 | 5 | [aws/tools-for-devops-agent](https://github.com/aws/tools-for-devops-agent) | 143 | Yes (`skills/*/SKILL.md`) | Apache-2.0 | Official AWS org; AWS-only; 100 open issues — check the backlog first. |
 | 6 | [ollygarden/opentelemetry-agent-skills](https://github.com/ollygarden/opentelemetry-agent-skills) | 126 | Yes (`skills/otel-*/SKILL.md`) | Apache-2.0 | Vendor-neutral observability. |
@@ -126,7 +126,7 @@ Verified via the web on 20 November 2026 (SKILL.md + licence read from each repo
 | 2 | [PramodDutta/qaskills](https://github.com/PramodDutta/qaskills) | 250 | Yes (`.claude/skills/ship-prod/SKILL.md`) | MIT | QA/testing directory. Overlaps with petrkindlmann — pick one. | |
 | 3 | [wsimmonds/claude-nextjs-skills](https://github.com/wsimmonds/claude-nextjs-skills) | 115 | Yes (root folders, e.g. `nextjs-advanced-routing/SKILL.md`) | MIT | Next.js skills. Last commit 24 Oct 2025 — stale, over 1 year old. | |
 | 4 | [laguagu/claude-code-nextjs-skills](https://github.com/laguagu/claude-code-nextjs-skills) | 74 | Yes (`skills/ai-app/SKILL.md`) | MIT | Next.js 16 + AI SDK 7 + pgvector + Bun. Active. | |
-| 5 | [kazdenc/builder-skills](https://github.com/kazdenc/builder-skills) | 46 | Yes (`.claude/skills/dev/test/test-plan/SKILL.md`) | MIT | 47 skills: product, frontend, full-stack, browser automation. Last update 9 Mar 2026. | |
+| 5 | [kazdenc/builder-skills](https://github.com/kazdenc/builder-skills) | 46 | Yes (`.claude/skills/dev/test/test-plan/SKILL.md`) | MIT | 47 skills: product, frontend, full-stack, browser automation. Last update 9 Mar 2026. | REST API |
 | 6 | [PyModel/react-frontend-skills](https://github.com/PyModel/react-frontend-skills) | 43 | Yes (`skills/react/SKILL.md`) | MIT | React 19 / Next.js 16 / TypeScript, testing, UI. | |
 | 7 | [leejpsd/typescript-react-nextjs-patterns](https://github.com/leejpsd/typescript-react-nextjs-patterns) | 22 | Yes (at root) | MIT | TypeScript/React/Next.js decision guides. Small repo. | |
 | 8 | [googlechrome/modern-web-guidance](https://github.com/googlechrome/modern-web-guidance) | 24,695 | Yes (`skills/modern-web-guidance/SKILL.md`) | Apache-2.0 | 210 expert guides for the modern web platform: CSS, HTML, client-side JS, accessibility, dark mode, dialog, modal, popover, container queries, view transitions, forms, validation, autofill, passkeys, performance, web components. CLI search/retrieve via npx, Node >=22. | dialog, modal, dark mode, container queries, accessibility, popover, forms, validation, autofill, passkeys, performance, web components, CSS, HTML, typography, carousel, accordion, tabs, toast, scrollbar, wasm, webassembly, oklch, CWV, LCP, INP, CLS, built-in AI, sanitization, chrome |
@@ -137,22 +137,22 @@ Repo-level upstream entry for Google's Elephant-Goldfish Model (design-doc workf
 
 | # | Skill | Stars (22 Nov 2026) | SKILL.md? | Licence | Notes | Keywords |
 |---|---|---|---|---|---|---|
-| 1 | [google/elephant-goldfish-model](https://github.com/google/elephant-goldfish-model) | 21,959 | Yes (8 skills in subfolders) | Apache-2.0 | Elephant drafts design docs with full context; Goldfish blind review audits them without prior context. 8 skills: brainstorm, draft, review, review-loop, resolve, lite, bootstrap, drift-report. | egm, elephant, goldfish, blind review, design doc, design document, specification, spec, fresh eyes, review loop, brainstorm, drift, rfc, architecture, trade-off, assumption, reviewer, design review, spec review |
+| 1 | [google/elephant-goldfish-model](https://github.com/google/elephant-goldfish-model) | 21,959 | Yes (8 skills in subfolders) | Apache-2.0 | Elephant drafts design docs with full context; Goldfish blind review audits them without prior context. 8 skills: brainstorm, draft, review, review-loop, resolve, lite, bootstrap, drift-report. | egm, elephant, goldfish, blind review, design doc, design document, specification, spec, fresh eyes, review loop, brainstorm, drift, rfc, architecture, trade-off, assumption, reviewer, design review, spec review, system prompt |
 
 ## Domain Pack — Office & Corporate (8)
 
 Verified via the web on 20 November 2026. See [docs/recheck-web.md](../docs/recheck-web.md).
 
-| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes |
-|---|---|---|---|---|---|
+| # | Skill | Stars (20 Nov 2026) | SKILL.md? | Licence | Notes | Keywords |
+|---|---|---|---|---|---|---|
 | 1 | [chunkydotdev/email-skills](https://github.com/chunkydotdev/email-skills) | 8 | Yes (`skills/diagnostics/email-diagnostics/SKILL.md`) | MIT | Email deliverability, auth, bounce, compliance. |
 | 2 | [JunfengRan/PPTWork](https://github.com/JunfengRan/PPTWork) | 7 | Yes (`ppt/SKILL.md`) | MIT | Plan, write, and export PowerPoint decks. Last update 22 Jul 2026. |
 | 3 | [Dangooy/trade-pipeline-skill](https://github.com/Dangooy/trade-pipeline-skill) | 41 | Yes (`.claude/skills/trade-pipeline-run/SKILL.md`) | MIT | Excel inquiry → Quotation / PI / CI / Packing List. Trade-docs niche. |
-| 4 | [hearthbook-tools/spreadsheet-agent-skills](https://github.com/hearthbook-tools/spreadsheet-agent-skills) | 0 | Yes (`skills/formula-first-workbook/SKILL.md`) | MIT | Excel formula-first: linter, break-even pricing, month-end close. 0 stars — unproven. |
+| 4 | [hearthbook-tools/spreadsheet-agent-skills](https://github.com/hearthbook-tools/spreadsheet-agent-skills) | 0 | Yes (`skills/formula-first-workbook/SKILL.md`) | MIT | Excel formula-first: linter, break-even pricing, month-end close. 0 stars — unproven. | quarterly planning |
 | 5 | [integrityauthority/office-agent-skills](https://github.com/integrityauthority/office-agent-skills) | 2 | Yes (`.agents/skills/office-live/SKILL.md`) | MIT | MS Office + Microsoft 365. Live editing is Windows-COM only. |
 | 6 | [ProfCiccio/Skills-Catalog](https://github.com/ProfCiccio/Skills-Catalog) | 0 | Yes (`ai-workflow-infographic/SKILL.md`) | None shown | Executive comms, project delivery, knowledge management. No licence shown — check before use. |
 | 7 | [Ijam18/MAJI-Skills](https://github.com/Ijam18/MAJI-Skills) | 19 | Yes (`.agents/skills/maji-commit/SKILL.md`) | **AGPL v3** | Planning/shipping/docs playbooks. Link only — never vendor (AGPL). |
-| 8 | [skillsaas/microsoft-outlook](https://github.com/skillsaas/microsoft-outlook) | 0 | Yes (at root) | MIT | Outlook: inspect .msg/.eml/.ics, triage, drafts via Graph. 0 stars. |
+| 8 | [skillsaas/microsoft-outlook](https://github.com/skillsaas/microsoft-outlook) | 0 | Yes (at root) | MIT | Outlook: inspect .msg/.eml/.ics, triage, drafts via Graph. 0 stars. | draft |
 
 ## Domain Pack — Research (5)
 
