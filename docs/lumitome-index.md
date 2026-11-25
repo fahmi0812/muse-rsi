@@ -57,7 +57,7 @@ Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 c
 | `code-review` | Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s do… | Full-Stack Development | bug |
 | `commit` | Commit staged or intended changes: compose a Conventional Prefix or Natural Language message, then use ai-commit — | Full-Stack Development |
 | `correct` | Find the mistakes agents keep repeating in this repo and make each one impossible. Try architecture first, then types, then a lint whose er… | Full-Stack Development |
-| `docs-pack` | Bootstrap a 12-file living documentation pack for a project (PRD, architecture, data model, design system, security, testing, code style, A… *(12 living project docs (PRD, architecture, API spec…).)* | Full-Stack Development |
+| `docs-pack` | Bootstrap a 12-file living documentation pack for a project (PRD, architecture, data model, design system, security, testing, code style, A… *(12 living project docs (PRD, architecture, API spec…).)* | Full-Stack Development | prd, dokumentasi, documentation, architecture, arsitektur, changelog, roadmap, decisions, design system, api spec, agents.md, interview, wawancara |
 | `figure-it-out` | Design an auditable playbook when no narrower one fits: a large migration, an ambitious multi-part change, or work a human reviews after st… | Full-Stack Development |
 | `finishing-a-development-branch` | Use when implementation is complete, all tests pass, and you need to decide how to integrate the work | Full-Stack Development |
 | `floorplan` | Draw a floorplan of an app's codebase (one repo or several side by side), an interactive node-graph map where every subsystem, module, file… | Full-Stack Development |
@@ -106,7 +106,7 @@ Purpose = frontmatter `description` from the local `SKILL.md` (trimmed to ~140 c
 | `html-wireframe` | Direct-invocation specialist for low-fidelity, self-contained HTML wireframes that test information hierarchy, content, navigation, task fl… | Design & Media |
 | `impeccable` | Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise improve a frontend int… | Design & Media |
 | `logo-design` | Professional logo and brand-mark design, from brief to production files. Guides discovery and the design brief, concept generation, choosin… | Design & Media |
-| `loopdesign` | Perbaiki desain berulang sampai bagus lewat loop render → gate → kritik (loopdesign / desain loop): Maker direction-first (DESIGN.md: arah… | Design & Media |
+| `loopdesign` | Perbaiki desain berulang sampai bagus lewat loop render → gate → kritik (loopdesign / desain loop): Maker direction-first (DESIGN.md: arah… | Design & Media | desain, loop desain, desain loop, screenshot, gate, design-gate, kritik, kritikus, red team, pre-mortem, pairwise, token, kontras, behavior, iterasi, iteration, 60-30-10, perbaiki desain |
 | `magic-ui` | Use this skill when users want to add, customize, or troubleshoot Magic UI components in React/Next.js projects. It covers component select… | Design & Media |
 | `motion-design` | Taste rules for Remotion motion graphics — timing, easing, springs, typography, color, texture, and scene continuity, with concrete numbers… | Design & Media |
 | `review-loop` | Visual self-review loop for motion graphics — render a draft, build contact sheets at every timeline beat, look at them, critique against a… | Design & Media |
