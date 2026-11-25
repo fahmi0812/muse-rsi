@@ -6,7 +6,7 @@
 # validate registry, canary, manifest --verify, gen_facts --check,
 # drift_check, scorecard tests, cycle read-only audit, secret scan.
 # Informational step (reported, never fails the suite): routing eval
-# --strict top-1 — a metric (baseline 106/114, 22 Nov 2026), not a
+# --strict top-1 — a metric (baseline 114/114, 24 Nov 2026), not a
 # pass/fail gate; the DECIDE gate uses its matched-metric delta instead.
 # Usage: run_all_checks.sh [path-to-repo-clone]  (default ~/muse-rsi)
 # Installed by setup.py to ~/workspace/tools/run_all_checks.sh.
@@ -27,7 +27,7 @@ echo "== 2/10 routing eval (top-3) =="
 python3 "$REPO/scripts/eval_routing.py" --registry "$REPO/skills/router/registry.json"
 
 echo "== 3/10 routing eval --strict top-1 (informational metric) =="
-python3 "$REPO/scripts/eval_routing.py" --registry "$REPO/skills/router/registry.json" --strict || echo "NOTE: --strict is a metric, not a hard gate (baseline 106/114). See docs/scorecard.md."
+python3 "$REPO/scripts/eval_routing.py" --registry "$REPO/skills/router/registry.json" --strict || echo "NOTE: --strict is a metric, not a hard gate (baseline 114/114). See docs/scorecard.md."
 
 echo "== 4/10 validate registry =="
 python3 "$REPO/scripts/validate_registry.py"
