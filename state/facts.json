@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-23T19:14:11Z",
-  "head": "7626626",
+  "generated_at": "2026-11-25T00:38:18Z",
+  "head": "6d166d6",
   "router_version": "2.2",
   "registry_version": 2,
   "registry_total": 248,
@@ -20,5 +20,5 @@
   "canary_passed": 8,
   "canary_total": 8,
   "manifest_ok": true,
-  "manifest_sha256": "5bdac8e961c35e2464b0ec2414f5cb1772a89fcfcaa6fbf21911e0267d8c4d7c"
+  "manifest_sha256": "ce394b894a3e9b614f97eb7591940229ba845beb64c8823be87f6a9ade0e05d0"
 }

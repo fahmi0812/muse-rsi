@@ -1,6 +1,6 @@
 {
   "inputs": {
-    "skills/router/registry.json": "e88d55967adbd71949fa9c37d4348ce4cb1809c053007f23c1dc3515551eec4e",
+    "skills/router/registry.json": "f249e7f035c907682efad04180a6b633990044ac77286a48f4a9588eda77baef",
     "scripts/route.py": "0a61b71b14a5cf7d2f21ba30cffc9a396aff870d3ded85291dc9a03f8568a855",
     "scripts/eval_routing.py": "b8711eef8b431a57452b62ebd07599fde41f02cf10016453ecf7c16cefce049c",
     "scripts/eval_routing.json": "38fa732a8e379c677e34efcda7750bbb6b542f3d191a3e39ee5878fd1b02fe9c"
@@ -11,5 +11,5 @@
     "registry_version": 2,
     "router_version": "2.2"
   },
-  "generated_at": "2026-11-23T19:13:47Z"
+  "generated_at": "2026-11-25T00:38:11Z"
 }
