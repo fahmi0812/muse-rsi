@@ -475,6 +475,30 @@ class Cycle:
             if self.dry_run:
                 print(f'note: budget via {self.budget_via}')
 
+    def _budget_close(self):
+        """Close the run_budget.py budget at the end of the cycle.
+
+        run_budget.py start refuses to overwrite an active budget
+        (exit 3), so a cycle that never closes its budget makes every
+        later cycle fall back to the internal counter and silently lose
+        the externally enforced 40-step / 45-min / $0 budget
+        (2026-11-23..26: three cycles ran on the counter only).
+        Closing is best-effort and must never mask a HALT or turn a
+        good cycle red — close itself refuses when the budget is
+        already exhausted. A cycle killed mid-run (crash) never reaches
+        here; its budget stays active until closed by hand or --force.
+        """
+        if self.dry_run or not self.budget_via.startswith(
+                'scripts/run_budget.py'):
+            return
+        rc, out = _run([sys.executable,
+                        str(self.repo / 'scripts' / 'run_budget.py'),
+                        'close', '--file', str(self.budget_file)])
+        if rc != 0:
+            print(f'warning: run_budget close failed ({out.strip()}); '
+                  f'next cycle will fall back to the internal counter',
+                  file=sys.stderr)
+
     def _spend_step(self):
         self.steps_spent += 1
         elapsed_min = (time.monotonic() - self.started_mono) / 60.0
@@ -918,6 +942,7 @@ class Cycle:
                 pass
             return EXIT_HALTED
         finally:
+            self._budget_close()
             self._release_lock()
 
 
